@@ -89,20 +89,36 @@ def has_vision_data(events):
 def should_show_event(ev, use_vision):
     """Decides whether an event is shown in combined mode.
 
-    Vision takes priority: a positive vision classification (strike/bounce)
-    always shows the event, even if VAD flagged it as speech — this handles
-    the case where someone shouts 'out' exactly when the ball is hit.
-
-    Without vision data, vad_speech=True hides the event (no override possible).
+    Priority order:
+    1. VAD says speech → hide, unless vision positively classified the ball
+       (handles 'out' shout overlapping a real strike).
+    2. Camera cut detected → show regardless of vision_type; vision was blind
+       due to the angle change, not because there was no ball.
+    3. Vision ran and classified → show (strike/bounce confirmed).
+    4. Vision ran but couldn't classify (vision_type=None) → hide.
+    5. No vision data + no VAD flag → show.
     """
     if not use_vision:
         return True
-    if "vision_type" in ev:
-        # Vision ran: show only if it successfully classified the event
-        return ev["vision_type"] is not None
-    # No vision: hide if VAD flagged this onset as speech
-    if ev.get("vad_speech", False):
-        return False
+
+    vad_speech  = ev.get("vad_speech",  False)
+    camera_cut  = ev.get("camera_cut",  False)
+    has_vision  = "vision_type" in ev
+    vision_type = ev.get("vision_type")
+
+    # Rule 1: VAD flagged as speech
+    if vad_speech:
+        return has_vision and vision_type is not None
+
+    # Rule 2: camera cut — vision was blind, trust audio
+    if camera_cut:
+        return True
+
+    # Rule 3 & 4: vision ran
+    if has_vision:
+        return vision_type is not None
+
+    # Rule 5: no vision data
     return True
 
 
@@ -471,7 +487,11 @@ class DetailPanelItem(QGraphicsItem):
         if "vad_speech" in ev:
             vad_val = ev["vad_speech"]
             vad_color = (255, 140, 60) if vad_val else (100, 220, 100)
-            lines.append((f"  vad_speech: {vad_val}", vad_color))
+            lines.append((f"  vad_speech:  {vad_val}", vad_color))
+        if "camera_cut" in ev:
+            cut_val = ev["camera_cut"]
+            cut_color = (255, 220, 80) if cut_val else None
+            lines.append((f"  camera_cut:  {cut_val}", cut_color))
 
         # Vision fields (only when present)
         if "vision_type" in ev:

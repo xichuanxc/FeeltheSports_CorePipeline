@@ -49,6 +49,8 @@ import librosa
 #       "decay_ratio": 0.21,        # energy[t+30ms:t+60ms]/energy[t:t+30ms]: low=fast decay (impact)
 #       "vad_speech": false,        # true = Silero VAD detected speech at this onset (--vad only)
 #       # vision fields (present only when --vision-model was used):
+#       "camera_cut": false,        # true = broadcast camera cut detected in the frame window
+#       # vision fields (present only when --vision-model was used):
 #       "vision_confirmed": true,   # ball detected in window around event
 #       "vision_detections": 4,     # count of sampled frames with a detection
 #       "vision_type": "strike"     # "strike" | "bounce" | null (null = undetermined)
@@ -391,7 +393,8 @@ def _classify_from_trajectory(pos_before, pos_after, bounce_y_threshold):
 
 def vision_filter(events, video_path, model_path,
                   conf=0.3, window_before_s=0.3, window_after_s=0.5,
-                  frame_step=3, bounce_y_threshold=0.65, device="auto"):
+                  frame_step=3, bounce_y_threshold=0.65, device="auto",
+                  cut_threshold=30.0):
     """
     Annotate each event with vision-based fields. Runs YOLO ball detection on
     sampled frames around each audio event and adds:
@@ -399,9 +402,13 @@ def vision_filter(events, video_path, model_path,
       vision_confirmed  — bool: at least one ball detected in the window
       vision_detections — int: number of sampled frames with a detection
       vision_type       — "strike" | "bounce" | null
+      camera_cut        — bool: a broadcast camera cut was detected in the window
+                          (large frame-to-frame pixel jump). When True, the player
+                          trusts the audio event even if vision_type is null —
+                          vision was blind due to the angle change, not because
+                          there was no ball.
 
-    Nothing is removed. vision_confirmed=False flags candidate false positives
-    for downstream evaluation.
+    Nothing is removed. Flags allow the player to make informed show/hide decisions.
 
     Requires: opencv-python, ultralytics
     """
@@ -446,12 +453,23 @@ def vision_filter(events, video_path, model_path,
 
         n_confirmed = 0
         pos_before, pos_after = [], []
+        prev_small     = None
+        max_frame_diff = 0.0
+        CUT_W, CUT_H   = 160, 90   # downsample for cheap diff computation
 
         for fi in range(f_win_start, f_win_end + 1, frame_step):
             cap.set(cv2.CAP_PROP_POS_FRAMES, fi)
             ret, frame = cap.read()
             if not ret:
                 continue
+
+            # Camera cut detection: compare downsampled consecutive frames.
+            # Broadcast cuts produce mean absolute diff >> 30; normal motion << 20.
+            small = cv2.resize(frame, (CUT_W, CUT_H)).astype(np.float32)
+            if prev_small is not None:
+                max_frame_diff = max(max_frame_diff,
+                                     float(np.mean(np.abs(small - prev_small))))
+            prev_small = small
 
             dets = _detect_balls(model, frame, conf, device)
             if dets:
@@ -468,6 +486,7 @@ def vision_filter(events, video_path, model_path,
         event["vision_type"]       = _classify_from_trajectory(
             pos_before, pos_after, bounce_y_threshold
         )
+        event["camera_cut"]        = max_frame_diff > cut_threshold
 
     elapsed = time.time() - t0
     print(f"  Vision done: {elapsed:.1f}s  ({elapsed / len(events):.2f}s/event)")
@@ -549,6 +568,11 @@ def main():
                     help="inference device: auto (default), mps, cuda, cpu. "
                          "auto picks mps on Apple Silicon, cuda if available, "
                          "otherwise cpu")
+    vg.add_argument("--vision-cut-threshold", type=float, default=30.0,
+                    dest="vision_cut_threshold",
+                    help="mean absolute pixel difference (0–255) between consecutive "
+                         "downsampled frames to count as a camera cut (default 30.0). "
+                         "Broadcast cuts are typically 40–80; normal motion < 20")
     args = ap.parse_args()
 
     out = args.output or str(Path(args.input).with_suffix("")) + ".haptic.json"
@@ -590,13 +614,15 @@ def main():
             window_after_s=args.vision_window_after,
             bounce_y_threshold=args.vision_bounce_y,
             device=args.vision_device,
+            cut_threshold=args.vision_cut_threshold,
         )
         timeline["version"] = 3
-        timeline["params"]["vision_model"]         = args.vision_model
-        timeline["params"]["vision_conf"]           = args.vision_conf
-        timeline["params"]["vision_window_before"]  = args.vision_window_before
-        timeline["params"]["vision_window_after"]   = args.vision_window_after
-        timeline["params"]["vision_bounce_y"]       = args.vision_bounce_y
+        timeline["params"]["vision_model"]          = args.vision_model
+        timeline["params"]["vision_conf"]            = args.vision_conf
+        timeline["params"]["vision_window_before"]   = args.vision_window_before
+        timeline["params"]["vision_window_after"]    = args.vision_window_after
+        timeline["params"]["vision_bounce_y"]        = args.vision_bounce_y
+        timeline["params"]["vision_cut_threshold"]   = args.vision_cut_threshold
 
     with open(out, "w") as f:
         json.dump(timeline, f, indent=2)
