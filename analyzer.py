@@ -44,7 +44,9 @@ import librosa
 #       "db": -18.4,
 #       "hf_ratio": 0.312,
 #       "centroid": 3241.0,
-#       "flatness": 0.41,           # spectral flatness 200–8kHz: ~1.0=broadband hit, ~0.0=tonal speech
+#       "flatness": 0.41,           # onset flatness 200–8kHz: ~1.0=broadband, ~0.0=tonal speech
+#       "pre_flatness": 0.38,       # flatness of 200ms BEFORE onset: low = ongoing speech context
+#       "decay_ratio": 0.21,        # energy[t+30ms:t+60ms]/energy[t:t+30ms]: low=fast decay (impact)
 #       # vision fields (present only when --vision-model was used):
 #       "vision_confirmed": true,   # ball detected in window around event
 #       "vision_detections": 4,     # count of sampled frames with a detection
@@ -106,32 +108,62 @@ def db_to_intensity(db, lo_db, hi_db):
     return float(np.clip((db - lo_db) / (hi_db - lo_db), 0.0, 1.0))
 
 
-def spectral_features_at(y, sr, t, window_s=0.04, hf_cutoff_hz=1500.0):
+def _spectral_flatness(seg, sr, lo_hz=200.0, hi_hz=8000.0):
+    """Spectral flatness (geometric/arithmetic mean) over [lo_hz, hi_hz].
+    Near 1.0 = broadband/noise; near 0.0 = tonal/speech."""
+    if len(seg) < 16:
+        return 0.0
+    win  = np.hanning(len(seg))
+    spec = np.abs(np.fft.rfft(seg * win))
+    freqs = np.fft.rfftfreq(len(seg), d=1.0 / sr)
+    mask = (freqs >= lo_hz) & (freqs <= hi_hz)
+    s = spec[mask] + 1e-12
+    geo = float(np.exp(np.mean(np.log(s))))
+    ari = float(np.mean(s))
+    return geo / ari if ari > 0 else 0.0
+
+
+def spectral_features_at(y, sr, t, window_s=0.04, hf_cutoff_hz=1500.0,
+                          pre_window_s=0.20):
     i0 = int(t * sr)
     i1 = min(len(y), i0 + int(window_s * sr))
     seg = y[i0:i1]
     if len(seg) < 16:
-        return {"hf_ratio": 0.0, "centroid": 0.0, "flatness": 0.0}
+        return {"hf_ratio": 0.0, "centroid": 0.0, "flatness": 0.0,
+                "pre_flatness": 0.0, "decay_ratio": 1.0}
     win = np.hanning(len(seg))
     spec = np.abs(np.fft.rfft(seg * win))
     freqs = np.fft.rfftfreq(len(seg), d=1.0 / sr)
     total = float(np.sum(spec) + 1e-12)
     hf_ratio = float(np.sum(spec[freqs >= hf_cutoff_hz])) / total
     centroid = float(np.sum(freqs * spec) / total)
-    # Spectral flatness over 200–8000 Hz: geometric_mean / arithmetic_mean.
-    # Broadband impacts (racket hits) → near 1.0; tonal speech → near 0.0.
-    mask = (freqs >= 200.0) & (freqs <= 8000.0)
-    s = spec[mask] + 1e-12
-    geo = float(np.exp(np.mean(np.log(s))))
-    ari = float(np.mean(s))
-    flatness = geo / ari if ari > 0 else 0.0
-    return {"hf_ratio": hf_ratio, "centroid": centroid, "flatness": flatness}
+    flatness = _spectral_flatness(seg, sr)
+
+    # Pre-onset flatness: flatness of the pre_window_s of audio BEFORE the onset.
+    # Commentary plosives are embedded in ongoing voiced speech → low pre_flatness.
+    # Real hits start from relative quiet or broadband crowd noise → higher pre_flatness.
+    pre_start = max(0, i0 - int(pre_window_s * sr))
+    pre_flatness = _spectral_flatness(y[pre_start:i0], sr)
+
+    # Decay ratio: RMS energy in [t+30ms : t+60ms] / RMS energy in [t : t+30ms].
+    # Impacts are brief transients — energy drops steeply → low ratio.
+    # Speech plosives are followed by a sustained vowel → energy holds up → higher ratio.
+    step = int(0.030 * sr)
+    onset_seg = y[i0              : min(len(y), i0 +     step)]
+    decay_seg  = y[min(len(y), i0 + step) : min(len(y), i0 + 2 * step)]
+    rms_onset = float(np.sqrt(np.mean(onset_seg ** 2))) + 1e-9
+    rms_decay  = float(np.sqrt(np.mean(decay_seg  ** 2))) + 1e-9
+    decay_ratio = rms_decay / rms_onset
+
+    return {"hf_ratio": hf_ratio, "centroid": centroid, "flatness": flatness,
+            "pre_flatness": pre_flatness, "decay_ratio": decay_ratio}
 
 
 
 def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
             low_hz=1000.0, high_hz=10000.0, hf_cutoff_hz=2500.0,
-            pct_low=10.0, pct_high=90.0, min_flatness=0.0):
+            pct_low=10.0, pct_high=90.0,
+            min_flatness=0.0, min_pre_flatness=0.0, max_decay_ratio=0.0):
     t0 = time.time()
     print("  Loading audio...", end=" ", flush=True)
     y, sr = load_audio(path, sr=sr)
@@ -155,13 +187,20 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
         feats = spectral_features_at(y, sr, t, hf_cutoff_hz=hf_cutoff_hz)
         raw.append({"time": float(t), "db": db, "feats": feats})
 
-    # Spectral flatness filter: drop tonal/voice-like events (commentary, shouts).
-    # Broadband impacts score near 1.0; speech scores near 0.0.
-    # min_flatness=0.0 (default) disables the filter entirely.
-    if min_flatness > 0.0:
+    # Commentary filter — three independent thresholds, each disabled when 0.0:
+    #   min_flatness:     onset must be broadband (not a tonal speech burst)
+    #   min_pre_flatness: audio before onset must be broadband (not ongoing speech)
+    #   max_decay_ratio:  energy must drop quickly after onset (not sustained speech)
+    if min_flatness > 0.0 or min_pre_flatness > 0.0 or max_decay_ratio > 0.0:
         n_before = len(raw)
-        raw = [r for r in raw if r["feats"]["flatness"] >= min_flatness]
-        print(f"  flatness filter ({min_flatness:.2f}): {n_before} -> {len(raw)} events")
+        def _passes(r):
+            f = r["feats"]
+            if min_flatness     > 0.0 and f["flatness"]     < min_flatness:     return False
+            if min_pre_flatness > 0.0 and f["pre_flatness"] < min_pre_flatness: return False
+            if max_decay_ratio  > 0.0 and f["decay_ratio"]  > max_decay_ratio:  return False
+            return True
+        raw = [r for r in raw if _passes(r)]
+        print(f"  commentary filter: {n_before} -> {len(raw)} events")
 
     # Per-video calibration: percentile range across filtered events
     all_dbs = [r["db"] for r in raw]
@@ -175,13 +214,15 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
     events = []
     for r in raw:
         events.append({
-            "time":      round(r["time"], 3),
-            "intensity": round(db_to_intensity(r["db"], lo_db, hi_db), 3),
-            "type":      "hit",
-            "db":        round(r["db"], 1),
-            "hf_ratio":  round(r["feats"]["hf_ratio"], 3),
-            "centroid":  round(r["feats"]["centroid"], 1),
-            "flatness":  round(r["feats"]["flatness"], 3),
+            "time":         round(r["time"], 3),
+            "intensity":    round(db_to_intensity(r["db"], lo_db, hi_db), 3),
+            "type":         "hit",
+            "db":           round(r["db"], 1),
+            "hf_ratio":     round(r["feats"]["hf_ratio"], 3),
+            "centroid":     round(r["feats"]["centroid"], 1),
+            "flatness":     round(r["feats"]["flatness"], 3),
+            "pre_flatness": round(r["feats"]["pre_flatness"], 3),
+            "decay_ratio":  round(r["feats"]["decay_ratio"], 3),
         })
 
     print(f"{len(events)} kept  ({time.time() - t0:.1f}s)")
@@ -199,11 +240,72 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
         "params": {
             "hop_length": hop_length, "threshold": threshold,
             "min_gap_s": min_gap_s, "low_hz": low_hz, "high_hz": high_hz,
-            "hf_cutoff_hz": hf_cutoff_hz, "min_flatness": min_flatness,
+            "hf_cutoff_hz": hf_cutoff_hz,
+            "min_flatness": min_flatness, "min_pre_flatness": min_pre_flatness,
+            "max_decay_ratio": max_decay_ratio,
         },
         "events": events,
     }
     return timeline, (y, sr, env_norm, env_times, times, events), (lo_db, hi_db)
+
+
+# ---------------------------------------------------------------------------
+# VAD speech filter  (experimental — see experiment/silero-vad branch)
+# ---------------------------------------------------------------------------
+
+def vad_filter(y, sr, events, margin_s=0.15, vad_threshold=0.5):
+    """
+    Run Silero VAD on the audio and drop events that fall within detected
+    speech segments (plus margin_s on each side).
+
+    Silero VAD is a lightweight neural model trained on noisy speech — it
+    handles broadcast audio with crowd noise far better than hand-crafted
+    acoustic features.
+
+    Returns the filtered event list. Events removed here never appear in the
+    output JSON; the console reports the count.
+
+    Requires: pip install silero-vad
+    """
+    try:
+        from silero_vad import load_silero_vad, get_speech_timestamps
+    except ImportError:
+        raise ImportError(
+            "Silero VAD requires: pip install silero-vad"
+        )
+    import torch
+
+    t0 = time.time()
+    print("  Loading Silero VAD model...", end=" ", flush=True)
+    model = load_silero_vad()
+
+    # Silero requires 16 kHz mono audio
+    VAD_SR = 16000
+    y_16k = librosa.resample(y, orig_sr=sr, target_sr=VAD_SR)
+    wav   = torch.FloatTensor(y_16k)
+
+    stamps = get_speech_timestamps(
+        wav, model,
+        sampling_rate=VAD_SR,
+        threshold=vad_threshold,
+        min_speech_duration_ms=200,
+        min_silence_duration_ms=100,
+        return_seconds=True,
+    )
+    segments = [(s["start"], s["end"]) for s in stamps]
+    print(f"{len(segments)} speech segments  ({time.time() - t0:.1f}s)")
+
+    def _in_speech(t):
+        for start, end in segments:
+            if start - margin_s <= t <= end + margin_s:
+                return True
+        return False
+
+    n_before = len(events)
+    filtered = [e for e in events if not _in_speech(e["time"])]
+    print(f"  removed {n_before - len(filtered)} events in speech segments  "
+          f"({len(filtered)} remain)")
+    return filtered
 
 
 # ---------------------------------------------------------------------------
@@ -395,9 +497,31 @@ def main():
     ag.add_argument("--pct-low", type=float, default=10.0, dest="pct_low")
     ag.add_argument("--pct-high", type=float, default=90.0, dest="pct_high")
     ag.add_argument("--min-flatness", type=float, default=0.0, dest="min_flatness",
-                    help="spectral flatness threshold to filter commentary/shouts: "
-                         "broadband impacts score near 1.0, tonal speech near 0.0. "
-                         "Disabled by default; try 0.05–0.15 to reject commentary")
+                    help="onset flatness threshold: broadband impacts near 1.0, "
+                         "tonal speech near 0.0. Disabled by default; try 0.05–0.15")
+    ag.add_argument("--min-pre-flatness", type=float, default=0.0,
+                    dest="min_pre_flatness",
+                    help="flatness of the 200ms BEFORE the onset: low = ongoing speech "
+                         "context (commentary), higher = quiet/noise. Try 0.05–0.10")
+    ag.add_argument("--max-decay-ratio", type=float, default=0.0,
+                    dest="max_decay_ratio",
+                    help="max energy ratio [t+30ms:t+60ms]/[t:t+30ms]: impacts decay "
+                         "fast (low ratio), speech sustains (high ratio). Try 0.5–0.8")
+
+    # VAD knobs (experimental)
+    vadg = ap.add_argument_group("VAD speech filter (experimental, requires silero-vad)")
+    vadg.add_argument("--vad", action="store_true",
+                      help="run Silero VAD and drop events that fall inside detected "
+                           "speech segments — filters commentary more reliably than "
+                           "hand-crafted acoustic features")
+    vadg.add_argument("--vad-threshold", type=float, default=0.5,
+                      dest="vad_threshold",
+                      help="Silero speech probability threshold (default 0.5; "
+                           "lower = more aggressive speech detection)")
+    vadg.add_argument("--vad-margin", type=float, default=0.15,
+                      dest="vad_margin",
+                      help="seconds of buffer added around each speech segment "
+                           "(default 0.15; catches onsets just outside VAD boundaries)")
 
     # Vision knobs
     vg = ap.add_argument_group("vision (optional)")
@@ -436,7 +560,21 @@ def main():
         hf_cutoff_hz=args.hf_cutoff_hz,
         pct_low=args.pct_low, pct_high=args.pct_high,
         min_flatness=args.min_flatness,
+        min_pre_flatness=args.min_pre_flatness,
+        max_decay_ratio=args.max_decay_ratio,
     )
+
+    # --- VAD speech filter (optional, experimental) ---
+    if args.vad:
+        print("VAD:")
+        y_audio, sr_audio = viz[0], viz[1]
+        timeline["events"] = vad_filter(
+            y_audio, sr_audio, timeline["events"],
+            margin_s=args.vad_margin,
+            vad_threshold=args.vad_threshold,
+        )
+        timeline["params"]["vad_threshold"] = args.vad_threshold
+        timeline["params"]["vad_margin"]    = args.vad_margin
 
     # --- Vision filter (optional) ---
     if args.vision_model:
@@ -472,13 +610,18 @@ def main():
     if n:
         rate  = n / timeline["duration"] * 60
         inten = [e["intensity"] for e in ev]
-        flat  = sorted(e["flatness"] for e in ev)
+        flat  = sorted(e["flatness"]     for e in ev)
+        pre_f = sorted(e["pre_flatness"] for e in ev)
+        decay = sorted(e["decay_ratio"]  for e in ev)
         print(f"  rate: {rate:.1f} events/min")
-        print(f"  intensity: min {min(inten):.2f}  "
+        print(f"  intensity:    min {min(inten):.2f}  "
               f"median {sorted(inten)[n // 2]:.2f}  max {max(inten):.2f}")
-        print(f"  flatness:  min {flat[0]:.3f}  "
-              f"median {flat[n // 2]:.3f}  max {flat[-1]:.3f}"
-              "  (use --min-flatness to filter commentary)")
+        print(f"  flatness:     min {flat[0]:.3f}  median {flat[n//2]:.3f}  "
+              f"max {flat[-1]:.3f}   --min-flatness")
+        print(f"  pre_flatness: min {pre_f[0]:.3f}  median {pre_f[n//2]:.3f}  "
+              f"max {pre_f[-1]:.3f}   --min-pre-flatness")
+        print(f"  decay_ratio:  min {decay[0]:.3f}  median {decay[n//2]:.3f}  "
+              f"max {decay[-1]:.3f}   --max-decay-ratio")
 
     if args.vision_model and n:
         confirmed = sum(1 for e in ev if e.get("vision_confirmed"))

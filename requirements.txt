@@ -6,3 +6,5 @@ tqdm
 # vision pipeline (only needed for --vision-model)
 ultralytics
 opencv-python
+# VAD speech filter (only needed for --vad, experiment/silero-vad branch)
+silero-vad
