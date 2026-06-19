@@ -407,6 +407,12 @@ def main():
                          "(e.g. vision/yolo26s/best_640.pt)")
     vg.add_argument("--vision-conf", type=float, default=0.3, dest="vision_conf",
                     help="YOLO confidence threshold for ball detection (default 0.3)")
+    vg.add_argument("--vision-window-before", type=float, default=0.3,
+                    dest="vision_window_before",
+                    help="seconds of frames to sample before each event (default 0.3)")
+    vg.add_argument("--vision-window-after", type=float, default=0.5,
+                    dest="vision_window_after",
+                    help="seconds of frames to sample after each event (default 0.5)")
     vg.add_argument("--vision-bounce-y", type=float, default=0.65,
                     dest="vision_bounce_y",
                     help="normalised frame-height below which the ball is "
@@ -440,13 +446,17 @@ def main():
             video_path=args.input,
             model_path=args.vision_model,
             conf=args.vision_conf,
+            window_before_s=args.vision_window_before,
+            window_after_s=args.vision_window_after,
             bounce_y_threshold=args.vision_bounce_y,
             device=args.vision_device,
         )
         timeline["version"] = 3
-        timeline["params"]["vision_model"] = args.vision_model
-        timeline["params"]["vision_conf"]  = args.vision_conf
-        timeline["params"]["vision_bounce_y"] = args.vision_bounce_y
+        timeline["params"]["vision_model"]         = args.vision_model
+        timeline["params"]["vision_conf"]           = args.vision_conf
+        timeline["params"]["vision_window_before"]  = args.vision_window_before
+        timeline["params"]["vision_window_after"]   = args.vision_window_after
+        timeline["params"]["vision_bounce_y"]       = args.vision_bounce_y
 
     with open(out, "w") as f:
         json.dump(timeline, f, indent=2)

@@ -86,6 +86,16 @@ def has_vision_data(events):
     return any("vision_type" in e for e in events)
 
 
+def should_show_event(ev, use_vision):
+    """False when vision ran on this event but couldn't classify it and we're
+    in combined mode — unclassified events are treated as non-events by default."""
+    if not use_vision:
+        return True
+    if "vision_type" in ev and ev["vision_type"] is None:
+        return False
+    return True
+
+
 # ============================ AUDIO ANALYSIS ==================================
 def analyze_audio_for_strip(video_path):
     import librosa
@@ -310,6 +320,8 @@ class StripWidget(QWidget):
         hi = bisect.bisect_right(self.times, t1)
         for j in range(lo, hi):
             ev        = self.events[j]
+            if not should_show_event(ev, self.use_vision):
+                continue
             x         = x_of(ev["time"])
             etype     = effective_type(ev, self.use_vision)
             confirmed = is_vision_confirmed(ev)
@@ -673,6 +685,8 @@ class PlayerWindow(QMainWindow):
         """Recompute per-type counts using effective_type and push to flash item."""
         counts = {}
         for e in self.events:
+            if not should_show_event(e, self.use_vision):
+                continue
             t = effective_type(e, self.use_vision)
             counts[t] = counts.get(t, 0) + 1
         self.video_view.flash_item.legend_data = counts
@@ -725,6 +739,8 @@ class PlayerWindow(QMainWindow):
             hi = bisect.bisect_right(self.times, pos)
             for j in range(lo, hi):
                 ev = self.events[j]
+                if not should_show_event(ev, self.use_vision):
+                    continue
                 if float(ev.get("intensity", 1.0)) >= self.min_haptic:
                     self.video_view.flash_item.fire(ev)
                 else:
