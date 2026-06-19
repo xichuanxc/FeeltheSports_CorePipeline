@@ -40,10 +40,11 @@ import librosa
 #     {
 #       "time": 12.480,          # media-time seconds
 #       "intensity": 0.82,       # 0-1, relative to THIS video's hit range
-#       "type": "strike",        # audio classification: "strike" | "bounce"
+#       "type": "hit",            # always "hit" — audio detects, vision classifies
 #       "db": -18.4,
 #       "hf_ratio": 0.312,
 #       "centroid": 3241.0,
+#       "flatness": 0.41,           # spectral flatness 200–8kHz: ~1.0=broadband hit, ~0.0=tonal speech
 #       # vision fields (present only when --vision-model was used):
 #       "vision_confirmed": true,   # ball detected in window around event
 #       "vision_detections": 4,     # count of sampled frames with a detection
@@ -110,24 +111,27 @@ def spectral_features_at(y, sr, t, window_s=0.04, hf_cutoff_hz=1500.0):
     i1 = min(len(y), i0 + int(window_s * sr))
     seg = y[i0:i1]
     if len(seg) < 16:
-        return {"hf_ratio": 0.0, "centroid": 0.0}
+        return {"hf_ratio": 0.0, "centroid": 0.0, "flatness": 0.0}
     win = np.hanning(len(seg))
     spec = np.abs(np.fft.rfft(seg * win))
     freqs = np.fft.rfftfreq(len(seg), d=1.0 / sr)
     total = float(np.sum(spec) + 1e-12)
     hf_ratio = float(np.sum(spec[freqs >= hf_cutoff_hz])) / total
     centroid = float(np.sum(freqs * spec) / total)
-    return {"hf_ratio": hf_ratio, "centroid": centroid}
+    # Spectral flatness over 200–8000 Hz: geometric_mean / arithmetic_mean.
+    # Broadband impacts (racket hits) → near 1.0; tonal speech → near 0.0.
+    mask = (freqs >= 200.0) & (freqs <= 8000.0)
+    s = spec[mask] + 1e-12
+    geo = float(np.exp(np.mean(np.log(s))))
+    ari = float(np.mean(s))
+    flatness = geo / ari if ari > 0 else 0.0
+    return {"hf_ratio": hf_ratio, "centroid": centroid, "flatness": flatness}
 
-
-def classify_event(features, hf_ratio_cutoff=0.18):
-    return "strike" if features["hf_ratio"] >= hf_ratio_cutoff else "bounce"
 
 
 def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
             low_hz=1000.0, high_hz=10000.0, hf_cutoff_hz=2500.0,
-            hf_ratio_cutoff=0.18, keep=("strike", "bounce"),
-            pct_low=10.0, pct_high=90.0):
+            pct_low=10.0, pct_high=90.0, min_flatness=0.0):
     t0 = time.time()
     print("  Loading audio...", end=" ", flush=True)
     y, sr = load_audio(path, sr=sr)
@@ -144,34 +148,40 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
     t0 = time.time()
     print("  Classifying events...", end=" ", flush=True)
 
-    # Pass 1: measure raw loudness + features for every detected onset
+    # Pass 1: measure raw loudness + spectral features for every detected onset.
     raw = []
     for t in times:
-        db = loudness_db_at(y, sr, t)
+        db    = loudness_db_at(y, sr, t)
         feats = spectral_features_at(y, sr, t, hf_cutoff_hz=hf_cutoff_hz)
-        etype = classify_event(feats, hf_ratio_cutoff)
-        raw.append({"time": float(t), "db": db, "feats": feats, "type": etype})
+        raw.append({"time": float(t), "db": db, "feats": feats})
 
-    # Per-video calibration: percentile range of the kept hits' loudness
-    kept_dbs = [r["db"] for r in raw if r["type"] in keep]
-    if kept_dbs:
-        lo_db = float(np.percentile(kept_dbs, pct_low))
-        hi_db = float(np.percentile(kept_dbs, pct_high))
+    # Spectral flatness filter: drop tonal/voice-like events (commentary, shouts).
+    # Broadband impacts score near 1.0; speech scores near 0.0.
+    # min_flatness=0.0 (default) disables the filter entirely.
+    if min_flatness > 0.0:
+        n_before = len(raw)
+        raw = [r for r in raw if r["feats"]["flatness"] >= min_flatness]
+        print(f"  flatness filter ({min_flatness:.2f}): {n_before} -> {len(raw)} events")
+
+    # Per-video calibration: percentile range across filtered events
+    all_dbs = [r["db"] for r in raw]
+    if all_dbs:
+        lo_db = float(np.percentile(all_dbs, pct_low))
+        hi_db = float(np.percentile(all_dbs, pct_high))
     else:
         lo_db, hi_db = -50.0, -10.0
 
-    # Pass 2: map each kept onset's dB onto 0..1 via this video's range
+    # Pass 2: map each onset's dB onto 0..1 via this video's range
     events = []
     for r in raw:
-        if r["type"] not in keep:
-            continue
         events.append({
-            "time": round(r["time"], 3),
+            "time":      round(r["time"], 3),
             "intensity": round(db_to_intensity(r["db"], lo_db, hi_db), 3),
-            "type": r["type"],
-            "db": round(r["db"], 1),
-            "hf_ratio": round(r["feats"]["hf_ratio"], 3),
-            "centroid": round(r["feats"]["centroid"], 1),
+            "type":      "hit",
+            "db":        round(r["db"], 1),
+            "hf_ratio":  round(r["feats"]["hf_ratio"], 3),
+            "centroid":  round(r["feats"]["centroid"], 1),
+            "flatness":  round(r["feats"]["flatness"], 3),
         })
 
     print(f"{len(events)} kept  ({time.time() - t0:.1f}s)")
@@ -189,8 +199,7 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
         "params": {
             "hop_length": hop_length, "threshold": threshold,
             "min_gap_s": min_gap_s, "low_hz": low_hz, "high_hz": high_hz,
-            "hf_cutoff_hz": hf_cutoff_hz, "hf_ratio_cutoff": hf_ratio_cutoff,
-            "kept_types": list(keep),
+            "hf_cutoff_hz": hf_cutoff_hz, "min_flatness": min_flatness,
         },
         "events": events,
     }
@@ -383,10 +392,12 @@ def main():
     ag.add_argument("--low-hz", type=float, default=1000.0)
     ag.add_argument("--high-hz", type=float, default=10000.0)
     ag.add_argument("--hf-cutoff", type=float, default=2500.0, dest="hf_cutoff_hz")
-    ag.add_argument("--hf-ratio-cutoff", type=float, default=0.18, dest="hf_ratio_cutoff")
-    ag.add_argument("--keep", default="strike,bounce")
     ag.add_argument("--pct-low", type=float, default=10.0, dest="pct_low")
     ag.add_argument("--pct-high", type=float, default=90.0, dest="pct_high")
+    ag.add_argument("--min-flatness", type=float, default=0.0, dest="min_flatness",
+                    help="spectral flatness threshold to filter commentary/shouts: "
+                         "broadband impacts score near 1.0, tonal speech near 0.0. "
+                         "Disabled by default; try 0.05–0.15 to reject commentary")
 
     # Vision knobs
     vg = ap.add_argument_group("vision (optional)")
@@ -408,7 +419,6 @@ def main():
     args = ap.parse_args()
 
     out = args.output or str(Path(args.input).with_suffix("")) + ".haptic.json"
-    keep = tuple(s.strip() for s in args.keep.split(",") if s.strip())
 
     print(f"\n=== {Path(args.input).name} ===")
 
@@ -417,8 +427,9 @@ def main():
     timeline, viz, (lo_db, hi_db) = analyze(
         args.input, threshold=args.threshold, min_gap_s=args.min_gap_s,
         low_hz=args.low_hz, high_hz=args.high_hz,
-        hf_cutoff_hz=args.hf_cutoff_hz, hf_ratio_cutoff=args.hf_ratio_cutoff,
-        keep=keep, pct_low=args.pct_low, pct_high=args.pct_high,
+        hf_cutoff_hz=args.hf_cutoff_hz,
+        pct_low=args.pct_low, pct_high=args.pct_high,
+        min_flatness=args.min_flatness,
     )
 
     # --- Vision filter (optional) ---
@@ -444,29 +455,28 @@ def main():
     ev = timeline["events"]
     n = len(ev)
     print(f"\nAnalyzed {timeline['source']}  ({timeline['duration']}s)")
-    print(f"Kept {n} events ({args.keep})  ->  {out}")
+    print(f"Kept {n} events  ->  {out}")
     print(f"  calibrated range: {lo_db:.1f} dB -> 0.0   "
           f"{hi_db:.1f} dB -> 1.0   (p{args.pct_low:g}/p{args.pct_high:g})")
 
     if n:
-        audio_types = {}
-        for e in ev:
-            audio_types[e["type"]] = audio_types.get(e["type"], 0) + 1
-        rate = n / timeline["duration"] * 60
+        rate  = n / timeline["duration"] * 60
         inten = [e["intensity"] for e in ev]
-        print(f"  rate: {rate:.1f} events/min   audio types: {audio_types}")
+        flat  = sorted(e["flatness"] for e in ev)
+        print(f"  rate: {rate:.1f} events/min")
         print(f"  intensity: min {min(inten):.2f}  "
               f"median {sorted(inten)[n // 2]:.2f}  max {max(inten):.2f}")
+        print(f"  flatness:  min {flat[0]:.3f}  "
+              f"median {flat[n // 2]:.3f}  max {flat[-1]:.3f}"
+              "  (use --min-flatness to filter commentary)")
 
     if args.vision_model and n:
-        confirmed   = sum(1 for e in ev if e.get("vision_confirmed"))
-        typed       = sum(1 for e in ev if e.get("vision_type") is not None)
-        disagree    = sum(1 for e in ev
-                         if e.get("vision_type") is not None
-                         and e["vision_type"] != e["type"])
-        print(f"  vision: {confirmed}/{n} confirmed  |  "
-              f"{typed}/{n} classified  |  "
-              f"{disagree} audio/vision disagreements")
+        confirmed = sum(1 for e in ev if e.get("vision_confirmed"))
+        vtype_counts = {}
+        for e in ev:
+            vt = str(e.get("vision_type"))
+            vtype_counts[vt] = vtype_counts.get(vt, 0) + 1
+        print(f"  vision: {confirmed}/{n} confirmed  |  types: {vtype_counts}")
 
     if args.plot:
         save_plot(viz, out.replace(".json", ".png"),
@@ -481,14 +491,15 @@ def save_plot(viz, png_path, vision_events=None):
     y, sr, env_norm, env_times, times, events = viz
     t_audio = np.arange(len(y)) / sr
 
-    type_of = {round(e["time"], 3): e["type"] for e in events}
-    COLORS = {"strike": "tab:red", "bounce": "tab:blue"}
+    # Colour by vision_type when available; fall back to a neutral yellow for "hit"
+    type_of = {round(e["time"], 3): (e.get("vision_type") or e["type"]) for e in events}
+    COLORS  = {"strike": "tab:red", "bounce": "tab:blue", "hit": "#c8a800"}
 
     n_panels = 4 if vision_events else 3
     fig, ax = plt.subplots(n_panels, 1, figsize=(14, 3 * n_panels))
 
     ax[0].plot(t_audio, y, lw=0.4, color="0.4")
-    ax[0].set_title("waveform — audio type: red=strike  blue=bounce")
+    ax[0].set_title("waveform — all events: yellow=hit  (red=vision:strike  blue=vision:bounce)")
     for t in times:
         c = COLORS.get(type_of.get(round(float(t), 3)), "0.7")
         ax[0].axvline(t, color=c, alpha=0.6, lw=0.9)
@@ -500,16 +511,21 @@ def save_plot(viz, png_path, vision_events=None):
         ax[1].axvline(t, color=c, alpha=0.6, lw=0.9)
     ax[1].set_xlabel("time (s)")
 
-    strikes = [(e["centroid"], e["hf_ratio"]) for e in events if e["type"] == "strike"]
-    bounces = [(e["centroid"], e["hf_ratio"]) for e in events if e["type"] == "bounce"]
-    if strikes:
-        ax[2].scatter(*zip(*strikes), c="tab:red", s=30, label="strike", alpha=0.7)
-    if bounces:
-        ax[2].scatter(*zip(*bounces), c="tab:blue", s=30, label="bounce", alpha=0.7)
+    # Feature scatter coloured by vision_type when available, grey otherwise
+    vis_strike = [(e["centroid"], e["hf_ratio"]) for e in events if e.get("vision_type") == "strike"]
+    vis_bounce = [(e["centroid"], e["hf_ratio"]) for e in events if e.get("vision_type") == "bounce"]
+    vis_none   = [(e["centroid"], e["hf_ratio"]) for e in events if e.get("vision_type") is None]
+    if vis_strike:
+        ax[2].scatter(*zip(*vis_strike), c="tab:red",  s=30, label="vision:strike", alpha=0.7)
+    if vis_bounce:
+        ax[2].scatter(*zip(*vis_bounce), c="tab:blue", s=30, label="vision:bounce", alpha=0.7)
+    if vis_none:
+        ax[2].scatter(*zip(*vis_none),   c="0.55",     s=20, label="vision:null",   alpha=0.5)
     ax[2].set_xlabel("spectral centroid (Hz)")
     ax[2].set_ylabel("high-freq energy ratio")
-    ax[2].set_title("audio feature space — clean split = two separated clusters")
-    ax[2].legend()
+    ax[2].set_title("feature space (coloured by vision_type — useful for future tuning)")
+    if vis_strike or vis_bounce or vis_none:
+        ax[2].legend()
 
     if vision_events:
         # Vision classification panel: compare audio type vs vision_type

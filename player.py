@@ -36,8 +36,9 @@ from PySide6.QtMultimediaWidgets import QGraphicsVideoItem
 # ============================ CONFIG ==========================================
 FLASH_MS   = 180
 TYPE_COLORS = {
-    "strike": (255, 90,  90),
-    "bounce": (90,  170, 255),
+    "hit":    (255, 200, 80),     # audio-only: no vision classification
+    "strike": (255, 90,  90),     # vision-classified strike
+    "bounce": (90,  170, 255),    # vision-classified bounce
     "soft":   (90,  200, 255),    # legacy v1 types
     "normal": (120, 255, 140),
     "smash":  (255, 90,  90),
@@ -188,7 +189,12 @@ class FlashItem(QGraphicsItem):
             # secondary so the researcher can distinguish them at a glance
             alpha  = int((220 if confirmed else 80) * life)
 
-            cx = r.left() + w * (0.66 if etype == "bounce" else 0.34)
+            if etype == "bounce":
+                cx = r.left() + w * 0.66
+            elif etype == "strike":
+                cx = r.left() + w * 0.34
+            else:                          # "hit" — no vision classification
+                cx = r.left() + w * 0.50
             cy = r.top()  + h * 0.30
 
             p.setPen(Qt.NoPen)
@@ -211,7 +217,8 @@ class FlashItem(QGraphicsItem):
         p.setFont(QFont("Menlo", 12, QFont.Bold))
         legend_x = r.right() - 12
         ly = r.top() + 8
-        for key in ("strike", "bounce"):
+        keys = [k for k in ("strike", "bounce", "hit") if k in self.legend_data]
+        for key in keys:
             n     = self.legend_data.get(key, 0)
             text  = f"{key.upper()}  {n}"
             color = TYPE_COLORS.get(key, DEFAULT_COLOR)
