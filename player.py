@@ -19,6 +19,7 @@ import sys
 import json
 import bisect
 import time
+import copy
 from pathlib import Path
 
 import numpy as np
@@ -31,6 +32,12 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PySide6.QtMultimediaWidgets import QGraphicsVideoItem
+
+try:
+    from server import HapticServer
+    _SERVER_AVAILABLE = True
+except ImportError:
+    _SERVER_AVAILABLE = False
 
 
 # ============================ CONFIG ==========================================
@@ -96,36 +103,44 @@ def has_vision_data(events):
 def should_show_event(ev, use_vision):
     """Decides whether an event is shown in combined mode.
 
-    Priority order:
-    1. VAD says speech → hide, unless vision confirmed the ball was present.
-       Handles 'out' shout overlapping a real strike.
-    2. Vision ran and confirmed ball (vision_confirmed=True) → show.
-       Covers non-standard angles where the ball moves horizontally and
-       vision_type stays None — the ball WAS there, just unclassifiable.
-    3. Vision ran but found no ball (vision_confirmed=False) → hide.
-       Covers crowd shots, clap events, between-point noise.
-    4. No vision data + no VAD flag → show.
+    Acoustic (onset detection + VAD) is the primary signal.
+    Vision is a suppressor only — it can veto events but never rescue them.
 
-    camera_cut is stored in the JSON as research data but does not affect
-    show/hide — vision_confirmed is the more reliable signal.
+    1. VAD says speech → hide. (Vision no longer overrides VAD.)
+    2. Vision ran, found no ball, and no camera cut → hide.
+       Removes crowd shots and clap false-positives.
+    3. Everything else → show.
+       Covers side-angle rallies where YOLO can't see the ball: audio
+       was right, vision stays silent, event is shown.
     """
     if not use_vision:
         return True
 
-    vad_speech = ev.get("vad_speech",  False)
-    has_vision = "vision_type" in ev
-    confirmed  = ev.get("vision_confirmed", False)
+    # Stage 1: VAD veto — trust acoustic speech detection
+    if ev.get("vad_speech", False):
+        return False
 
-    # Rule 1: VAD flagged as speech → only show if ball was confirmed
-    if vad_speech:
-        return has_vision and confirmed
+    # Stage 2: Burst veto — dense clusters are likely clapping/applause
+    if ev.get("clap_burst", False):
+        return False
 
-    # Rules 2 & 3: vision ran
-    if has_vision:
-        return confirmed
+    # Stage 3: Vision veto — only suppress when vision had a clear view
+    # (no camera cut) and still found no ball
+    if "vision_confirmed" in ev:
+        if not ev.get("vision_confirmed", False) and not ev.get("camera_cut", False):
+            return False
 
     # Rule 4: no vision data
     return True
+
+
+def build_server_timeline(data, events, use_vision=True):
+    """Return a copy of the timeline dict containing only events that pass
+    should_show_event(), so the phone receives an already-filtered list."""
+    filtered = [copy.copy(e) for e in events if should_show_event(e, use_vision)]
+    tl = copy.copy(data)
+    tl["events"] = filtered
+    return tl
 
 
 # ============================ AUDIO ANALYSIS ==================================
@@ -407,11 +422,15 @@ class HudWidget(QWidget):
         else:
             mode_str = ""
 
+        phone_n = getattr(self, "phone_clients", 0)
+        phone_str = f"  📱{phone_n}" if phone_n else "  phone: -"
+
         left = (f"t = {self.pos:7.3f}s   speed: {speed_str}   "
                 f"events: {self.total}   "
                 f"haptic thr: {self.min_haptic:.2f}  ([ / ])   "
                 f"suppressed: {self.suppressed}   "
                 + mode_str
+                + phone_str
                 + ("  PAUSED" if self.paused else ""))
         p.drawText(8, 19, left)
 
@@ -691,6 +710,19 @@ class PlayerWindow(QMainWindow):
         self.timer.timeout.connect(self._tick)
         self.timer.start()
 
+        # Haptic server — broadcasts timeline + sync pulses to the phone
+        self._server = None
+        self._sync_tick_counter = 0     # publish_sync every ~8 Hz (every 8th 16ms tick)
+        if _SERVER_AVAILABLE:
+            try:
+                tl = build_server_timeline(self.data, self.events, self.use_vision)
+                self._server = HapticServer(timeline_dict=tl)
+                self._server.start()
+                print(f"[server] started — waiting for phone (mDNS: _haptics._tcp.local.)")
+            except Exception as e:
+                print(f"[server] failed to start: {e}", file=sys.stderr)
+                self._server = None
+
         self._window_sized_to_video = False
         self.video_view.video_item.nativeSizeChanged.connect(self._on_native_size_known)
         self.player.errorOccurred.connect(self._on_media_error)
@@ -698,6 +730,8 @@ class PlayerWindow(QMainWindow):
 
         self.player.play()
         self.is_paused = False
+        if self._server:
+            self._server.publish_play(0.0, SPEED_STEPS[self.speed_index])
 
     # -------------------------------------------------------------------------
     def _log_startup(self, json_path):
@@ -804,6 +838,13 @@ class PlayerWindow(QMainWindow):
                     self.suppressed_count += 1
         self.last_pos_s = pos
 
+        # Sync pulses to phone at ~8 Hz (every 8th 16ms tick ≈ 128ms interval)
+        if self._server and not self.is_paused:
+            self._sync_tick_counter += 1
+            if self._sync_tick_counter >= 8:
+                self._sync_tick_counter = 0
+                self._server.publish_sync(pos)
+
         nearest_info  = ""
         nearest_event = None
         if self.is_paused and self.times:
@@ -830,7 +871,8 @@ class PlayerWindow(QMainWindow):
                            min_haptic=self.min_haptic,
                            suppressed=self.suppressed_count,
                            paused=self.is_paused,
-                           nearest_info=nearest_info)
+                           nearest_info=nearest_info,
+                           phone_clients=self._server.client_count if self._server else 0)
         self.strip.set_pos(pos)
         self.video_view.flash_item.update()
 
@@ -843,9 +885,14 @@ class PlayerWindow(QMainWindow):
             if self.is_paused:
                 self.player.play()
                 self.is_paused = False
+                if self._server:
+                    pos = self.player.position() / 1000.0
+                    self._server.publish_play(pos, SPEED_STEPS[self.speed_index])
             else:
                 self.player.pause()
                 self.is_paused = True
+                if self._server:
+                    self._server.publish_pause(self.player.position() / 1000.0)
         elif k == Qt.Key_V:
             if self._vision_avail:
                 self._set_vision_mode(not self.use_vision)
@@ -860,6 +907,8 @@ class PlayerWindow(QMainWindow):
                     self.player.setPosition(int(self.times[i] * 1000))
                     self.last_pos_s = -1.0
                     self.video_view.flash_item.clear_active()
+                    if self._server:
+                        self._server.publish_seek(self.times[i])
         elif k == Qt.Key_Comma:
             if self.is_paused:
                 pos = self.player.position() / 1000.0
@@ -868,20 +917,32 @@ class PlayerWindow(QMainWindow):
                     self.player.setPosition(int(self.times[i] * 1000))
                     self.last_pos_s = -1.0
                     self.video_view.flash_item.clear_active()
+                    if self._server:
+                        self._server.publish_seek(self.times[i])
         elif k == Qt.Key_Up:
             if self.speed_index < len(SPEED_STEPS) - 1:
                 self.speed_index += 1
                 self.player.setPlaybackRate(SPEED_STEPS[self.speed_index])
+                if self._server:
+                    self._server.publish_rate(SPEED_STEPS[self.speed_index])
         elif k == Qt.Key_Down:
             if self.speed_index > 0:
                 self.speed_index -= 1
                 self.player.setPlaybackRate(SPEED_STEPS[self.speed_index])
+                if self._server:
+                    self._server.publish_rate(SPEED_STEPS[self.speed_index])
         elif k == Qt.Key_BracketLeft:
             self.min_haptic = max(0.0, round(self.min_haptic - 0.05, 2))
         elif k == Qt.Key_BracketRight:
             self.min_haptic = min(1.0, round(self.min_haptic + 0.05, 2))
         else:
             super().keyPressEvent(ev)
+
+    def closeEvent(self, ev):
+        if self._server:
+            self._server.stop()
+            print("[server] stopped")
+        super().closeEvent(ev)
 
 
 # ============================ ENTRY ===========================================

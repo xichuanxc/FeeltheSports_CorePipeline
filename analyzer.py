@@ -253,6 +253,37 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
 
 
 # ---------------------------------------------------------------------------
+# Burst / clap filter
+# ---------------------------------------------------------------------------
+
+def burst_filter(events, window_s=2.0, min_count=3):
+    """
+    Flag events in dense temporal clusters as likely clapping/applause.
+
+    Claps arrive at 2–5 per second during applause; tennis strikes are
+    typically 0.3–2 s apart. Any event with >= min_count neighbours
+    (including itself) within a centred window of window_s is flagged
+    clap_burst=True.
+
+    Default: window=2.0s, min_count=3 → ≥3 events in any 2s window flags
+    all of them as a burst. Applause easily exceeds this; isolated rally
+    strikes (typically 1–2 per 2s window) do not.
+    """
+    times = np.array([e["time"] for e in events])
+    half  = window_s / 2.0
+    n_flagged = 0
+    for i, e in enumerate(events):
+        count     = int(np.sum((times >= times[i] - half) & (times <= times[i] + half)))
+        is_burst  = count >= min_count
+        e["clap_burst"] = is_burst
+        if is_burst:
+            n_flagged += 1
+    print(f"  burst filter: {n_flagged}/{len(events)} events flagged "
+          f"(window={window_s}s, min_count={min_count})")
+    return events
+
+
+# ---------------------------------------------------------------------------
 # VAD speech filter  (experimental — see experiment/silero-vad branch)
 # ---------------------------------------------------------------------------
 
@@ -289,7 +320,7 @@ def vad_filter(y, sr, events, margin_s=0.15, vad_threshold=0.5):
         wav, model,
         sampling_rate=VAD_SR,
         threshold=vad_threshold,
-        min_speech_duration_ms=200,
+        min_speech_duration_ms=1200,
         min_silence_duration_ms=100,
         return_seconds=True,
     )
@@ -530,6 +561,15 @@ def main():
                     help="max energy ratio [t+30ms:t+60ms]/[t:t+30ms]: impacts decay "
                          "fast (low ratio), speech sustains (high ratio). Try 0.5–0.8")
 
+    # Burst / clap filter
+    bg = ap.add_argument_group("burst / clap filter")
+    bg.add_argument("--burst", action="store_true",
+                    help="flag dense event clusters as likely clapping/applause")
+    bg.add_argument("--burst-window", type=float, default=2.0, dest="burst_window",
+                    help="time window in seconds for cluster counting (default 2.0)")
+    bg.add_argument("--burst-count", type=int, default=3, dest="burst_count",
+                    help="minimum events in window to be flagged as burst (default 3)")
+
     # VAD knobs (experimental)
     vadg = ap.add_argument_group("VAD speech filter (experimental, requires silero-vad)")
     vadg.add_argument("--vad", action="store_true",
@@ -590,6 +630,17 @@ def main():
         min_pre_flatness=args.min_pre_flatness,
         max_decay_ratio=args.max_decay_ratio,
     )
+
+    # --- Burst / clap filter (optional) ---
+    if args.burst:
+        print("Burst:")
+        burst_filter(
+            timeline["events"],
+            window_s=args.burst_window,
+            min_count=args.burst_count,
+        )
+        timeline["params"]["burst_window"] = args.burst_window
+        timeline["params"]["burst_count"]  = args.burst_count
 
     # --- VAD speech filter (optional, experimental) ---
     if args.vad:
