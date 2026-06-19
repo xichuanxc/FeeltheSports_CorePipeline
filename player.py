@@ -90,35 +90,34 @@ def should_show_event(ev, use_vision):
     """Decides whether an event is shown in combined mode.
 
     Priority order:
-    1. VAD says speech → hide, unless vision positively classified the ball
-       (handles 'out' shout overlapping a real strike).
-    2. Camera cut detected → show regardless of vision_type; vision was blind
-       due to the angle change, not because there was no ball.
-    3. Vision ran and classified → show (strike/bounce confirmed).
-    4. Vision ran but couldn't classify (vision_type=None) → hide.
-    5. No vision data + no VAD flag → show.
+    1. VAD says speech → hide, unless vision confirmed the ball was present.
+       Handles 'out' shout overlapping a real strike.
+    2. Vision ran and confirmed ball (vision_confirmed=True) → show.
+       Covers non-standard angles where the ball moves horizontally and
+       vision_type stays None — the ball WAS there, just unclassifiable.
+    3. Vision ran but found no ball (vision_confirmed=False) → hide.
+       Covers crowd shots, clap events, between-point noise.
+    4. No vision data + no VAD flag → show.
+
+    camera_cut is stored in the JSON as research data but does not affect
+    show/hide — vision_confirmed is the more reliable signal.
     """
     if not use_vision:
         return True
 
-    vad_speech  = ev.get("vad_speech",  False)
-    camera_cut  = ev.get("camera_cut",  False)
-    has_vision  = "vision_type" in ev
-    vision_type = ev.get("vision_type")
+    vad_speech = ev.get("vad_speech",  False)
+    has_vision = "vision_type" in ev
+    confirmed  = ev.get("vision_confirmed", False)
 
-    # Rule 1: VAD flagged as speech
+    # Rule 1: VAD flagged as speech → only show if ball was confirmed
     if vad_speech:
-        return has_vision and vision_type is not None
+        return has_vision and confirmed
 
-    # Rule 2: camera cut — vision was blind, trust audio
-    if camera_cut:
-        return True
-
-    # Rule 3 & 4: vision ran
+    # Rules 2 & 3: vision ran
     if has_vision:
-        return vision_type is not None
+        return confirmed
 
-    # Rule 5: no vision data
+    # Rule 4: no vision data
     return True
 
 
