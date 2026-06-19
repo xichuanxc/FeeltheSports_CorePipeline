@@ -259,7 +259,7 @@ class StripWidget(QWidget):
     """Scrolling waveform + onset-envelope strip.
     Confirmed event ticks: solid.  Unconfirmed: dashed (dimmer)."""
 
-    def __init__(self, strip_data, events, times, parent=None):
+    def __init__(self, strip_data, events, times, threshold=A_THRESHOLD, parent=None):
         super().__init__(parent)
         self.setMinimumHeight(STRIP_H)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -268,6 +268,7 @@ class StripWidget(QWidget):
         self.times      = times
         self.pos        = 0.0
         self.use_vision = True
+        self.threshold  = threshold
 
     def set_pos(self, pos):
         self.pos = pos
@@ -320,10 +321,10 @@ class StripWidget(QWidget):
                 p.drawLine(pts[j], pts[j + 1])
 
         # Threshold line
-        ty = base - int(A_THRESHOLD * (panel_h - 2))
+        ty = base - int(self.threshold * (panel_h - 2))
         p.setPen(QPen(qcolor((255, 200, 80)), 1))
         p.drawLine(0, ty, w, ty)
-        p.drawText(w - 80, ty - 4, f"thr {A_THRESHOLD:.2f}")
+        p.drawText(w - 80, ty - 4, f"thr {self.threshold:.2f}")
 
         # Event ticks
         lo = bisect.bisect_left(self.times, t0)
@@ -635,7 +636,9 @@ class PlayerWindow(QMainWindow):
         self.hud.unconfirmed  = self._count_unconfirmed()
         layout.addWidget(self.hud)
 
-        self.strip = StripWidget(strip_data, self.events, self.times)
+        json_threshold = self.data.get("params", {}).get("threshold", A_THRESHOLD)
+        self.strip = StripWidget(strip_data, self.events, self.times,
+                                 threshold=json_threshold)
         self.strip.use_vision = self.use_vision
         layout.addWidget(self.strip)
 
