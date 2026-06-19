@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+
+# Data files (videos, analysis outputs)
+data/
+
+# Old iterations — reference only, not part of active history
+archive/
+
+# Vision — exploratory YOLO research, large model files
+vision/
