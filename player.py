@@ -63,14 +63,21 @@ A_THRESHOLD  = 0.30
 # ============================ CLASSIFICATION HELPERS ==========================
 
 def effective_type(ev, use_vision=True):
-    """Type to use for display.
-    With use_vision=True: vision_type when available and non-null, else audio type.
-    With use_vision=False: always the audio type field."""
+    """Underlying classification (used for research detail panel)."""
     if use_vision:
         vt = ev.get("vision_type")
         if vt is not None:
             return vt
-    return ev.get("type", "strike")
+    return ev.get("type", "hit")
+
+
+def display_type(ev, use_vision=True, show_types=False):
+    """Type used for flash position and colour.
+    show_types=False (default): all events display as 'hit' — centre, yellow.
+    show_types=True: shows strike/bounce distinction for research inspection."""
+    if not show_types:
+        return "hit"
+    return effective_type(ev, use_vision)
 
 
 def is_vision_confirmed(ev):
@@ -172,8 +179,7 @@ def nearest_index(times, pos):
 
 # ============================ FLASH ITEM ======================================
 class FlashItem(QGraphicsItem):
-    """Fading flash overlays on the video. Strikes left of centre, bounces right.
-    Unconfirmed events (vision_confirmed=False) flash at reduced opacity."""
+    """Fading flash overlays on the video."""
 
     def __init__(self):
         super().__init__()
@@ -181,6 +187,7 @@ class FlashItem(QGraphicsItem):
         self._bounds     = QRectF(0, 0, 1280, 720)
         self.active      = []
         self.use_vision  = True
+        self.show_types  = False   # False = all hits same; True = strike/bounce colours
         self.legend_data = {}    # {type_str: count} — set by PlayerWindow
 
     def setBounds(self, rect: QRectF):
@@ -214,21 +221,19 @@ class FlashItem(QGraphicsItem):
 
             life      = 1.0 - age / FLASH_MS
             intensity = float(ev.get("intensity", 0.5))
-            etype     = effective_type(ev, self.use_vision)
+            etype     = display_type(ev, self.use_vision, self.show_types)
             confirmed = is_vision_confirmed(ev)
             color     = TYPE_COLORS.get(etype, DEFAULT_COLOR)
 
             base   = 28 + intensity * 90
             radius = base * (0.5 + 0.5 * life)
-            # Unconfirmed events shown at 35% opacity — visible but clearly
-            # secondary so the researcher can distinguish them at a glance
             alpha  = int((220 if confirmed else 80) * life)
 
             if etype == "bounce":
                 cx = r.left() + w * 0.66
             elif etype == "strike":
                 cx = r.left() + w * 0.34
-            else:                          # "hit" — no vision classification
+            else:                          # "hit" — centre
                 cx = r.left() + w * 0.50
             cy = r.top()  + h * 0.30
 
@@ -241,9 +246,7 @@ class FlashItem(QGraphicsItem):
             if age < FLASH_MS * 0.8 and confirmed:
                 p.setPen(qcolor(color, alpha))
                 p.setFont(QFont("Menlo", 13, QFont.Bold))
-                label = f"{etype.upper()}  {intensity:.2f}"
-                if not self.use_vision and ev.get("vision_type") not in (None, etype):
-                    label += f"  (v:{ev['vision_type']})"
+                label = f"HIT  {intensity:.2f}" if not self.show_types else f"{etype.upper()}  {intensity:.2f}"
                 p.drawText(QRectF(cx - 120, cy + radius + 4, 240, 20),
                            Qt.AlignCenter, label)
         self.active = keep
@@ -283,6 +286,7 @@ class StripWidget(QWidget):
         self.times      = times
         self.pos        = 0.0
         self.use_vision = True
+        self.show_types = False
         self.threshold  = threshold
 
     def set_pos(self, pos):
@@ -349,7 +353,7 @@ class StripWidget(QWidget):
             if not should_show_event(ev, self.use_vision):
                 continue
             x         = x_of(ev["time"])
-            etype     = effective_type(ev, self.use_vision)
+            etype     = display_type(ev, self.use_vision, self.show_types)
             confirmed = is_vision_confirmed(ev)
             color     = TYPE_COLORS.get(etype, DEFAULT_COLOR)
             pen       = QPen(qcolor(color, 255 if confirmed else 100), 2)
@@ -379,6 +383,7 @@ class HudWidget(QWidget):
         self.paused        = False
         self.nearest_info  = ""
         self.use_vision    = True
+        self.show_types    = False
         self.vision_avail  = False    # True if JSON has vision fields
         self.unconfirmed   = 0
 
@@ -397,7 +402,8 @@ class HudWidget(QWidget):
 
         if self.vision_avail:
             mode = "COMBINED" if self.use_vision else "AUDIO ONLY"
-            mode_str = f"mode: {mode} (V)   unconfirmed: {self.unconfirmed}   "
+            types_mode = "TYPED" if self.show_types else "SIMPLE"
+            mode_str = f"mode: {mode} (V)  types: {types_mode} (T)   unconfirmed: {self.unconfirmed}   "
         else:
             mode_str = ""
 
@@ -620,12 +626,13 @@ class PlayerWindow(QMainWindow):
     def __init__(self, video_path, json_path):
         super().__init__()
         self.setWindowTitle(
-            "Haptic player — SPACE pause | ,/. step | ↑↓ speed | [ ] haptic | V toggle vision | Q quit"
+            "Haptic player — SPACE pause | ,/. step | ↑↓ speed | [ ] haptic | V vision | T types | Q quit"
         )
 
         self.data, self.events, self.times = load_timeline(json_path)
         self._vision_avail = has_vision_data(self.events)
         self.use_vision    = True       # combined mode on by default
+        self.show_types    = False      # T to toggle strike/bounce colours
 
         self._log_startup(json_path)
 
@@ -723,12 +730,12 @@ class PlayerWindow(QMainWindow):
         return sum(1 for e in self.events if not is_vision_confirmed(e))
 
     def _sync_legend(self):
-        """Recompute per-type counts using effective_type and push to flash item."""
+        """Recompute per-type counts using display_type and push to flash item."""
         counts = {}
         for e in self.events:
             if not should_show_event(e, self.use_vision):
                 continue
-            t = effective_type(e, self.use_vision)
+            t = display_type(e, self.use_vision, self.show_types)
             counts[t] = counts.get(t, 0) + 1
         self.video_view.flash_item.legend_data = counts
 
@@ -741,6 +748,15 @@ class PlayerWindow(QMainWindow):
         self._sync_legend()
         mode = "COMBINED (audio + vision)" if use_vision else "AUDIO ONLY"
         print(f"[mode] {mode}")
+
+    def _set_show_types(self, show_types):
+        self.show_types = show_types
+        self.video_view.flash_item.show_types = show_types
+        self.strip.show_types                 = show_types
+        self.hud.set_state(show_types=show_types)
+        self._sync_legend()
+        mode = "TYPED (strike/bounce)" if show_types else "SIMPLE (all=hit)"
+        print(f"[types] {mode}")
 
     # -------------------------------------------------------------------------
     def _on_media_error(self, err, msg):
@@ -797,7 +813,7 @@ class PlayerWindow(QMainWindow):
                 nearest_event = ev
                 dt   = pos - ev["time"]
                 sign = "+" if dt >= 0 else "-"
-                etype = effective_type(ev, self.use_vision)
+                etype = display_type(ev, self.use_vision, self.show_types)
                 nearest_info = (f"#{ni+1}/{len(self.events)} "
                                 f"{ev['time']:.3f}s "
                                 f"[{etype} {ev.get('intensity',0):.2f}] "
@@ -833,6 +849,9 @@ class PlayerWindow(QMainWindow):
         elif k == Qt.Key_V:
             if self._vision_avail:
                 self._set_vision_mode(not self.use_vision)
+        elif k == Qt.Key_T:
+            if self._vision_avail:
+                self._set_show_types(not self.show_types)
         elif k == Qt.Key_Period:
             if self.is_paused:
                 pos = self.player.position() / 1000.0
