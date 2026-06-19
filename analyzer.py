@@ -22,6 +22,7 @@ Usage:
 
 import argparse
 import json
+import time
 from pathlib import Path
 
 import numpy as np
@@ -127,12 +128,21 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
             low_hz=1000.0, high_hz=10000.0, hf_cutoff_hz=2500.0,
             hf_ratio_cutoff=0.18, keep=("strike", "bounce"),
             pct_low=10.0, pct_high=90.0):
+    t0 = time.time()
+    print("  Loading audio...", end=" ", flush=True)
     y, sr = load_audio(path, sr=sr)
     duration = len(y) / sr
+    print(f"{duration:.1f}s of media  ({time.time() - t0:.1f}s)")
 
+    t0 = time.time()
+    print("  Detecting onsets...", end=" ", flush=True)
     times, peaks, env_norm, env_times = detect_onsets(
         y, sr, hop_length, threshold, min_gap_s, low_hz, high_hz
     )
+    print(f"{len(times)} candidates  ({time.time() - t0:.1f}s)")
+
+    t0 = time.time()
+    print("  Classifying events...", end=" ", flush=True)
 
     # Pass 1: measure raw loudness + features for every detected onset
     raw = []
@@ -164,6 +174,8 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
             "centroid": round(r["feats"]["centroid"], 1),
         })
 
+    print(f"{len(events)} kept  ({time.time() - t0:.1f}s)")
+
     timeline = {
         "version": 2,
         "source": Path(path).name,
@@ -189,11 +201,26 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
 # Vision pipeline
 # ---------------------------------------------------------------------------
 
-def _detect_balls(model, frame, conf):
+def _get_device(requested: str) -> str:
+    """Resolve 'auto' to the best available device: mps > cuda > cpu."""
+    if requested != "auto":
+        return requested
+    try:
+        import torch
+        if torch.backends.mps.is_available():
+            return "mps"
+        if torch.cuda.is_available():
+            return "cuda"
+    except ImportError:
+        pass
+    return "cpu"
+
+
+def _detect_balls(model, frame, conf, device):
     """Run YOLO on one frame. Returns list of (x_norm, y_norm, confidence)
     where x/y are normalized to [0, 1] by frame dimensions."""
     h, w = frame.shape[:2]
-    results = model(frame, imgsz=640, conf=conf, verbose=False)
+    results = model(frame, imgsz=640, conf=conf, verbose=False, device=device)
     detections = []
     for r in results:
         if r.boxes is None or len(r.boxes) == 0:
@@ -250,7 +277,7 @@ def _classify_from_trajectory(pos_before, pos_after, bounce_y_threshold):
 
 def vision_filter(events, video_path, model_path,
                   conf=0.3, window_before_s=0.3, window_after_s=0.5,
-                  frame_step=3, bounce_y_threshold=0.65):
+                  frame_step=3, bounce_y_threshold=0.65, device="auto"):
     """
     Annotate each event with vision-based fields. Runs YOLO ball detection on
     sampled frames around each audio event and adds:
@@ -273,7 +300,14 @@ def vision_filter(events, video_path, model_path,
             f"Missing: {e}"
         )
 
-    print(f"Loading YOLO model: {model_path}")
+    try:
+        from tqdm import tqdm
+    except ImportError:
+        def tqdm(it, **kw):
+            return it
+
+    device = _get_device(device)
+    print(f"  Loading YOLO model: {Path(model_path).name}  (device: {device})")
     model = YOLO(str(model_path))
 
     cap = cv2.VideoCapture(str(video_path))
@@ -282,18 +316,17 @@ def vision_filter(events, video_path, model_path,
 
     fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    print(f"Vision filter: {len(events)} events  |  "
-          f"{fps:.1f} fps  |  {total_frames} total frames")
 
     # Exclude frames within this margin of the event itself — ball may be
     # motion-blurred or at an ambiguous position right at the moment of contact
     CONTACT_MARGIN_S = 0.05
 
-    for i, event in enumerate(events):
+    t0 = time.time()
+    for event in tqdm(events, desc="  vision", unit="ev"):
         t = event["time"]
 
-        f_win_start = max(0, int((t - window_before_s) * fps))
-        f_win_end   = min(total_frames - 1, int((t + window_after_s) * fps))
+        f_win_start   = max(0, int((t - window_before_s) * fps))
+        f_win_end     = min(total_frames - 1, int((t + window_after_s) * fps))
         f_before_end  = int((t - CONTACT_MARGIN_S) * fps)
         f_after_start = int((t + CONTACT_MARGIN_S) * fps)
 
@@ -306,15 +339,15 @@ def vision_filter(events, video_path, model_path,
             if not ret:
                 continue
 
-            dets = _detect_balls(model, frame, conf)
+            dets = _detect_balls(model, frame, conf, device)
             if dets:
                 n_confirmed += 1
                 best = max(dets, key=lambda d: d[2])
-                pos = (best[0], best[1])
+                pos_xy = (best[0], best[1])
                 if fi <= f_before_end:
-                    pos_before.append(pos)
+                    pos_before.append(pos_xy)
                 elif fi >= f_after_start:
-                    pos_after.append(pos)
+                    pos_after.append(pos_xy)
 
         event["vision_confirmed"]  = n_confirmed > 0
         event["vision_detections"] = n_confirmed
@@ -322,9 +355,8 @@ def vision_filter(events, video_path, model_path,
             pos_before, pos_after, bounce_y_threshold
         )
 
-        if (i + 1) % 20 == 0 or (i + 1) == len(events):
-            print(f"  {i + 1}/{len(events)} events processed")
-
+    elapsed = time.time() - t0
+    print(f"  Vision done: {elapsed:.1f}s  ({elapsed / len(events):.2f}s/event)")
     cap.release()
     return events
 
@@ -369,12 +401,19 @@ def main():
                     help="normalised frame-height below which the ball is "
                          "considered 'near court' for bounce classification "
                          "(default 0.65; tune for non-standard camera angles)")
+    vg.add_argument("--vision-device", default="auto", dest="vision_device",
+                    help="inference device: auto (default), mps, cuda, cpu. "
+                         "auto picks mps on Apple Silicon, cuda if available, "
+                         "otherwise cpu")
     args = ap.parse_args()
 
     out = args.output or str(Path(args.input).with_suffix("")) + ".haptic.json"
     keep = tuple(s.strip() for s in args.keep.split(",") if s.strip())
 
+    print(f"\n=== {Path(args.input).name} ===")
+
     # --- Audio analysis ---
+    print("Audio:")
     timeline, viz, (lo_db, hi_db) = analyze(
         args.input, threshold=args.threshold, min_gap_s=args.min_gap_s,
         low_hz=args.low_hz, high_hz=args.high_hz,
@@ -384,12 +423,14 @@ def main():
 
     # --- Vision filter (optional) ---
     if args.vision_model:
+        print("Vision:")
         vision_filter(
             timeline["events"],
             video_path=args.input,
             model_path=args.vision_model,
             conf=args.vision_conf,
             bounce_y_threshold=args.vision_bounce_y,
+            device=args.vision_device,
         )
         timeline["version"] = 3
         timeline["params"]["vision_model"] = args.vision_model

@@ -2,6 +2,7 @@ librosa>=0.10
 scipy
 numpy
 matplotlib
+tqdm
 # vision pipeline (only needed for --vision-model)
 ultralytics
 opencv-python
