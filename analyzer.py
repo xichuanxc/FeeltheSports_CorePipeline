@@ -47,6 +47,7 @@ import librosa
 #       "flatness": 0.41,           # onset flatness 200–8kHz: ~1.0=broadband, ~0.0=tonal speech
 #       "pre_flatness": 0.38,       # flatness of 200ms BEFORE onset: low = ongoing speech context
 #       "decay_ratio": 0.21,        # energy[t+30ms:t+60ms]/energy[t:t+30ms]: low=fast decay (impact)
+#       "vad_speech": false,        # true = Silero VAD detected speech at this onset (--vad only)
 #       # vision fields (present only when --vision-model was used):
 #       "vision_confirmed": true,   # ball detected in window around event
 #       "vision_detections": 4,     # count of sampled frames with a detection
@@ -255,15 +256,13 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
 
 def vad_filter(y, sr, events, margin_s=0.15, vad_threshold=0.5):
     """
-    Run Silero VAD on the audio and drop events that fall within detected
-    speech segments (plus margin_s on each side).
+    Run Silero VAD on the audio and annotate each event with vad_speech=True/False.
 
-    Silero VAD is a lightweight neural model trained on noisy speech — it
-    handles broadcast audio with crowd noise far better than hand-crafted
-    acoustic features.
-
-    Returns the filtered event list. Events removed here never appear in the
-    output JSON; the console reports the count.
+    Events inside a detected speech segment (plus margin_s) are flagged but
+    NOT removed — vision can override the flag in the player. If vision confirms
+    a ball was hit at a VAD-flagged moment, the event is shown; if vision finds
+    no ball, the VAD flag hides it. Without vision data, vad_speech=True events
+    are hidden in the player.
 
     Requires: pip install silero-vad
     """
@@ -301,11 +300,15 @@ def vad_filter(y, sr, events, margin_s=0.15, vad_threshold=0.5):
                 return True
         return False
 
-    n_before = len(events)
-    filtered = [e for e in events if not _in_speech(e["time"])]
-    print(f"  removed {n_before - len(filtered)} events in speech segments  "
-          f"({len(filtered)} remain)")
-    return filtered
+    n_flagged = 0
+    for e in events:
+        in_speech = _in_speech(e["time"])
+        e["vad_speech"] = in_speech
+        if in_speech:
+            n_flagged += 1
+    print(f"  flagged {n_flagged}/{len(events)} events as speech  "
+          f"(vision can override in player)")
+    return events
 
 
 # ---------------------------------------------------------------------------
@@ -567,9 +570,8 @@ def main():
     # --- VAD speech filter (optional, experimental) ---
     if args.vad:
         print("VAD:")
-        y_audio, sr_audio = viz[0], viz[1]
-        timeline["events"] = vad_filter(
-            y_audio, sr_audio, timeline["events"],
+        vad_filter(
+            viz[0], viz[1], timeline["events"],
             margin_s=args.vad_margin,
             vad_threshold=args.vad_threshold,
         )

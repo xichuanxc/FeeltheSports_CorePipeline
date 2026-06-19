@@ -87,11 +87,21 @@ def has_vision_data(events):
 
 
 def should_show_event(ev, use_vision):
-    """False when vision ran on this event but couldn't classify it and we're
-    in combined mode — unclassified events are treated as non-events by default."""
+    """Decides whether an event is shown in combined mode.
+
+    Vision takes priority: a positive vision classification (strike/bounce)
+    always shows the event, even if VAD flagged it as speech — this handles
+    the case where someone shouts 'out' exactly when the ball is hit.
+
+    Without vision data, vad_speech=True hides the event (no override possible).
+    """
     if not use_vision:
         return True
-    if "vision_type" in ev and ev["vision_type"] is None:
+    if "vision_type" in ev:
+        # Vision ran: show only if it successfully classified the event
+        return ev["vision_type"] is not None
+    # No vision: hide if VAD flagged this onset as speech
+    if ev.get("vad_speech", False):
         return False
     return True
 
@@ -391,7 +401,7 @@ class HudWidget(QWidget):
 # ============================ DETAIL PANEL ====================================
 DETAIL_WINDOW_S = 0.5
 DETAIL_W        = 440
-DETAIL_H        = 230
+DETAIL_H        = 260
 
 
 class DetailPanelItem(QGraphicsItem):
@@ -457,6 +467,10 @@ class DetailPanelItem(QGraphicsItem):
             lines.append((f"  centroid:  {ev['centroid']:.0f} Hz", None))
         if "db" in ev:
             lines.append((f"  raw db:    {ev['db']:.1f}", None))
+        if "vad_speech" in ev:
+            vad_val = ev["vad_speech"]
+            vad_color = (255, 140, 60) if vad_val else (100, 220, 100)
+            lines.append((f"  vad_speech: {vad_val}", vad_color))
 
         # Vision fields (only when present)
         if "vision_type" in ev:
@@ -677,6 +691,11 @@ class PlayerWindow(QMainWindow):
             print(f"  audio/vision disagreements: {disagree}")
         else:
             print("  no vision data in JSON — audio-only mode")
+        vad_flagged = sum(1 for e in self.events if e.get("vad_speech"))
+        if vad_flagged:
+            overridden = sum(1 for e in self.events
+                             if e.get("vad_speech") and e.get("vision_type") is not None)
+            print(f"  VAD flagged: {vad_flagged}  vision overrides: {overridden}")
 
     def _count_unconfirmed(self):
         return sum(1 for e in self.events if not is_vision_confirmed(e))
