@@ -803,6 +803,11 @@ class PlayerWindow(QMainWindow):
 
 # ============================ ENTRY ===========================================
 def main():
+    # Qt defaults to the FFmpeg backend on macOS, which lacks hardware AV1
+    # decoding. Force the AVFoundation (darwin) backend instead — it uses
+    # VideoToolbox and supports AV1 natively on Apple Silicon.
+    os.environ.setdefault("QT_MEDIA_BACKEND", "darwin")
+
     ap = argparse.ArgumentParser(
         description="Haptic timeline validation player"
     )
