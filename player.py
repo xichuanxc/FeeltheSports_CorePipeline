@@ -292,7 +292,8 @@ class StripWidget(QWidget):
     """Scrolling waveform + onset-envelope strip.
     Confirmed event ticks: solid.  Unconfirmed: dashed (dimmer)."""
 
-    def __init__(self, strip_data, events, times, threshold=A_THRESHOLD, parent=None):
+    def __init__(self, strip_data, events, times, threshold=A_THRESHOLD,
+                 min_gap_s=0.08, parent=None):
         super().__init__(parent)
         self.setMinimumHeight(STRIP_H)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -303,6 +304,15 @@ class StripWidget(QWidget):
         self.use_vision = True
         self.show_types = False
         self.threshold  = threshold
+
+        # Precompute dynamic detection threshold: rolling_mean(env) + threshold.
+        # This is what peak_pick() actually compares against — not a flat line.
+        dt       = float(self.env_t[1] - self.env_t[0]) if len(self.env_t) > 1 else (A_HOP / A_SR)
+        half_win = max(1, int(round(min_gap_s / dt)))
+        win      = 2 * half_win + 1
+        kernel   = np.ones(win) / win
+        local_avg = np.convolve(self.env, kernel, mode='same')
+        self.det_threshold = np.clip(local_avg + threshold, 0.0, 1.0)
 
     def set_pos(self, pos):
         self.pos = pos
@@ -354,11 +364,18 @@ class StripWidget(QWidget):
             for j in range(len(pts) - 1):
                 p.drawLine(pts[j], pts[j + 1])
 
-        # Threshold line
-        ty = base - int(self.threshold * (panel_h - 2))
-        p.setPen(QPen(qcolor((255, 200, 80)), 1))
-        p.drawLine(0, ty, w, ty)
-        p.drawText(w - 80, ty - 4, f"thr {self.threshold:.2f}")
+        # Dynamic detection threshold: rolling_mean(env) + threshold.
+        # A peak is only detected when the envelope EXCEEDS this curve.
+        tpts = [QPointF(x_of(self.env_t[i]),
+                        base - int(self.det_threshold[i] * (panel_h - 2)))
+                for i in range(elo, ehi)]
+        if len(tpts) > 1:
+            p.setPen(QPen(qcolor((255, 200, 80)), 1))
+            for j in range(len(tpts) - 1):
+                p.drawLine(tpts[j], tpts[j + 1])
+        if tpts:
+            p.setPen(qcolor((255, 200, 80)))
+            p.drawText(w - 90, int(tpts[-1].y()) - 4, f"thr {self.threshold:.2f}")
 
         # Event ticks
         lo = bisect.bisect_left(self.times, t0)
@@ -425,13 +442,20 @@ class HudWidget(QWidget):
         phone_n = getattr(self, "phone_clients", 0)
         phone_str = f"  📱{phone_n}" if phone_n else "  phone: -"
 
+        if self.paused and self.pos < 0.1 and phone_n == 0:
+            pause_str = "  WAITING FOR PHONE — press SPACE to start anyway"
+        elif self.paused:
+            pause_str = "  PAUSED"
+        else:
+            pause_str = ""
+
         left = (f"t = {self.pos:7.3f}s   speed: {speed_str}   "
                 f"events: {self.total}   "
                 f"haptic thr: {self.min_haptic:.2f}  ([ / ])   "
                 f"suppressed: {self.suppressed}   "
                 + mode_str
                 + phone_str
-                + ("  PAUSED" if self.paused else ""))
+                + pause_str)
         p.drawText(8, 19, left)
 
         if self.paused and self.nearest_info:
@@ -682,8 +706,9 @@ class PlayerWindow(QMainWindow):
         layout.addWidget(self.hud)
 
         json_threshold = self.data.get("params", {}).get("threshold", A_THRESHOLD)
+        json_min_gap   = self.data.get("params", {}).get("min_gap_s", 0.08)
         self.strip = StripWidget(strip_data, self.events, self.times,
-                                 threshold=json_threshold)
+                                 threshold=json_threshold, min_gap_s=json_min_gap)
         self.strip.use_vision = self.use_vision
         layout.addWidget(self.strip)
 
@@ -728,10 +753,10 @@ class PlayerWindow(QMainWindow):
         self.player.errorOccurred.connect(self._on_media_error)
         self.player.mediaStatusChanged.connect(self._on_media_status)
 
-        self.player.play()
-        self.is_paused = False
-        if self._server:
-            self._server.publish_play(0.0, SPEED_STEPS[self.speed_index])
+        # Start paused — user presses Space once the phone is connected
+        # (HUD shows phone client count so the user knows when to start)
+        self.player.pause()
+        self.is_paused = True
 
     # -------------------------------------------------------------------------
     def _log_startup(self, json_path):
