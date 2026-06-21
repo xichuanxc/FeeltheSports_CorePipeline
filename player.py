@@ -738,7 +738,10 @@ class PlayerWindow(QMainWindow):
                       if Path(self._annotated_path).exists()
                       else self._original_path)
         self.data, self.events, self.times = load_timeline(_load_path)
-        _, self._original_events, _ = load_timeline(self._original_path)
+        _orig_data, self._original_events, _ = load_timeline(self._original_path)
+        self._original_updated_at = _orig_data.get("updated_at")
+        # Carry forward any log entries from a previous annotation session
+        self._annotation_log = list(self.data.get("annotation_log", []))
         self._vision_avail = has_vision_data(self.events)
         self.use_vision    = True       # combined mode on by default
         self.show_types    = False      # T to toggle strike/bounce colours
@@ -913,6 +916,11 @@ class PlayerWindow(QMainWindow):
         self.times = [e["time"] for e in self.events]
         self.strip.events = self.events
         self.strip.times  = self.times
+        self._annotation_log.append({
+            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "action": "add",
+            "event": copy.copy(ev),
+        })
         self._dirty = True
         self._sync_legend()
         added, removed = self._annotation_stats()
@@ -934,6 +942,11 @@ class PlayerWindow(QMainWindow):
         )
         if reply != QMessageBox.Yes:
             return
+        self._annotation_log.append({
+            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "action": "remove",
+            "event": copy.copy(ev),
+        })
         self.events.pop(i)
         self.times = [e["time"] for e in self.events]
         self.strip.events = self.events
@@ -949,6 +962,11 @@ class PlayerWindow(QMainWindow):
         out = dict(self.data)
         out["events"] = self.events
         out["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        out["annotation_meta"] = {
+            "original_updated_at":  self._original_updated_at,
+            "original_event_count": len(self._original_events),
+        }
+        out["annotation_log"] = self._annotation_log
         with open(self._annotated_path, "w") as f:
             json.dump(out, f, indent=2)
         self._dirty = False
