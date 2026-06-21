@@ -136,27 +136,27 @@ def should_show_event(ev, use_vision):
     return True
 
 
-_SERVER_STRIP_KEYS = {"annotation_log", "annotation_meta"}
-_EVENT_STRIP_KEYS  = {"vad_speech", "clap_burst", "flatness", "pre_flatness",
-                      "decay_ratio", "vision_confirmed", "vision_detections",
-                      "camera_cut", "manual"}
+# Allowlists — only these fields reach the phone.
+# Any new field added to the JSON is excluded by default.
+_SERVER_KEEP_KEYS = {"version", "source", "duration"}
+_EVENT_KEEP_KEYS  = {"time", "intensity", "type", "vision_type"}
 
 def build_server_timeline(data, events, use_vision=True):
-    """Return a trimmed timeline dict for the phone.
+    """Return a minimal timeline dict for the phone.
 
-    Only events that pass should_show_event() are included. Top-level
-    annotation fields and per-event research fields are stripped so the
-    payload stays small and the phone only sees what it needs: time,
-    intensity, type, and the optional acoustic/vision fields the protocol
-    documents (db, hf_ratio, centroid, vision_type).
+    Allowlist approach: only fields the phone actually needs are included.
+    Top level: version, source, duration.
+    Per event:  time, intensity, type, vision_type.
+
+    Events that don't pass should_show_event() are excluded entirely —
+    the phone never sees suppressed events.
     """
     filtered = []
     for e in events:
         if not should_show_event(e, use_vision):
             continue
-        ev = {k: v for k, v in e.items() if k not in _EVENT_STRIP_KEYS}
-        filtered.append(ev)
-    tl = {k: v for k, v in data.items() if k not in _SERVER_STRIP_KEYS}
+        filtered.append({k: v for k, v in e.items() if k in _EVENT_KEEP_KEYS})
+    tl = {k: v for k, v in data.items() if k in _SERVER_KEEP_KEYS}
     tl["events"] = filtered
     return tl
 

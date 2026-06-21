@@ -385,33 +385,28 @@ authoritative schema:
 
 ```jsonc
 {
-  "version": 2,                    // schema version (integer); 3 when vision fields present
-  "source": "match.mp4",           // informational; original media filename
-  "duration": 412.5,               // total media duration in seconds (float)
-  "sample_rate_analyzed": 22050,   // informational; analyzer audio sample rate
-  "updated_at": "2026-06-21T09:00:00Z", // UTC ISO-8601 timestamp of last analyzer run
-
-  "calibration": {                 // informational; intensity calibration metadata
-    "pct_low": 10.0, "pct_high": 90.0,
-    "lo_db": -37.6, "hi_db": -30.9,
-    "note": "intensity is relative to THIS video's hit-loudness range"
-  },
-  "params": { /* analyzer settings used; informational, opaque */ },
+  "version": 2,        // schema version (integer)
+  "source": "match.mp4",  // original media filename (informational)
+  "duration": 412.5,   // total media duration in seconds (float)
 
   "events": [
     {
-      "time": 12.480,              // media-time in SECONDS (float, required)
-      "intensity": 0.82,           // 0.0..1.0 (float, required)
-      "type": "hit",               // audio detection type — always "hit" (required, see §6.1)
-      "db": -31.6,                 // raw loudness (float, optional)
-      "hf_ratio": 0.34,            // high-freq energy ratio (float, optional)
-      "centroid": 2480.0,          // spectral centroid Hz (float, optional)
-      "vision_type": "strike"      // vision-refined type — "strike"|"bounce"|null (optional, see §6.2)
+      "time": 12.480,        // media-time in SECONDS (float, required)
+      "intensity": 0.82,     // 0.0..1.0 vibration strength (float, required)
+      "type": "hit",         // always "hit" — see §6.1 (string, required)
+      "vision_type": "strike" // refined classification — see §6.2 (string|null, optional)
     },
     ...
   ]
 }
 ```
+
+> **Minimal payload:** the server sends only the four fields above per event.
+> All research fields (`db`, `hf_ratio`, `centroid`, `flatness`, etc.) and
+> all annotation/analyzer metadata (`calibration`, `params`, `updated_at`,
+> `annotation_log`, etc.) are stripped before transmission. The server uses
+> an allowlist — any new field added in future is excluded by default unless
+> explicitly opted in.
 
 > **Pre-filtered:** the server applies all suppression rules (VAD speech
 > detection, vision confirmation) before sending. The client receives only
@@ -436,18 +431,12 @@ authoritative schema:
   non-null, prefer this over `type` for choosing the haptic pattern
   (e.g. a racket strike vs. a ball bounce feel different). When null or
   absent, fall back to a generic hit pattern.
-- **`db`** is the raw loudness in dB. Useful if you want to re-compute
-  intensity with a different calibration on the client. Otherwise ignore.
-- **`hf_ratio`** and **`centroid`** are acoustic features describing the
-  spectral shape of the event. Reserved for future use. Ignore unless you
-  have a specific reason.
 
 ### 6.3 Unknown fields
 
-The server may include additional top-level fields (e.g. `updated_at`,
-`calibration`, `params`) and additional per-event fields. **Clients MUST
-silently ignore any field they do not recognise.** This allows the analyzer
-and player to evolve without breaking existing clients.
+Future protocol versions may add new fields. **Clients MUST silently ignore
+any field they do not recognise.** This allows the protocol to evolve
+without breaking existing clients.
 
 ### 6.4 Sorting
 
