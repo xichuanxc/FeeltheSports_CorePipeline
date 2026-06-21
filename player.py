@@ -28,7 +28,7 @@ from PySide6.QtCore import Qt, QUrl, QTimer, QPointF, QRectF, QSizeF
 from PySide6.QtGui import QPainter, QColor, QFont, QPen, QBrush, QPolygonF, QKeyEvent
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QSizePolicy,
-    QGraphicsView, QGraphicsScene, QGraphicsItem
+    QGraphicsView, QGraphicsScene, QGraphicsItem, QMessageBox
 )
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PySide6.QtMultimediaWidgets import QGraphicsVideoItem
@@ -46,6 +46,7 @@ TYPE_COLORS = {
     "hit":    (255, 200, 80),     # audio-only: no vision classification
     "strike": (255, 90,  90),     # vision-classified strike
     "bounce": (90,  170, 255),    # vision-classified bounce
+    "manual": (255, 160, 255),    # manually annotated event
     "soft":   (90,  200, 255),    # legacy v1 types
     "normal": (120, 255, 140),
     "smash":  (255, 90,  90),
@@ -305,6 +306,8 @@ class StripWidget(QWidget):
         self.use_vision = True
         self.show_types = False
         self.threshold  = threshold
+        self.on_add     = None   # callback(t: float)
+        self.on_remove  = None   # callback(index: int)
 
         # Precompute dynamic detection threshold: rolling_mean(env) + threshold.
         # This is what peak_pick() actually compares against — not a flat line.
@@ -314,6 +317,43 @@ class StripWidget(QWidget):
         kernel   = np.ones(win) / win
         local_avg = np.convolve(self.env, kernel, mode='same')
         self.det_threshold = np.clip(local_avg + threshold, 0.0, 1.0)
+
+    def _snap_to_peak(self, t, window_s=0.20):
+        """Return the time of the highest onset-envelope value within window_s of t."""
+        lo = int(np.searchsorted(self.env_t, t - window_s))
+        hi = int(np.searchsorted(self.env_t, t + window_s))
+        if hi <= lo:
+            return t
+        peak_idx = lo + int(np.argmax(self.env[lo:hi]))
+        return float(self.env_t[peak_idx])
+
+    def mousePressEvent(self, mouse_ev):
+        if mouse_ev.button() != Qt.LeftButton:
+            return
+        w = self.width()
+        click_x = mouse_ev.position().x()
+        half = STRIP_WINDOW_S / 2.0
+        t0 = self.pos - half
+        t_clicked = t0 + (click_x / w) * STRIP_WINDOW_S
+        t_clicked = max(0.0, min(self.duration, t_clicked))
+
+        # Check if click lands within REMOVE_TOL_PX of an existing event tick
+        REMOVE_TOL_PX = 10
+        closest_i, closest_dx = None, REMOVE_TOL_PX + 1
+        for j, event_t in enumerate(self.times):
+            x_ev = (event_t - t0) / STRIP_WINDOW_S * w
+            dx = abs(click_x - x_ev)
+            if dx < closest_dx:
+                closest_dx = dx
+                closest_i = j
+
+        if closest_i is not None and closest_dx <= REMOVE_TOL_PX:
+            if self.on_remove:
+                self.on_remove(closest_i)
+        else:
+            t_snapped = self._snap_to_peak(t_clicked)
+            if self.on_add:
+                self.on_add(t_snapped)
 
     def set_pos(self, pos):
         self.pos = pos
@@ -382,16 +422,20 @@ class StripWidget(QWidget):
         lo = bisect.bisect_left(self.times, t0)
         hi = bisect.bisect_right(self.times, t1)
         for j in range(lo, hi):
-            ev        = self.events[j]
+            ev = self.events[j]
             if not should_show_event(ev, self.use_vision):
                 continue
-            x         = x_of(ev["time"])
-            etype     = display_type(ev, self.use_vision, self.show_types)
-            confirmed = is_vision_confirmed(ev)
-            color     = TYPE_COLORS.get(etype, DEFAULT_COLOR)
-            pen       = QPen(qcolor(color, 255 if confirmed else 100), 2)
-            if not confirmed:
-                pen.setStyle(Qt.DashLine)
+            x = x_of(ev["time"])
+            if ev.get("manual"):
+                color = TYPE_COLORS["manual"]
+                pen   = QPen(qcolor(color, 255), 2)
+            else:
+                etype     = display_type(ev, self.use_vision, self.show_types)
+                confirmed = is_vision_confirmed(ev)
+                color     = TYPE_COLORS.get(etype, DEFAULT_COLOR)
+                pen       = QPen(qcolor(color, 255 if confirmed else 100), 2)
+                if not confirmed:
+                    pen.setStyle(Qt.DashLine)
             p.setPen(pen)
             p.drawLine(x, wave_top, x, wave_top + panel_h)
             p.drawLine(x, env_top,  x, env_top  + panel_h)
@@ -420,6 +464,7 @@ class HudWidget(QWidget):
         self.show_types    = False
         self.vision_avail  = False    # True if JSON has vision fields
         self.unconfirmed   = 0
+        self.dirty         = False
 
     def set_state(self, **kwargs):
         for k, v in kwargs.items():
@@ -459,6 +504,11 @@ class HudWidget(QWidget):
                 + phone_str
                 + pause_str)
         p.drawText(8, 19, left)
+
+        if self.dirty:
+            fw = p.fontMetrics().horizontalAdvance(left)
+            p.setPen(qcolor((255, 200, 60)))
+            p.drawText(8 + fw, 19, "  [* unsaved — S to save]")
 
         if self.paused and self.nearest_info:
             p.setPen(qcolor((200, 220, 255)))
@@ -673,13 +723,15 @@ class PlayerWindow(QMainWindow):
     def __init__(self, video_path, json_path):
         super().__init__()
         self.setWindowTitle(
-            "Haptic player — SPACE pause | ←→ seek 5s | ,/. step | ↑↓ speed | [ ] haptic | V vision | T types | Q quit"
+            "Haptic player — SPACE pause | ←→ seek 5s | ,/. step | ↑↓ speed | [ ] haptic | V vision | T types | click strip: add/remove event | S save | Q quit"
         )
 
+        self._json_path    = json_path
         self.data, self.events, self.times = load_timeline(json_path)
         self._vision_avail = has_vision_data(self.events)
         self.use_vision    = True       # combined mode on by default
         self.show_types    = False      # T to toggle strike/bounce colours
+        self._dirty        = False
 
         self._log_startup(json_path)
 
@@ -714,6 +766,8 @@ class PlayerWindow(QMainWindow):
         self.strip = StripWidget(strip_data, self.events, self.times,
                                  threshold=json_threshold, min_gap_s=json_min_gap)
         self.strip.use_vision = self.use_vision
+        self.strip.on_add    = self._add_event
+        self.strip.on_remove = self._remove_event
         layout.addWidget(self.strip)
 
         self._sync_legend()
@@ -821,6 +875,51 @@ class PlayerWindow(QMainWindow):
         self._sync_legend()
         mode = "TYPED (strike/bounce)" if show_types else "SIMPLE (all=hit)"
         print(f"[types] {mode}")
+
+    # -------------------------------------------------------------------------
+    def _add_event(self, t):
+        ev = {"time": round(t, 3), "intensity": 0.7, "type": "hit", "manual": True}
+        self.events.append(ev)
+        self.events.sort(key=lambda e: e["time"])
+        self.times = [e["time"] for e in self.events]
+        self.strip.events = self.events
+        self.strip.times  = self.times
+        self._dirty = True
+        self._sync_legend()
+        self.hud.set_state(total=len(self.events), dirty=True)
+        print(f"[annotate] added event at t={t:.3f}s")
+
+    def _remove_event(self, i):
+        if not (0 <= i < len(self.events)):
+            return
+        ev    = self.events[i]
+        t     = ev["time"]
+        label = "manual" if ev.get("manual") else "auto-detected"
+        reply = QMessageBox.question(
+            self, "Remove event",
+            f"Remove {label} event at t = {t:.3f} s?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply != QMessageBox.Yes:
+            return
+        self.events.pop(i)
+        self.times = [e["time"] for e in self.events]
+        self.strip.events = self.events
+        self.strip.times  = self.times
+        self._dirty = True
+        self._sync_legend()
+        self.hud.set_state(total=len(self.events), dirty=True)
+        print(f"[annotate] removed {label} event at t={t:.3f}s")
+
+    def _save_json(self):
+        out = dict(self.data)
+        out["events"] = self.events
+        with open(self._json_path, "w") as f:
+            json.dump(out, f, indent=2)
+        self._dirty = False
+        self.hud.set_state(dirty=False)
+        print(f"[save] {len(self.events)} events -> {self._json_path}")
 
     # -------------------------------------------------------------------------
     def _on_media_error(self, err, msg):
@@ -979,6 +1078,9 @@ class PlayerWindow(QMainWindow):
             self.min_haptic = max(0.0, round(self.min_haptic - 0.05, 2))
         elif k == Qt.Key_BracketRight:
             self.min_haptic = min(1.0, round(self.min_haptic + 0.05, 2))
+        elif k == Qt.Key_S:
+            if self._dirty:
+                self._save_json()
         else:
             super().keyPressEvent(ev)
 
