@@ -297,6 +297,7 @@ class StripWidget(QWidget):
         super().__init__(parent)
         self.setMinimumHeight(STRIP_H)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setFocusPolicy(Qt.NoFocus)
         self.duration, self.wave_t, self.wave_peak, self.env_t, self.env = strip_data
         self.events     = events
         self.times      = times
@@ -407,6 +408,7 @@ class HudWidget(QWidget):
         super().__init__(parent)
         self.setFixedHeight(28)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setFocusPolicy(Qt.NoFocus)
         self.pos           = 0.0
         self.speed         = 1.0
         self.total         = 0
@@ -460,7 +462,8 @@ class HudWidget(QWidget):
 
         if self.paused and self.nearest_info:
             p.setPen(qcolor((200, 220, 255)))
-            p.drawText(self.width() // 2 + 60, 19, self.nearest_info)
+            tw = p.fontMetrics().horizontalAdvance(self.nearest_info)
+            p.drawText(self.width() - tw - 8, 19, self.nearest_info)
 
 
 # ============================ DETAIL PANEL ====================================
@@ -613,6 +616,7 @@ class VideoView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        self.setFocusPolicy(Qt.NoFocus)
 
         self._scene    = QGraphicsScene(self)
         self.setScene(self._scene)
@@ -669,7 +673,7 @@ class PlayerWindow(QMainWindow):
     def __init__(self, video_path, json_path):
         super().__init__()
         self.setWindowTitle(
-            "Haptic player — SPACE pause | ,/. step | ↑↓ speed | [ ] haptic | V vision | T types | Q quit"
+            "Haptic player — SPACE pause | ←→ seek 5s | ,/. step | ↑↓ speed | [ ] haptic | V vision | T types | Q quit"
         )
 
         self.data, self.events, self.times = load_timeline(json_path)
@@ -757,6 +761,7 @@ class PlayerWindow(QMainWindow):
         # (HUD shows phone client count so the user knows when to start)
         self.player.pause()
         self.is_paused = True
+        self.setFocus()
 
     # -------------------------------------------------------------------------
     def _log_startup(self, json_path):
@@ -944,6 +949,20 @@ class PlayerWindow(QMainWindow):
                     self.video_view.flash_item.clear_active()
                     if self._server:
                         self._server.publish_seek(self.times[i])
+        elif k == Qt.Key_Left:
+            pos_ms = max(0, self.player.position() - 5000)
+            self.player.setPosition(pos_ms)
+            self.last_pos_s = -1.0
+            self.video_view.flash_item.clear_active()
+            if self._server:
+                self._server.publish_seek(pos_ms / 1000.0)
+        elif k == Qt.Key_Right:
+            pos_ms = min(self.player.duration(), self.player.position() + 5000)
+            self.player.setPosition(pos_ms)
+            self.last_pos_s = -1.0
+            self.video_view.flash_item.clear_active()
+            if self._server:
+                self._server.publish_seek(pos_ms / 1000.0)
         elif k == Qt.Key_Up:
             if self.speed_index < len(SPEED_STEPS) - 1:
                 self.speed_index += 1
