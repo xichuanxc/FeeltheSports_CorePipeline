@@ -385,10 +385,11 @@ authoritative schema:
 
 ```jsonc
 {
-  "version": 2,                    // schema version (integer)
+  "version": 2,                    // schema version (integer); 3 when vision fields present
   "source": "match.mp4",           // informational; original media filename
   "duration": 412.5,               // total media duration in seconds (float)
   "sample_rate_analyzed": 22050,   // informational; analyzer audio sample rate
+  "updated_at": "2026-06-21T09:00:00Z", // UTC ISO-8601 timestamp of last analyzer run
 
   "calibration": {                 // informational; intensity calibration metadata
     "pct_low": 10.0, "pct_high": 90.0,
@@ -401,15 +402,20 @@ authoritative schema:
     {
       "time": 12.480,              // media-time in SECONDS (float, required)
       "intensity": 0.82,           // 0.0..1.0 (float, required)
-      "type": "strike",            // "strike" | "bounce" | future types (required)
+      "type": "hit",               // audio detection type — always "hit" (required, see §6.1)
       "db": -31.6,                 // raw loudness (float, optional)
       "hf_ratio": 0.34,            // high-freq energy ratio (float, optional)
-      "centroid": 2480.0           // spectral centroid Hz (float, optional)
+      "centroid": 2480.0,          // spectral centroid Hz (float, optional)
+      "vision_type": "strike"      // vision-refined type — "strike"|"bounce"|null (optional, see §6.2)
     },
     ...
   ]
 }
 ```
+
+> **Pre-filtered:** the server applies all suppression rules (VAD speech
+> detection, vision confirmation) before sending. The client receives only
+> events that should produce haptic feedback — it does not need to filter.
 
 ### 6.1 Field semantics — what the client MUST honor
 
@@ -418,20 +424,32 @@ authoritative schema:
 - **`intensity`** is the calibrated 0.0–1.0 vibration strength for **this
   video**. It is **not** comparable across videos. Do not attempt to
   normalize, scale, or "correct" it across recordings.
-- **`type`** is currently one of `"strike"` or `"bounce"`. Future timelines
-  may add types like `"scrape"`. **Unknown types MUST NOT crash the client.**
-  Fall back to a default haptic pattern for unknown types.
+- **`type`** is always `"hit"` in the current pipeline. Audio onset detection
+  produces all events; `vision_type` (§6.2) carries the refined classification.
+  **Unknown `type` values MUST NOT crash the client.** Fall back to a default
+  haptic pattern for any unrecognised value.
 
 ### 6.2 Field semantics — what the client MAY use
 
+- **`vision_type`** is the vision-refined event classification: `"strike"`,
+  `"bounce"`, or `null` (undetermined / no vision data). When present and
+  non-null, prefer this over `type` for choosing the haptic pattern
+  (e.g. a racket strike vs. a ball bounce feel different). When null or
+  absent, fall back to a generic hit pattern.
 - **`db`** is the raw loudness in dB. Useful if you want to re-compute
   intensity with a different calibration on the client. Otherwise ignore.
 - **`hf_ratio`** and **`centroid`** are acoustic features describing the
-  spectral shape of the event. Reserved for future use (e.g. selecting
-  different haptic patterns based on tone color). Ignore unless you have a
-  specific reason.
+  spectral shape of the event. Reserved for future use. Ignore unless you
+  have a specific reason.
 
-### 6.3 Sorting
+### 6.3 Unknown fields
+
+The server may include additional top-level fields (e.g. `updated_at`,
+`calibration`, `params`) and additional per-event fields. **Clients MUST
+silently ignore any field they do not recognise.** This allows the analyzer
+and player to evolve without breaking existing clients.
+
+### 6.4 Sorting
 
 The reference server sorts events by `time` before sending. The client
 SHOULD still sort defensively on receipt, since the order is not part of
