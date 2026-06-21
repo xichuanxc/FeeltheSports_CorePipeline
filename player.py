@@ -105,34 +105,26 @@ def has_vision_data(events):
 def should_show_event(ev, use_vision):
     """Decides whether an event is shown in combined mode.
 
-    Acoustic (onset detection + VAD) is the primary signal.
-    Vision is a suppressor only — it can veto events but never rescue them.
+    VAD speech filtering happens at analysis time (analyzer.py), so by the time
+    events reach the player they have already been cleaned of speech segments.
 
-    1. VAD says speech → hide. (Vision no longer overrides VAD.)
-    2. Vision ran, found no ball, and no camera cut → hide.
-       Removes crowd shots and clap false-positives.
+    1. Burst veto — dense clusters are likely clapping/applause.
+    2. Vision veto — only suppress when vision had a clear view and found no ball.
     3. Everything else → show.
-       Covers side-angle rallies where YOLO can't see the ball: audio
-       was right, vision stays silent, event is shown.
     """
     if not use_vision:
         return True
 
-    # Stage 1: VAD veto — trust acoustic speech detection
-    if ev.get("vad_speech", False):
-        return False
-
-    # Stage 2: Burst veto — dense clusters are likely clapping/applause
+    # Stage 1: Burst veto — dense clusters are likely clapping/applause
     if ev.get("clap_burst", False):
         return False
 
-    # Stage 3: Vision veto — only suppress when vision had a clear view
+    # Stage 2: Vision veto — only suppress when vision had a clear view
     # (no camera cut) and still found no ball
     if "vision_confirmed" in ev:
         if not ev.get("vision_confirmed", False) and not ev.get("camera_cut", False):
             return False
 
-    # Rule 4: no vision data
     return True
 
 
@@ -608,10 +600,6 @@ class DetailPanelItem(QGraphicsItem):
             lines.append((f"  centroid:  {ev['centroid']:.0f} Hz", None))
         if "db" in ev:
             lines.append((f"  raw db:    {ev['db']:.1f}", None))
-        if "vad_speech" in ev:
-            vad_val = ev["vad_speech"]
-            vad_color = (255, 140, 60) if vad_val else (100, 220, 100)
-            lines.append((f"  vad_speech:  {vad_val}", vad_color))
         if "camera_cut" in ev:
             cut_val = ev["camera_cut"]
             cut_color = (255, 220, 80) if cut_val else None
@@ -884,11 +872,6 @@ class PlayerWindow(QMainWindow):
             print(f"  audio/vision disagreements: {disagree}")
         else:
             print("  no vision data in JSON — audio-only mode")
-        vad_flagged = sum(1 for e in self.events if e.get("vad_speech"))
-        if vad_flagged:
-            overridden = sum(1 for e in self.events
-                             if e.get("vad_speech") and e.get("vision_type") is not None)
-            print(f"  VAD flagged: {vad_flagged}  vision overrides: {overridden}")
 
     def _count_unconfirmed(self):
         return sum(1 for e in self.events if not is_vision_confirmed(e))

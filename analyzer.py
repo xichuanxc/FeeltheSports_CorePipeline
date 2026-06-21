@@ -669,15 +669,21 @@ def main():
         timeline["params"]["burst_window"] = args.burst_window
         timeline["params"]["burst_count"]  = args.burst_count
 
-    # --- VAD event annotation (reuses segments from pre-pass) ---
+    # --- VAD pre-processing: remove speech events before writing JSON ---
     if args.vad:
-        print("VAD (event annotation):")
+        print("VAD (speech removal):")
         vad_filter(
             viz[0], viz[1], timeline["events"],
             margin_s=args.vad_margin,
             vad_threshold=args.vad_threshold,
             _segments=vad_segments,
         )
+        n_before = len(timeline["events"])
+        timeline["events"] = [e for e in timeline["events"] if not e.get("vad_speech")]
+        for e in timeline["events"]:
+            e.pop("vad_speech", None)
+        n_removed = n_before - len(timeline["events"])
+        print(f"  removed {n_removed} speech events ({len(timeline['events'])} remaining)")
         timeline["params"]["vad_threshold"] = args.vad_threshold
         timeline["params"]["vad_margin"]    = args.vad_margin
 
