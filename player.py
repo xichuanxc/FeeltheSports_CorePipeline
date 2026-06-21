@@ -473,6 +473,7 @@ class HudWidget(QWidget):
         self.pos           = 0.0
         self.speed         = 1.0
         self.total         = 0
+        self.hidden        = 0
         self.min_haptic    = MIN_HAPTIC_INTENSITY
         self.suppressed    = 0
         self.paused        = False
@@ -515,10 +516,11 @@ class HudWidget(QWidget):
         else:
             pause_str = ""
 
-        annot_str = (f"  [+{self.annot_added} -{self.annot_removed}]"
-                     if self.annot_added or self.annot_removed else "")
+        annot_str  = (f"  [+{self.annot_added} -{self.annot_removed}]"
+                      if self.annot_added or self.annot_removed else "")
+        hidden_str = f"  hidden: {self.hidden}" if self.hidden else ""
         left = (f"t = {self.pos:7.3f}s   speed: {speed_str}   "
-                f"events: {self.total}{annot_str}   "
+                f"events: {self.total}{annot_str}{hidden_str}   "
                 f"haptic thr: {self.min_haptic:.2f}  ([ / ])   "
                 f"suppressed: {self.suppressed}   "
                 + mode_str
@@ -787,7 +789,10 @@ class PlayerWindow(QMainWindow):
 
         self.hud = HudWidget()
         _init_added, _init_removed = self._annotation_stats()
+        _init_hidden = sum(1 for e in self.events
+                           if not should_show_event(e, self.use_vision))
         self.hud.total         = len(self.events)
+        self.hud.hidden        = _init_hidden
         self.hud.vision_avail  = self._vision_avail
         self.hud.use_vision    = self.use_vision
         self.hud.unconfirmed   = self._count_unconfirmed()
@@ -889,14 +894,17 @@ class PlayerWindow(QMainWindow):
         return sum(1 for e in self.events if not is_vision_confirmed(e))
 
     def _sync_legend(self):
-        """Recompute per-type counts using display_type and push to flash item."""
+        """Recompute per-type counts and hidden count; push to flash item and HUD."""
         counts = {}
+        hidden = 0
         for e in self.events:
             if not should_show_event(e, self.use_vision):
+                hidden += 1
                 continue
             t = display_type(e, self.use_vision, self.show_types)
             counts[t] = counts.get(t, 0) + 1
         self.video_view.flash_item.legend_data = counts
+        self.hud.set_state(hidden=hidden)
 
     def _set_vision_mode(self, use_vision):
         self.use_vision = use_vision
