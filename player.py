@@ -20,6 +20,7 @@ import json
 import bisect
 import time
 import copy
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -465,6 +466,8 @@ class HudWidget(QWidget):
         self.vision_avail  = False    # True if JSON has vision fields
         self.unconfirmed   = 0
         self.dirty         = False
+        self.annot_added   = 0
+        self.annot_removed = 0
 
     def set_state(self, **kwargs):
         for k, v in kwargs.items():
@@ -496,8 +499,10 @@ class HudWidget(QWidget):
         else:
             pause_str = ""
 
+        annot_str = (f"  [+{self.annot_added} -{self.annot_removed}]"
+                     if self.annot_added or self.annot_removed else "")
         left = (f"t = {self.pos:7.3f}s   speed: {speed_str}   "
-                f"events: {self.total}   "
+                f"events: {self.total}{annot_str}   "
                 f"haptic thr: {self.min_haptic:.2f}  ([ / ])   "
                 f"suppressed: {self.suppressed}   "
                 + mode_str
@@ -726,12 +731,19 @@ class PlayerWindow(QMainWindow):
             "Haptic player — SPACE pause | ←→ seek 5s | ,/. step | ↑↓ speed | [ ] haptic | V vision | T types | click strip: add/remove event | S save | Q quit"
         )
 
-        self._json_path    = json_path
-        self.data, self.events, self.times = load_timeline(json_path)
+        p_orig = Path(json_path)
+        self._original_path  = str(p_orig)
+        self._annotated_path = str(p_orig.parent / (p_orig.stem + '.annotated.json'))
+        _load_path = (self._annotated_path
+                      if Path(self._annotated_path).exists()
+                      else self._original_path)
+        self.data, self.events, self.times = load_timeline(_load_path)
+        _, self._original_events, _ = load_timeline(self._original_path)
         self._vision_avail = has_vision_data(self.events)
         self.use_vision    = True       # combined mode on by default
         self.show_types    = False      # T to toggle strike/bounce colours
         self._dirty        = False
+        self._load_path    = _load_path
 
         self._log_startup(json_path)
 
@@ -755,10 +767,13 @@ class PlayerWindow(QMainWindow):
         self.video_view.addDetailItem(self.detail_panel)
 
         self.hud = HudWidget()
-        self.hud.total        = len(self.events)
-        self.hud.vision_avail = self._vision_avail
-        self.hud.use_vision   = self.use_vision
-        self.hud.unconfirmed  = self._count_unconfirmed()
+        _init_added, _init_removed = self._annotation_stats()
+        self.hud.total         = len(self.events)
+        self.hud.vision_avail  = self._vision_avail
+        self.hud.use_vision    = self.use_vision
+        self.hud.unconfirmed   = self._count_unconfirmed()
+        self.hud.annot_added   = _init_added
+        self.hud.annot_removed = _init_removed
         layout.addWidget(self.hud)
 
         json_threshold = self.data.get("params", {}).get("threshold", A_THRESHOLD)
@@ -819,11 +834,18 @@ class PlayerWindow(QMainWindow):
 
     # -------------------------------------------------------------------------
     def _log_startup(self, json_path):
+        is_annotated = self._load_path == self._annotated_path
+        src = "annotated" if is_annotated else "original"
+        print(f"Loaded {len(self.events)} events from {self._load_path}  [{src}]")
+        if not is_annotated:
+            print(f"  (no annotated file yet — S will create {self._annotated_path})")
+        else:
+            added, removed = self._annotation_stats()
+            print(f"  annotation vs. original: +{added} manual, -{removed} removed")
         type_counts = {}
         for e in self.events:
             t = e.get("type", "strike")
             type_counts[t] = type_counts.get(t, 0) + 1
-        print(f"Loaded {len(self.events)} events from {json_path}")
         print(f"  audio types: {type_counts}")
         if self._vision_avail:
             vc_counts = {}
@@ -877,6 +899,13 @@ class PlayerWindow(QMainWindow):
         print(f"[types] {mode}")
 
     # -------------------------------------------------------------------------
+    def _annotation_stats(self):
+        added     = sum(1 for e in self.events if e.get("manual"))
+        cur_times = {round(e["time"], 3) for e in self.events}
+        removed   = sum(1 for e in self._original_events
+                        if round(e["time"], 3) not in cur_times)
+        return added, removed
+
     def _add_event(self, t):
         ev = {"time": round(t, 3), "intensity": 0.7, "type": "hit", "manual": True}
         self.events.append(ev)
@@ -886,7 +915,9 @@ class PlayerWindow(QMainWindow):
         self.strip.times  = self.times
         self._dirty = True
         self._sync_legend()
-        self.hud.set_state(total=len(self.events), dirty=True)
+        added, removed = self._annotation_stats()
+        self.hud.set_state(total=len(self.events), dirty=True,
+                           annot_added=added, annot_removed=removed)
         print(f"[annotate] added event at t={t:.3f}s")
 
     def _remove_event(self, i):
@@ -909,17 +940,22 @@ class PlayerWindow(QMainWindow):
         self.strip.times  = self.times
         self._dirty = True
         self._sync_legend()
-        self.hud.set_state(total=len(self.events), dirty=True)
+        added, removed = self._annotation_stats()
+        self.hud.set_state(total=len(self.events), dirty=True,
+                           annot_added=added, annot_removed=removed)
         print(f"[annotate] removed {label} event at t={t:.3f}s")
 
     def _save_json(self):
         out = dict(self.data)
         out["events"] = self.events
-        with open(self._json_path, "w") as f:
+        out["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        with open(self._annotated_path, "w") as f:
             json.dump(out, f, indent=2)
         self._dirty = False
-        self.hud.set_state(dirty=False)
-        print(f"[save] {len(self.events)} events -> {self._json_path}")
+        added, removed = self._annotation_stats()
+        self.hud.set_state(dirty=False, annot_added=added, annot_removed=removed)
+        print(f"[save] {len(self.events)} events "
+              f"(+{added} manual, -{removed} removed) -> {self._annotated_path}")
 
     # -------------------------------------------------------------------------
     def _on_media_error(self, err, msg):

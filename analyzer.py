@@ -23,6 +23,7 @@ Usage:
 import argparse
 import json
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -702,6 +703,7 @@ def main():
         timeline["params"]["vision_bounce_y"]        = args.vision_bounce_y
         timeline["params"]["vision_cut_threshold"]   = args.vision_cut_threshold
 
+    timeline["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     with open(out, "w") as f:
         json.dump(timeline, f, indent=2)
 
