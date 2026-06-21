@@ -78,12 +78,25 @@ def bandpass(y: np.ndarray, sr: int, low_hz: float, high_hz: float):
     return sosfiltfilt(sos, y).astype(np.float32)
 
 
-def detect_onsets(y, sr, hop_length, threshold, min_gap_s, low_hz, high_hz):
+def detect_onsets(y, sr, hop_length, threshold, min_gap_s, low_hz, high_hz,
+                  vad_segments=None):
     yb = bandpass(y, sr, low_hz, high_hz)
     env = librosa.onset.onset_strength(y=yb, sr=sr, hop_length=hop_length)
     env_times = librosa.frames_to_time(np.arange(len(env)), sr=sr, hop_length=hop_length)
 
-    env_norm = env / env.max() if env.max() > 0 else env
+    if vad_segments:
+        # Exclude speech regions so commentary/crowd don't inflate the reference.
+        mask = np.ones(len(env), dtype=bool)
+        for start, end in vad_segments:
+            lo = max(0, int(start * sr / hop_length))
+            hi = min(len(env), int(end * sr / hop_length) + 1)
+            mask[lo:hi] = False
+        ref_env = env[mask] if mask.any() else env
+        ref = float(ref_env.max()) if ref_env.max() > 0 else float(env.max())
+    else:
+        ref = float(env.max())
+
+    env_norm = np.clip(env / ref, 0.0, 1.0) if ref > 0 else env
 
     min_gap_frames = max(1, int(round(min_gap_s * sr / hop_length)))
     peaks = librosa.util.peak_pick(
@@ -166,7 +179,8 @@ def spectral_features_at(y, sr, t, window_s=0.04, hf_cutoff_hz=1500.0,
 def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
             low_hz=1000.0, high_hz=10000.0, hf_cutoff_hz=2500.0,
             pct_low=10.0, pct_high=90.0,
-            min_flatness=0.0, min_pre_flatness=0.0, max_decay_ratio=0.0):
+            min_flatness=0.0, min_pre_flatness=0.0, max_decay_ratio=0.0,
+            vad_segments=None):
     t0 = time.time()
     print("  Loading audio...", end=" ", flush=True)
     y, sr = load_audio(path, sr=sr)
@@ -176,7 +190,8 @@ def analyze(path, sr=22050, hop_length=256, threshold=0.30, min_gap_s=0.08,
     t0 = time.time()
     print("  Detecting onsets...", end=" ", flush=True)
     times, peaks, env_norm, env_times = detect_onsets(
-        y, sr, hop_length, threshold, min_gap_s, low_hz, high_hz
+        y, sr, hop_length, threshold, min_gap_s, low_hz, high_hz,
+        vad_segments=vad_segments,
     )
     print(f"{len(times)} candidates  ({time.time() - t0:.1f}s)")
 
@@ -287,31 +302,18 @@ def burst_filter(events, window_s=2.0, min_count=3):
 # VAD speech filter  (experimental — see experiment/silero-vad branch)
 # ---------------------------------------------------------------------------
 
-def vad_filter(y, sr, events, margin_s=0.15, vad_threshold=0.5):
-    """
-    Run Silero VAD on the audio and annotate each event with vad_speech=True/False.
-
-    Events inside a detected speech segment (plus margin_s) are flagged but
-    NOT removed — vision can override the flag in the player. If vision confirms
-    a ball was hit at a VAD-flagged moment, the event is shown; if vision finds
-    no ball, the VAD flag hides it. Without vision data, vad_speech=True events
-    are hidden in the player.
-
-    Requires: pip install silero-vad
-    """
+def _get_vad_segments(y, sr, vad_threshold=0.5):
+    """Run Silero VAD and return raw (start_s, end_s) speech segments (no margin)."""
     try:
         from silero_vad import load_silero_vad, get_speech_timestamps
     except ImportError:
-        raise ImportError(
-            "Silero VAD requires: pip install silero-vad"
-        )
+        raise ImportError("Silero VAD requires: pip install silero-vad")
     import torch
 
     t0 = time.time()
     print("  Loading Silero VAD model...", end=" ", flush=True)
     model = load_silero_vad()
 
-    # Silero requires 16 kHz mono audio
     VAD_SR = 16000
     y_16k = librosa.resample(y, orig_sr=sr, target_sr=VAD_SR)
     wav   = torch.FloatTensor(y_16k)
@@ -320,15 +322,28 @@ def vad_filter(y, sr, events, margin_s=0.15, vad_threshold=0.5):
         wav, model,
         sampling_rate=VAD_SR,
         threshold=vad_threshold,
-        min_speech_duration_ms=1200,
+        min_speech_duration_ms=350,
         min_silence_duration_ms=100,
         return_seconds=True,
     )
     segments = [(s["start"], s["end"]) for s in stamps]
     print(f"{len(segments)} speech segments  ({time.time() - t0:.1f}s)")
+    return segments
+
+
+def vad_filter(y, sr, events, margin_s=0.15, vad_threshold=0.5, _segments=None):
+    """
+    Annotate each event with vad_speech=True/False.
+
+    If _segments is provided (pre-computed by _get_vad_segments), Silero is
+    not run again. Otherwise it runs here. Pass _segments from main() to avoid
+    running the model twice when VAD-masked normalization is also enabled.
+    """
+    if _segments is None:
+        _segments = _get_vad_segments(y, sr, vad_threshold=vad_threshold)
 
     def _in_speech(t):
-        for start, end in segments:
+        for start, end in _segments:
             if start - margin_s <= t <= end + margin_s:
                 return True
         return False
@@ -339,8 +354,7 @@ def vad_filter(y, sr, events, margin_s=0.15, vad_threshold=0.5):
         e["vad_speech"] = in_speech
         if in_speech:
             n_flagged += 1
-    print(f"  flagged {n_flagged}/{len(events)} events as speech  "
-          f"(vision can override in player)")
+    print(f"  flagged {n_flagged}/{len(events)} events as speech")
     return events
 
 
@@ -619,6 +633,17 @@ def main():
 
     print(f"\n=== {Path(args.input).name} ===")
 
+    # --- VAD pre-pass: get speech segments before onset detection ---
+    # Running VAD first lets us mask speech regions during envelope normalisation
+    # so commentary/crowd noise doesn't inflate the reference level.
+    vad_segments = None
+    if args.vad:
+        print("VAD (pre-analysis):")
+        y_tmp, sr_tmp = load_audio(args.input)
+        vad_segments = _get_vad_segments(y_tmp, sr_tmp,
+                                          vad_threshold=args.vad_threshold)
+        del y_tmp
+
     # --- Audio analysis ---
     print("Audio:")
     timeline, viz, (lo_db, hi_db) = analyze(
@@ -629,6 +654,7 @@ def main():
         min_flatness=args.min_flatness,
         min_pre_flatness=args.min_pre_flatness,
         max_decay_ratio=args.max_decay_ratio,
+        vad_segments=vad_segments,
     )
 
     # --- Burst / clap filter (optional) ---
@@ -642,13 +668,14 @@ def main():
         timeline["params"]["burst_window"] = args.burst_window
         timeline["params"]["burst_count"]  = args.burst_count
 
-    # --- VAD speech filter (optional, experimental) ---
+    # --- VAD event annotation (reuses segments from pre-pass) ---
     if args.vad:
-        print("VAD:")
+        print("VAD (event annotation):")
         vad_filter(
             viz[0], viz[1], timeline["events"],
             margin_s=args.vad_margin,
             vad_threshold=args.vad_threshold,
+            _segments=vad_segments,
         )
         timeline["params"]["vad_threshold"] = args.vad_threshold
         timeline["params"]["vad_margin"]    = args.vad_margin
