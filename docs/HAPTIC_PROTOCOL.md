@@ -427,12 +427,37 @@ authoritative schema:
 ### 6.2 Field semantics — what the client MAY use
 
 - **`vision_type`** is the vision-refined event classification: `"strike"`,
-  `"bounce"`, or `null` (undetermined / no vision data). When present and
-  non-null, prefer this over `type` for choosing the haptic pattern
-  (e.g. a racket strike vs. a ball bounce feel different). When null or
-  absent, fall back to a generic hit pattern.
+  `"bounce"`, or `null` (undetermined / no vision data). **This is the field
+  to switch on for haptic pattern selection** — not `type`. When present and
+  non-null, use it to choose a pattern (e.g. a sharp click for a racket
+  strike, a thud for a bounce). When null or absent, fall back to a generic
+  hit pattern.
 
-### 6.3 Unknown fields
+  Recommended Kotlin pattern:
+  ```kotlin
+  val pattern = when (event.visionType) {
+      "strike" -> HapticPattern.STRIKE
+      "bounce" -> HapticPattern.BOUNCE
+      else     -> HapticPattern.HIT   // null, absent, or unknown
+  }
+  ```
+
+### 6.3 Android implementation notes
+
+> **If your Android client was written against an earlier version of this
+> document**, check the following:
+>
+> - **`type` vs `vision_type`**: older versions of this doc described `type`
+>   as `"strike"` or `"bounce"`. In practice `type` has always been `"hit"`.
+>   If your code switches on `type` for haptic pattern selection, change it
+>   to switch on `vision_type` instead.
+> - **Removed fields**: `db`, `hf_ratio`, `centroid`, `calibration`,
+>   `params`, `sample_rate_analyzed` are no longer sent. Grep your client
+>   source for these strings; any reference to them can be removed.
+> - **Unknown fields**: if your JSON parser is strict (rejects unknown
+>   fields), make it lenient — the protocol can add fields in future.
+
+### 6.4 Unknown fields
 
 Future protocol versions may add new fields. **Clients MUST silently ignore
 any field they do not recognise.** This allows the protocol to evolve
@@ -489,7 +514,7 @@ T+0.251  CLIENT  RX sync        -> re-anchors media-clock
 T+0.375  SERVER  TX UDP -> {"msg":"sync","media_t":12.640,...}
 T+0.500  SERVER  TX UDP -> {"msg":"sync","media_t":12.765,...}
                                                    ...(continuing at 8 Hz)
-T+1.230  CLIENT  scheduler: event #43 (time=13.480, strike, intensity=0.82)
+T+1.230  CLIENT  scheduler: event #43 (time=13.480, type=hit, vision_type=strike, intensity=0.82)
                  deadline reached -> vibrator.vibrate(...)
 
 # --- User pauses video on laptop ---
