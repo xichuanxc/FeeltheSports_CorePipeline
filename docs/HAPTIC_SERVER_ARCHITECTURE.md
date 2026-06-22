@@ -19,12 +19,12 @@ extending the server.
 The server side ships as two files:
 
 ```
-haptic_server.py        the server module (importable + runnable)
-haptic_client_demo.py   a fake Android client for testing (NSD discovery,
+server.py               the server module (importable + runnable)
+client_demo.py          a fake Android client for testing (NSD discovery,
                         TCP/UDP protocol, manual trigger key)
 ```
 
-`haptic_server.py` is **decoupled** from the PySide6 player on purpose. The
+`server.py` is **decoupled** from the PySide6 player on purpose. The
 player imports `HapticServer` and calls a handful of `publish_*` methods.
 Nothing in the server depends on Qt, on `librosa`, or on the player's GUI
 loop. This separation matters for three reasons:
@@ -211,7 +211,7 @@ A few honest notes about this integration:
 ## 6. Standalone mode (no player)
 
 ```
-python haptic_server.py path/to/match.haptic.json [--simulate]
+python server.py path/to/match.haptic.json [--simulate]
                                                   [--rate-hz N]
                                                   [--tcp-port N]
                                                   [--udp-port N]
@@ -230,7 +230,7 @@ Useful for testing connect/disconnect logic in isolation.
 
 ---
 
-## 7. The demo client (`haptic_client_demo.py`)
+## 7. The demo client (`client_demo.py`)
 
 A Python fake-Android client. It exists to verify the server's protocol
 without needing a real Android device, and as a reference implementation
@@ -270,14 +270,14 @@ Manual fires are clearly marked `[MANUAL]` in the output, scheduled ones
 
 In one terminal:
 ```
-python haptic_server.py match.haptic.json --simulate
+python server.py match.haptic.json --simulate
 ```
 
 In another:
 ```
-python haptic_client_demo.py
+python client_demo.py
 # or, skipping mDNS discovery:
-python haptic_client_demo.py --server 127.0.0.1:47821
+python client_demo.py --server 127.0.0.1:47821
 ```
 
 A successful run looks like:
@@ -371,8 +371,8 @@ authority where it belongs.
 ## 10. Quick reference
 
 **Files:**
-- `haptic_server.py` — server module (~330 lines, no Qt)
-- `haptic_client_demo.py` — test client (~290 lines)
+- `server.py` — server module (~330 lines, no Qt)
+- `client_demo.py` — test client (~290 lines)
 
 **Integration points in the player (5 calls):**
 - `HapticServer(timeline_dict=...).start()` on launch
@@ -384,10 +384,10 @@ authority where it belongs.
 **Standalone test loop:**
 ```
 # Terminal 1:
-python haptic_server.py match.haptic.json --simulate
+python server.py match.haptic.json --simulate
 
 # Terminal 2:
-python haptic_client_demo.py
+python client_demo.py
 # press 'f' to fire a manual event, 'q' to quit
 ```
 

@@ -12,7 +12,7 @@ Companion documents:
 
 - `HAPTIC_ANDROID_ARCHITECTURE.md` — how to structure the Android app (the *why*)
 - `HAPTIC_SERVER_ARCHITECTURE.md` — how the laptop server integrates with the player
-- `haptic_server.py`, `haptic_client_demo.py` — the reference implementation
+- `server.py`, `client_demo.py` — the reference implementation
 
 If you're an LLM implementing the Android client, this is the document to
 return to whenever you write a line of networking code. Everything else
@@ -622,6 +622,6 @@ Breaking changes will bump the protocol version. Non-breaking additions
 ---
 
 **End of protocol specification.** When in doubt, the reference implementation
-(`haptic_server.py`, `haptic_client_demo.py`) is the ground truth. If this
+(`server.py`, `client_demo.py`) is the ground truth. If this
 document disagrees with their behavior, the code is right and the doc is
 wrong — please report it so the doc can be fixed.

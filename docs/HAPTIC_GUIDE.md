@@ -7,9 +7,9 @@ the video to let a viewer *feel* the match.
 
 This guide covers the two programs you run today:
 
-1. **`haptic_analyzer_v2.py`** — the offline analyzer. Reads a video, detects
+1. **`analyzer.py`** — the offline analyzer. Reads a video, detects
    and classifies impacts, writes a timeline JSON.
-2. **`haptic_player.py`** — the validation player. Plays the video and shows
+2. **`player.py`** — the validation player. Plays the video and shows
    each detected event so you can verify timing, classification, and intensity
    before anything goes to a phone.
 
@@ -51,7 +51,7 @@ the player (see below).
        │
        ▼
 ┌──────────────────────┐     writes      ┌────────────────────────┐
-│  haptic_analyzer_v2  │ ──────────────► │  <video>.haptic.json   │
+│     analyzer.py      │ ──────────────► │  <video>.haptic.json   │
 │  (offline analysis)  │                 │  (the timeline)        │
 └──────────────────────┘                 └────────────────────────┘
                                                      │ reads
@@ -106,16 +106,16 @@ Per-event fields:
 
 ---
 
-## 4. The analyzer: `haptic_analyzer_v2.py`
+## 4. The analyzer: `analyzer.py`
 
 ### Basic use
 
 ```bash
 # Analyze, keeping both strikes and bounces, and save a diagnostic plot
-python haptic_analyzer_v2.py "match.mp4" --plot
+python analyzer.py "match.mp4" --plot
 
 # Focus on strikes only (bounces still classified internally, just not written)
-python haptic_analyzer_v2.py "match.mp4" --keep strike --plot
+python analyzer.py "match.mp4" --keep strike --plot
 ```
 
 This writes `match.haptic.json` next to the video, and (with `--plot`)
@@ -192,16 +192,16 @@ The PNG has three panels:
 
 ---
 
-## 5. The player: `haptic_player.py`
+## 5. The player: `player.py`
 
 ### Basic use
 
-1. Open `haptic_player.py` and set `VIDEO_PATH` near the top to your video's
+1. Open `player.py` and set `VIDEO_PATH` near the top to your video's
    filename. (`JSON_PATH` auto-derives to the matching `.haptic.json`.)
 2. Run:
 
 ```bash
-python haptic_player.py
+python player.py
 ```
 
 The video plays with visual markers for each event, plus a waveform strip
@@ -257,7 +257,7 @@ near the top of the file.
 
 The player's waveform strip recomputes the onset envelope itself, so its
 detection settings must match the analyzer's or the threshold line will mislead
-you. These constants near the top of `haptic_player.py` mirror the analyzer:
+you. These constants near the top of `player.py` mirror the analyzer:
 
 ```
 A_SR = 22050        A_HOP = 256
@@ -310,9 +310,9 @@ An intensity **calibration** issue — Group C.
 ### Recommended overall loop
 
 ```
-1. python haptic_analyzer_v2.py "match.mp4" --keep strike --plot
+1. python analyzer.py "match.mp4" --keep strike --plot
 2. Look at the PNG: are strikes detected? Do clusters separate cleanly?
-3. python haptic_player.py     (set VIDEO_PATH first)
+3. python player.py     (set VIDEO_PATH first)
 4. Slow down (↓) on a fast rally; watch/listen for missed or mislabeled strikes.
 5. Adjust the relevant parameter (see problems above) and re-run from step 1.
 6. Once timing + classification look right, tune the haptic threshold with [ ].
@@ -345,7 +345,7 @@ An intensity **calibration** issue — Group C.
 
 **Analyze (strikes only, with plot):**
 ```bash
-python haptic_analyzer_v2.py "match.mp4" --keep strike --plot
+python analyzer.py "match.mp4" --keep strike --plot
 ```
 
 **Common analyzer adjustments:**
@@ -358,7 +358,7 @@ python haptic_analyzer_v2.py "match.mp4" --keep strike --plot
 
 **Play (after setting VIDEO_PATH in the file):**
 ```bash
-python haptic_player.py
+python player.py
 ```
 
 **Player keys:** `SPACE` pause · `,`/`.` step events · `↑`/`↓` speed ·

@@ -18,9 +18,9 @@ match audio offline to find every racket strike and ball bounce, then during
 playback streams timing information to a phone, which vibrates in sync.
 
 Two halves, two repositories:
-- **`feel-the-sports-laptop`** (Python): offline analyser + Qt video player +
+- **`FeeltheSports_CorePipeline`** (Python): offline analyser + Qt video player +
   network server
-- **`feel-the-sports-android`** (Kotlin): the phone client that vibrates
+- **`FeeltheSports_AndroidHapticApp`** (Kotlin): the phone client that vibrates
 
 The shared wire protocol is the contract between them.
 
@@ -33,15 +33,15 @@ The shared wire protocol is the contract between them.
 These exist as working, tested single-file prototypes. They need migrating
 into the repo structure but the logic is sound:
 
-- **Analyser** (`haptic_analyzer_v2.py`): detects strikes/bounces from audio,
+- **Analyser** (`analyzer.py`): detects strikes/bounces from audio,
   classifies them, calibrates intensity per-video, writes timeline JSON.
   Verified on synthetic test audio.
-- **Player** (`haptic_player_qt.py`): PySide6 video player with native-res
+- **Player** (`player.py`): PySide6 video player with native-res
   video, event flashes over the video, scrolling waveform/envelope strip, and
   a paused inspection view (2-second waveform + spectrogram). Runs on macOS.
-- **Server** (`haptic_server.py`): network module, NSD + TCP + UDP. Verified
+- **Server** (`server.py`): network module, NSD + TCP + UDP. Verified
   end-to-end with the demo client (sub-10ms event timing on localhost).
-- **Demo client** (`haptic_client_demo.py`): fake Android client for testing
+- **Demo client** (`client_demo.py`): fake Android client for testing
   the server without a phone. Verified.
 - **Inspect tool** (`inspect_event.py`): standalone spectrogram inspector.
 
@@ -88,7 +88,7 @@ purpose. The protocol doc is the only one that's relevant across many tasks
 Two repos. Work inside ONE at a time — don't open a parent directory
 containing both; it dilutes focus.
 
-### `feel-the-sports-laptop` (Python)
+### `FeeltheSports_CorePipeline` (Python)
 ```
 pyproject.toml
 README.md
@@ -105,12 +105,12 @@ src/haptic_sports/
   player/      # Qt player — imports server + common
 tools/
   inspect_event.py
-  haptic_client_demo.py
+  client_demo.py
 data/          # gitignored: videos, generated .haptic.json files
 tests/
 ```
 
-### `feel-the-sports-android` (Kotlin)
+### `FeeltheSports_AndroidHapticApp` (Kotlin)
 ```
 README.md
 docs/
@@ -166,7 +166,7 @@ rather than silently changing it.
 - **When you change the protocol, update BOTH copies of `HAPTIC_PROTOCOL.md`**
   (laptop canonical + android copy) in the same change. Update the sync-date
   header in the android copy.
-- **Keep `haptic_client_demo.py` working.** It's the fastest way to test any
+- **Keep `client_demo.py` working.** It's the fastest way to test any
   networking change — far faster than building/installing the Android app.
 - **Tune the analyser on REAL match audio, never on synthetic fixtures.** The
   synthetic test data is for unit-test correctness, not tuning; it gives
@@ -193,7 +193,7 @@ python -m haptic_sports.analyser path/to/clip.mp4 --plot
 # terminal 1:
 python -m haptic_sports.server path/to/clip.haptic.json --simulate
 # terminal 2:
-python tools/haptic_client_demo.py
+python tools/client_demo.py
 # expect: discovery, clock sync, timeline received, scheduled HAPTIC lines
 # with single-digit-ms timing errors. Press 'f' for a manual event, 'q' to quit.
 ```
@@ -255,8 +255,8 @@ relevant design doc has the full detail.
 ## 10. If you're unsure
 
 - **The reference code is ground truth.** If a doc disagrees with the working
-  `haptic_server.py` / `haptic_client_demo.py` / `haptic_analyzer_v2.py` /
-  `haptic_player_qt.py`, the code is right; flag the doc for fixing.
+  `server.py` / `client_demo.py` / `analyzer.py` /
+  `player.py`, the code is right; flag the doc for fixing.
 - **Ask the user which phase they're on** if it's not obvious — it changes
   what "next" means.
 - **Don't invent scope.** The "out of scope" and "things not to do" sections
