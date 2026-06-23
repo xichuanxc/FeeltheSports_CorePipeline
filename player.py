@@ -28,8 +28,10 @@ import numpy as np
 from PySide6.QtCore import Qt, QUrl, QTimer, QPointF, QRectF, QSizeF
 from PySide6.QtGui import QPainter, QColor, QFont, QPen, QBrush, QPolygonF, QKeyEvent
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QSizePolicy,
-    QGraphicsView, QGraphicsScene, QGraphicsItem, QMessageBox
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy,
+    QGraphicsView, QGraphicsScene, QGraphicsItem, QMessageBox,
+    QDialog, QDialogButtonBox, QListWidget, QListWidgetItem, QCheckBox,
+    QLabel, QPushButton,
 )
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PySide6.QtMultimediaWidgets import QGraphicsVideoItem
@@ -200,6 +202,110 @@ def nearest_index(times, pos):
     if i < len(times): candidates.append(i)
     if i > 0:          candidates.append(i - 1)
     return min(candidates, key=lambda j: abs(times[j] - pos))
+
+
+# ============================ FILE PICKER DIALOG ==============================
+
+class FilePickerDialog(QDialog):
+    """Shown at startup when no video path is given on the command line."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Open Match Video")
+        self.setMinimumSize(660, 440)
+
+        self.video_path = None
+        self.json_path  = None
+
+        default_dir = Path(__file__).parent / "data"
+        self._scan_dir = default_dir if default_dir.is_dir() else Path.cwd()
+
+        layout = QVBoxLayout(self)
+
+        dir_row = QHBoxLayout()
+        self._dir_label = QLabel(str(self._scan_dir))
+        browse_btn = QPushButton("Browse…")
+        browse_btn.setFixedWidth(80)
+        browse_btn.clicked.connect(self._browse_dir)
+        dir_row.addWidget(QLabel("Folder:"))
+        dir_row.addWidget(self._dir_label, 1)
+        dir_row.addWidget(browse_btn)
+        layout.addLayout(dir_row)
+
+        self._require_annotated = QCheckBox("Show only videos with .haptic.annotated.json")
+        self._require_annotated.setChecked(True)
+        self._require_annotated.toggled.connect(self._refresh)
+        layout.addWidget(self._require_annotated)
+
+        self._list = QListWidget()
+        self._list.currentItemChanged.connect(self._on_selection)
+        self._list.itemDoubleClicked.connect(self._try_accept)
+        layout.addWidget(self._list)
+
+        self._buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self._buttons.button(QDialogButtonBox.Ok).setEnabled(False)
+        self._buttons.accepted.connect(self._try_accept)
+        self._buttons.rejected.connect(self.reject)
+        layout.addWidget(self._buttons)
+
+        self._refresh()
+
+    def _browse_dir(self):
+        from PySide6.QtWidgets import QFileDialog as _QFD
+        d = _QFD.getExistingDirectory(self, "Select folder", str(self._scan_dir))
+        if d:
+            self._scan_dir = Path(d)
+            self._dir_label.setText(d)
+            self._refresh()
+
+    @staticmethod
+    def _json_for(mp4: Path):
+        """Return the best available json path for mp4, or None if none exist."""
+        annotated = mp4.parent / (mp4.stem + ".haptic.annotated.json")
+        haptic    = mp4.parent / (mp4.stem + ".haptic.json")
+        if annotated.exists(): return annotated
+        if haptic.exists():    return haptic
+        return None
+
+    def _refresh(self):
+        self._list.clear()
+        require_annotated = self._require_annotated.isChecked()
+        try:
+            mp4s = sorted(self._scan_dir.glob("*.mp4"))
+        except Exception:
+            return
+        for mp4 in mp4s:
+            annotated = mp4.parent / (mp4.stem + ".haptic.annotated.json")
+            haptic    = mp4.parent / (mp4.stem + ".haptic.json")
+            has_annotated = annotated.exists()
+            has_haptic    = haptic.exists()
+            if not has_annotated and not has_haptic:
+                continue  # always hide mp4s with no json at all
+            if require_annotated and not has_annotated:
+                continue  # strict mode: must have .haptic.annotated.json
+            item = QListWidgetItem(mp4.name)
+            item.setData(Qt.UserRole, str(mp4))
+            if not has_annotated:
+                item.setForeground(QColor(140, 140, 140))  # dimmed: not yet annotated
+            self._list.addItem(item)
+
+    def _on_selection(self, current, _previous):
+        can_open = current is not None and self._json_for(
+            Path(current.data(Qt.UserRole))
+        ) is not None
+        self._buttons.button(QDialogButtonBox.Ok).setEnabled(can_open)
+
+    def _try_accept(self):
+        item = self._list.currentItem()
+        if item is None:
+            return
+        mp4  = Path(item.data(Qt.UserRole))
+        json = self._json_for(mp4)
+        if json is None:
+            return
+        self.video_path = str(mp4)
+        self.json_path  = str(json)
+        self.accept()
 
 
 # ============================ FLASH ITEM ======================================
@@ -737,9 +843,12 @@ class PlayerWindow(QMainWindow):
             "Haptic player — SPACE pause | ←→ seek 5s | ,/. step | ↑↓ speed | [ ] haptic | V vision | T types | click strip: add/remove event | S save | Q quit"
         )
 
-        p_orig = Path(json_path)
-        self._original_path  = str(p_orig)
-        self._annotated_path = str(p_orig.parent / (p_orig.stem + '.annotated.json'))
+        p_orig    = Path(json_path)
+        base_stem = p_orig.stem
+        if base_stem.endswith('.annotated'):
+            base_stem = base_stem[:-len('.annotated')]
+        self._original_path  = str(p_orig.parent / (base_stem + '.json'))
+        self._annotated_path = str(p_orig.parent / (base_stem + '.annotated.json'))
         _load_path = (self._annotated_path
                       if Path(self._annotated_path).exists()
                       else self._original_path)
@@ -1162,21 +1271,35 @@ def main():
     ap = argparse.ArgumentParser(
         description="Haptic timeline validation player"
     )
-    ap.add_argument("video", help="path to the match video (e.g. data/match.mp4)")
+    ap.add_argument("video", nargs="?", default=None,
+                    help="path to the match video (e.g. data/match.mp4); "
+                         "omit to open the file picker")
     ap.add_argument("--json", default=None,
                     help="path to the .haptic.json timeline "
                          "(default: same stem as video)")
     args = ap.parse_args()
 
-    video_path = args.video
-    json_path  = args.json or str(Path(video_path).with_suffix("")) + ".haptic.json"
-
-    if not os.path.exists(video_path):
-        sys.exit(f"Video not found: {video_path}")
-    if not os.path.exists(json_path):
-        sys.exit(f"Timeline JSON not found: {json_path}")
-
     app = QApplication(sys.argv)
+
+    if args.video is None:
+        dlg = FilePickerDialog()
+        if dlg.exec() != QDialog.Accepted:
+            sys.exit(0)
+        video_path = dlg.video_path
+        json_path  = dlg.json_path
+    else:
+        video_path = args.video
+        if args.json:
+            json_path = args.json
+        else:
+            mp4 = Path(video_path)
+            json_path = str(FilePickerDialog._json_for(mp4) or
+                            mp4.parent / (mp4.stem + ".haptic.json"))
+        if not os.path.exists(video_path):
+            sys.exit(f"Video not found: {video_path}")
+        if not os.path.exists(json_path):
+            sys.exit(f"Timeline JSON not found: {json_path}")
+
     win = PlayerWindow(video_path, json_path)
     win.resize(1200, 900)
     win.show()
