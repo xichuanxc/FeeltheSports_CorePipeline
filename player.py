@@ -320,6 +320,7 @@ class FlashItem(QGraphicsItem):
         self.use_vision  = True
         self.show_types  = False   # False = all hits same; True = strike/bounce colours
         self.legend_data = {}    # {type_str: count} — set by PlayerWindow
+        self.clean_mode  = False   # True = suppress all painting (plain video playback)
 
     def setBounds(self, rect: QRectF):
         self.prepareGeometryChange()
@@ -336,6 +337,8 @@ class FlashItem(QGraphicsItem):
         self.active = []
 
     def paint(self, p: QPainter, option, widget=None):
+        if self.clean_mode:
+            return
         p.setRenderHint(QPainter.Antialiasing)
         r  = self._bounds
         w, h = r.width(), r.height()
@@ -796,6 +799,7 @@ class VideoView(QGraphicsView):
         self._scene.addItem(self.flash_item)
 
         self.detail_item = None
+        self.stretch_to_fill = False   # True in clean/fullscreen mode
 
     def addDetailItem(self, detail_item):
         self.detail_item = detail_item
@@ -808,19 +812,22 @@ class VideoView(QGraphicsView):
         vw, vh = self.width(), self.height()
         if vw <= 0 or vh <= 0:
             return
-        native = self.video_item.nativeSize()
-        if native.isValid() and native.width() > 0 and native.height() > 0:
-            nw, nh = native.width(), native.height()
-            if nw <= vw and nh <= vh:
-                iw, ih = nw, nh
-            else:
-                ar = nw / nh
-                if vw / vh > ar:
-                    ih, iw = vh, vh * ar
-                else:
-                    iw, ih = vw, vw / ar
-        else:
+        if self.stretch_to_fill:
             iw, ih = vw, vh
+        else:
+            native = self.video_item.nativeSize()
+            if native.isValid() and native.width() > 0 and native.height() > 0:
+                nw, nh = native.width(), native.height()
+                if nw <= vw and nh <= vh:
+                    iw, ih = nw, nh
+                else:
+                    ar = nw / nh
+                    if vw / vh > ar:
+                        ih, iw = vh, vh * ar
+                    else:
+                        iw, ih = vw, vw / ar
+            else:
+                iw, ih = vw, vh
         x = (vw - iw) / 2
         y = (vh - ih) / 2
         self.video_item.setPos(x, y)
@@ -840,7 +847,7 @@ class PlayerWindow(QMainWindow):
     def __init__(self, video_path, json_path):
         super().__init__()
         self.setWindowTitle(
-            "Haptic player — SPACE pause | ←→ seek 5s | ,/. step | ↑↓ speed | [ ] haptic | V vision | T types | click strip: add/remove event | S save | Q quit"
+            "Haptic player — SPACE pause | ←→ seek 5s | ,/. step | ↑↓ speed | [ ] haptic | V vision | T types | H clean/fullscreen | click strip: add/remove event | S save | Q quit"
         )
 
         p_orig    = Path(json_path)
@@ -860,6 +867,7 @@ class PlayerWindow(QMainWindow):
         self._vision_avail = has_vision_data(self.events)
         self.use_vision    = True       # combined mode on by default
         self.show_types    = False      # T to toggle strike/bounce colours
+        self.clean_mode    = False      # H toggles plain fullscreen playback
         self._dirty        = False
         self._load_path    = _load_path
 
@@ -1017,6 +1025,19 @@ class PlayerWindow(QMainWindow):
         mode = "TYPED (strike/bounce)" if show_types else "SIMPLE (all=hit)"
         print(f"[types] {mode}")
 
+    def _set_clean_mode(self, clean):
+        self.clean_mode = clean
+        self.hud.setVisible(not clean)
+        self.strip.setVisible(not clean)
+        self.video_view.flash_item.clean_mode = clean
+        self.video_view.stretch_to_fill = clean
+        if clean:
+            self.showFullScreen()
+        else:
+            self.showNormal()
+        self.video_view.fitItems()
+        print(f"[clean] {'ON (fullscreen, stretched, no overlays)' if clean else 'OFF'}")
+
     # -------------------------------------------------------------------------
     def _annotation_stats(self):
         added     = sum(1 for e in self.events if e.get("manual"))
@@ -1131,6 +1152,8 @@ class PlayerWindow(QMainWindow):
                 ev = self.events[j]
                 if not should_show_event(ev, self.use_vision):
                     continue
+                if self.clean_mode:
+                    continue
                 if float(ev.get("intensity", 1.0)) >= self.min_haptic:
                     self.video_view.flash_item.fire(ev)
                 else:
@@ -1159,7 +1182,7 @@ class PlayerWindow(QMainWindow):
                                 f"[{etype} {ev.get('intensity',0):.2f}] "
                                 f"Δ {sign}{abs(dt)*1000:5.0f}ms")
 
-        if self.is_paused and nearest_event is not None:
+        if self.is_paused and nearest_event is not None and not self.clean_mode:
             self.detail_panel.setEvent(nearest_event)
             self.detail_panel.setVisible(True)
         else:
@@ -1198,6 +1221,8 @@ class PlayerWindow(QMainWindow):
         elif k == Qt.Key_T:
             if self._vision_avail:
                 self._set_show_types(not self.show_types)
+        elif k == Qt.Key_H:
+            self._set_clean_mode(not self.clean_mode)
         elif k == Qt.Key_Period:
             if self.is_paused:
                 pos = self.player.position() / 1000.0
