@@ -80,7 +80,16 @@ MATCH_TOL_S   = 0.030    # a saved label within this distance "owns" a candidate
 # spec section 3: crop window is [T - 30 ms, T + 120 ms] = 150 ms
 SLICE_PRE_S  = 0.030
 SLICE_POST_S = 0.120
-LOOP_GAP_S   = 0.100     # silence between loop repeats so onsets stay distinct
+# Silence padded either side of the audited slice. The leading gap lets the ear
+# reset before the onset — the attack is the main cue being judged — and the
+# trailing gap keeps repeats from running together.
+LOOP_PRE_GAP_S  = 0.20
+LOOP_POST_GAP_S = 0.30
+# Slice edges butt against digital silence, and normalisation lifts quiet
+# slices by up to ~47 dB, so an abrupt boundary clicks loudly enough to be
+# mistaken for the transient. A few ms of fade removes it; both fades sit
+# outside the event (the slice starts 30 ms before T and ends 120 ms after).
+LOOP_FADE_S  = 0.005
 
 STRIP_WINDOW_S = 8.0     # seconds visible in the waveform strip
 STRIP_H        = 150
@@ -90,10 +99,14 @@ PREVIEW_PRE_S  = 0.70    # P key: play from T-0.7s ...
 PREVIEW_POST_S = 0.30    # ... to T+0.3s
 
 # Auto-pause mode: during playback, stop just after each unreviewed candidate
-# so it can be labelled, then resume. The post-roll lets the transient and its
-# decay play out before the stop; the playhead is then parked back on the event
-# itself so the visible frame is the impact rather than the follow-through.
-AUTO_PAUSE_POST_S = 0.25
+# so it can be labelled, then resume. The post-roll lets the transient play out
+# before the stop; the playhead is then parked back on the event itself so the
+# visible frame is the impact rather than the follow-through.
+#
+# Set to the slice's trailing edge, so playback stops exactly where the model's
+# 150 ms window ends — you hear the audio the CNN will see and nothing beyond
+# it, and the rewind back to the event is correspondingly shorter.
+AUTO_PAUSE_POST_S = SLICE_POST_S
 
 # spec section 2.3 taxonomy. ambient_noise is listed there as automated
 # off-stroke sampling, which covers stationary background well but will almost
@@ -225,9 +238,20 @@ class LoopAuditor:
             return False
         peak = float(np.max(np.abs(seg)))
         if peak > 0:
-            seg = seg / peak                       # spec section 3 peak normalisation
-        pad = np.zeros(int(LOOP_GAP_S * sr), dtype=np.float32)
-        buf = np.concatenate([seg, pad])
+            # spec section 3 peak normalisation, kept just under full scale so
+            # the 16-bit WAV conversion below has no chance to clip.
+            seg = seg / peak * 0.99
+
+        nf = min(int(LOOP_FADE_S * sr), len(seg) // 2)
+        if nf > 0:
+            ramp = np.linspace(0.0, 1.0, nf, dtype=np.float32)
+            seg = seg.copy()
+            seg[:nf]  *= ramp
+            seg[-nf:] *= ramp[::-1]
+
+        pre  = np.zeros(int(LOOP_PRE_GAP_S  * sr), dtype=np.float32)
+        post = np.zeros(int(LOOP_POST_GAP_S * sr), dtype=np.float32)
+        buf  = np.concatenate([pre, seg, post])
 
         self.stop()
         fd, path = tempfile.mkstemp(suffix=".wav", prefix="audit_")
@@ -560,7 +584,10 @@ class AnnotatorWindow(QMainWindow):
         self._seek_to_selection(play=False)
 
         self.timer = QTimer(self)
-        self.timer.setInterval(33)
+        # 16 ms (~60 Hz), matching player.py. The tick interval bounds how late
+        # auto-pause can fire past its trigger point, so it is the floor on
+        # stop-timing accuracy — worth keeping tight.
+        self.timer.setInterval(16)
         self.timer.timeout.connect(self._tick)
         self.timer.start()
 
