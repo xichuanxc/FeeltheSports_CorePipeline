@@ -837,14 +837,22 @@ class AnnotatorWindow(QMainWindow):
         print(f"[undo] {kind}")
         self._seek_to_selection(play=False)
 
+    def _play(self):
+        """Resume playback. Always ends a loop audit first — the audit is a
+        paused-only inspection aid, so letting it keep looping would layer the
+        repeating slice over the video's own audio. Every resume path goes
+        through here so that cannot be forgotten at one of them."""
+        self.auditor.stop()
+        self.player.play()
+        self.is_paused = False
+
     def _advance(self):
         # If playback parked us here, resume instead of jumping: the next
         # auto-pause lands on the following event, so labelling never breaks
         # the flow of watching the match.
         if self.auto_pause and self._auto_paused:
             self._auto_paused = False
-            self.player.play()
-            self.is_paused = False
+            self._play()
             self._refresh()
             return
         nxt = self._next_unreviewed(self.sel_idx)
@@ -968,11 +976,9 @@ class AnnotatorWindow(QMainWindow):
         t = self._selected_time()
         if t is None:
             return
-        self.auditor.stop()
         self.player.setPosition(int(max(0.0, t - PREVIEW_PRE_S) * 1000))
         self._preview_until = t + PREVIEW_POST_S
-        self.player.play()
-        self.is_paused = False
+        self._play()
 
     def _on_strip_click(self, t):
         near = self._nearest_candidate_index(t)
@@ -1086,11 +1092,9 @@ class AnnotatorWindow(QMainWindow):
         elif k == Qt.Key_A:
             self._add_manual()
         elif k == Qt.Key_Space:
-            self.auditor.stop()
             self._preview_until = None
             if self.is_paused:
-                self.player.play()
-                self.is_paused = False
+                self._play()
             else:
                 self.player.pause()
                 self.is_paused = True
