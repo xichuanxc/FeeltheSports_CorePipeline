@@ -48,7 +48,7 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QSizePolicy, QMessageBox,
     QFileDialog,
 )
-from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput, QMediaMetaData
 from PySide6.QtMultimediaWidgets import QVideoWidget
 
 from analyzer import load_audio, bandpass
@@ -97,6 +97,13 @@ HUD_H          = 132
 
 PREVIEW_PRE_S  = 0.70    # P key: play from T-0.7s ...
 PREVIEW_POST_S = 0.30    # ... to T+0.3s
+
+# Playback rates, weighted towards the slow end — telling a strike from a
+# bounce is a visual judgement that wants slow motion. Frame stepping
+# (shift + arrows) is the rung below 0.10x: paused, one frame per press.
+SPEED_STEPS = [0.10, 0.25, 0.50, 0.75, 1.00, 1.50, 2.00]
+DEFAULT_SPEED_INDEX = 4          # 1.00x
+FALLBACK_FPS = 25.0              # only if the file declares no frame rate
 
 # Auto-pause mode: during playback, stop just after each unreviewed candidate
 # so it can be labelled, then resume. The post-roll lets the transient play out
@@ -444,6 +451,9 @@ class AnnotatorHud(QWidget):
         if s.get("auto_pause"):
             p.setPen(qcolor((120, 230, 160)))
             p.drawText(330, 20, "AUTO-PAUSE")
+        speed = s.get("speed", 1.0)
+        p.setPen(qcolor((235, 235, 235)) if speed == 1.0 else qcolor((255, 210, 120)))
+        p.drawText(450, 20, f"{speed:.2f}x")
 
         p.setFont(QFont("Menlo", 11))
         total_c = s.get("n_candidates", 0)
@@ -482,9 +492,9 @@ class AnnotatorHud(QWidget):
         p.setFont(QFont("Menlo", 10))
         p.setPen(qcolor((150, 150, 150)))
         p.drawText(10, h - 8,
-                   "1-5 label · X reject (not a real sound) · U undo · SPACE play · "
-                   "E auto-pause · TAB next · ,/. step · L loop audit · P preview · "
-                   "A add · [ ] thr · S save · Q quit")
+                   "1-5 label · X reject · U undo · SPACE play · ↑↓ speed · "
+                   "⇧←/⇧→ frame step · ←→ seek 5s · E auto-pause · TAB next · "
+                   ",/. event · L loop · P preview · A add · [ ] thr · S save · Q quit")
 
         saved = s.get("saved", True)
         p.setFont(QFont("Menlo", 11, QFont.Bold))
@@ -559,6 +569,9 @@ class AnnotatorWindow(QMainWindow):
         self.player.setSource(QUrl.fromLocalFile(os.path.abspath(video_path)))
         self.player.pause()
         self.is_paused = True
+        self.speed_index = DEFAULT_SPEED_INDEX
+        self.player.setPlaybackRate(SPEED_STEPS[self.speed_index])
+        self._fps = None
 
         self.auditor = LoopAuditor()
         self._preview_until = None
@@ -906,6 +919,51 @@ class AnnotatorWindow(QMainWindow):
             self.auditor.play(self.y, self.sr, t)
         self._refresh()
 
+    def _video_fps(self):
+        """Declared frame rate, cached. Metadata is only populated once the
+        media has loaded, so this is read lazily rather than at construction."""
+        if self._fps is None:
+            fps = None
+            try:
+                fps = self.player.metaData().value(QMediaMetaData.Key.VideoFrameRate)
+            except (AttributeError, TypeError):
+                fps = None
+            self._fps = float(fps) if fps and float(fps) > 1.0 else FALLBACK_FPS
+            print(f"[video] frame rate {self._fps:.3f} fps "
+                  f"({1000.0 / self._fps:.1f} ms per frame)")
+        return self._fps
+
+    def _set_speed(self, delta):
+        i = max(0, min(len(SPEED_STEPS) - 1, self.speed_index + delta))
+        if i == self.speed_index:
+            if delta < 0:
+                print("[speed] already at slowest rate — "
+                      "shift+left / shift+right steps frame by frame")
+            return
+        self.speed_index = i
+        self.player.setPlaybackRate(SPEED_STEPS[i])
+        print(f"[speed] {SPEED_STEPS[i]:.2f}x")
+        self._refresh()
+
+    def _frame_step(self, n):
+        """Advance exactly n video frames, paused — the rung below 0.10x."""
+        fps = self._video_fps()
+        if not self.is_paused:
+            self.player.pause()
+            self.is_paused = True
+        self._preview_until = None
+        step_ms = int(round(n * 1000.0 / fps))
+        if step_ms == 0:
+            step_ms = 1 if n > 0 else -1
+        pos = max(0, min(int(self.duration * 1000),
+                         self.player.position() + step_ms))
+        self.player.setPosition(pos)
+        # Stepping is manual navigation: let auto-pause re-baseline so it does
+        # not fire on an event the playhead was nudged across.
+        self._last_pos      = None
+        self._last_auto_idx = None
+        self._refresh(pos=pos / 1000.0)
+
     def _preview(self):
         t = self._selected_time()
         if t is None:
@@ -994,6 +1052,7 @@ class AnnotatorWindow(QMainWindow):
             pos=pos, duration=self.duration, paused=self.is_paused,
             auditing=self.auditor.is_active, threshold=self.threshold,
             auto_pause=self.auto_pause,
+            speed=SPEED_STEPS[self.speed_index],
             n_candidates=len(self.cand_times), n_reviewed=reviewed,
             sel_info=sel_info, counts=self._counts(), saved=self._saved,
         )
@@ -1002,6 +1061,7 @@ class AnnotatorWindow(QMainWindow):
     # ------------------------------------------------------------------- keys
     def keyPressEvent(self, ev: QKeyEvent):
         k = ev.key()
+        shift = bool(ev.modifiers() & Qt.ShiftModifier)
         if k in LABEL_KEYS:
             self._apply_label(LABEL_KEYS[k])
         elif k in (Qt.Key_X, Qt.Key_Delete, Qt.Key_Backspace):
@@ -1043,14 +1103,24 @@ class AnnotatorWindow(QMainWindow):
             print(f"[auto-pause] {'ON — stops at each unreviewed event' if self.auto_pause else 'OFF — free playback'}")
             self._refresh()
         elif k == Qt.Key_Left:
-            self.player.setPosition(max(0, self.player.position() - 5000))
-            self._last_pos = None
-            self._last_auto_idx = None
+            if shift:
+                self._frame_step(-1)
+            else:
+                self.player.setPosition(max(0, self.player.position() - 5000))
+                self._last_pos = None
+                self._last_auto_idx = None
         elif k == Qt.Key_Right:
-            self.player.setPosition(min(int(self.duration * 1000),
-                                        self.player.position() + 5000))
-            self._last_pos = None
-            self._last_auto_idx = None
+            if shift:
+                self._frame_step(+1)
+            else:
+                self.player.setPosition(min(int(self.duration * 1000),
+                                            self.player.position() + 5000))
+                self._last_pos = None
+                self._last_auto_idx = None
+        elif k == Qt.Key_Up:
+            self._set_speed(+1)
+        elif k == Qt.Key_Down:
+            self._set_speed(-1)
         elif k == Qt.Key_BracketLeft:
             self._set_threshold(self.threshold - THRESHOLD_STEP)
         elif k == Qt.Key_BracketRight:
