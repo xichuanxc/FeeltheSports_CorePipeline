@@ -15,8 +15,16 @@ venv/
 # IDE
 .vscode/
 
-# Data files (videos, analysis outputs)
-data/
+# Data files (videos, analysis outputs).
+# Exclude the contents rather than the directory itself, because git cannot
+# re-include a file whose parent directory is excluded.
+data/*
+# ...but keep the annotation labels. These are hand-made, cost hours to
+# produce and cannot be regenerated from the code, unlike everything else in
+# here. The sidecar carries the rejections and hand-placed candidates, which
+# are the same human decisions in a different form.
+!data/*.csv
+!data/*.annotator_state.json
 
 # Old iterations — reference only, not part of active history
 archive/
