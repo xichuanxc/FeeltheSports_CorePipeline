@@ -42,7 +42,7 @@ from pathlib import Path
 import numpy as np
 import librosa
 
-from PySide6.QtCore import Qt, QUrl, QTimer, QPointF, QPoint, QRectF
+from PySide6.QtCore import Qt, QUrl, QTimer, QPointF, QPoint, QRectF, QEvent
 from PySide6.QtGui import QPainter, QColor, QFont, QPen, QKeyEvent, QImage
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QSizePolicy, QMessageBox,
@@ -111,7 +111,7 @@ HOVER_TOL_PX = 12        # how near a spike the pointer must be to preview it
 
 STRIP_WINDOW_S = 8.0     # seconds visible in the waveform strip
 STRIP_H        = 150
-HUD_H          = 132
+HUD_H          = 150     # two help lines; one does not fit the window width
 
 PREVIEW_PRE_S  = 0.70    # P key: play from T-0.7s ...
 PREVIEW_POST_S = 0.30    # ... to T+0.3s
@@ -357,9 +357,17 @@ class MelPopup(QWidget):
         # popup is partly hidden behind the video no matter how it is raised.
         # A tool window floats above its parent window instead. It must never
         # take focus, or the annotator would stop receiving key presses.
+        # WindowTransparentForInput is the load-bearing flag: Qt.Tool becomes an
+        # NSPanel on macOS, which can become the key window and swallow the
+        # annotator's keystrokes while the preview is up — which is precisely
+        # when the pointer is over the strip and ,/. are being pressed.
+        # WindowDoesNotAcceptFocus alone does not prevent that. This is a
+        # display-only overlay, so refuse input entirely.
         super().__init__(parent,
                          Qt.Tool | Qt.FramelessWindowHint |
-                         Qt.WindowDoesNotAcceptFocus | Qt.NoDropShadowWindowHint)
+                         Qt.WindowDoesNotAcceptFocus |
+                         Qt.WindowTransparentForInput |
+                         Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_ShowWithoutActivating)
         self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.setFixedSize(self.PAD_L + self.IMG_W + self.PAD_R,
@@ -369,6 +377,15 @@ class MelPopup(QWidget):
         self._title  = ""
         self._shape  = (0, 0)
         self.hide()
+
+    def keyPressEvent(self, ev):
+        """Belt and braces: if a platform hands this window a key anyway, pass
+        it to the annotator rather than swallowing it."""
+        win = self.parent()
+        if win is not None:
+            win.keyPressEvent(ev)
+        else:
+            super().keyPressEvent(ev)
 
     def set_data(self, mel_db, title):
         """mel_db: (n_mels, frames) in dB relative to the slice peak."""
@@ -662,12 +679,17 @@ class AnnotatorHud(QWidget):
             p.fillRect(x + 4, 102, int(bar_w * frac), 5, qcolor(LABEL_COLORS[lab]))
             x += col_w
 
+        # Two lines: the full key list is wider than the window, and a single
+        # line was silently clipped at the right edge.
         p.setFont(QFont("Menlo", 10))
         p.setPen(qcolor((150, 150, 150)))
+        p.drawText(10, h - 24,
+                   "1-5 label · X reject · U undo · A add · S save · Q quit · "
+                   "L loop audit · P preview")
         p.drawText(10, h - 8,
-                   "1-5 label · X reject · U undo · SPACE play · ↑↓ speed · "
-                   "⇧←/⇧→ frame step · ←→ seek 5s · E auto-pause · TAB next · "
-                   ",/. event · L loop · P preview · A add · [ ] thr · S save · Q quit")
+                   "SPACE play · E auto-pause · TAB/⇧TAB next/prev unreviewed · "
+                   ",/. prev/next event · ←→ seek 5s · ⇧←/⇧→ frame · ↑↓ speed · "
+                   "[ ] threshold")
 
         saved = s.get("saved", True)
         p.setFont(QFont("Menlo", 11, QFont.Bold))
@@ -751,6 +773,13 @@ class AnnotatorWindow(QMainWindow):
         self.speed_index = DEFAULT_SPEED_INDEX
         self.player.setPlaybackRate(SPEED_STEPS[self.speed_index])
         self._fps = None
+        # Authoritative playhead for navigation. QMediaPlayer.position() is
+        # updated asynchronously and, on the AVFoundation backend used at
+        # runtime, a seek issued while paused may not be reflected for some
+        # time — so deriving the next seek from it can compute the same target
+        # repeatedly and appear to do nothing. Track the commanded time here
+        # and re-sync from the player only while it is genuinely playing.
+        self._nav_time = 0.0
 
         self.auditor = LoopAuditor()
         self._preview_until = None
@@ -909,6 +938,12 @@ class AnnotatorWindow(QMainWindow):
                 return j
         return None
 
+    def _prev_unreviewed(self, from_idx):
+        for j in range(from_idx - 1, -1, -1):
+            if not self._is_reviewed(float(self.cand_times[j])):
+                return j
+        return None
+
     def _overlapping_neighbour(self, t, width_s=SLICE_PRE_S + SLICE_POST_S):
         """Nearest other annotation whose crop window overlaps t's."""
         i = bisect.bisect_left(self._ann_times, t)
@@ -1016,6 +1051,14 @@ class AnnotatorWindow(QMainWindow):
         print(f"[undo] {kind}")
         self._seek_to_selection(play=False)
 
+    def _seek(self, t):
+        """Move the playhead and update the navigation anchor together, so
+        every later move is computed from a value we know is current."""
+        t = max(0.0, min(self.duration, float(t)))
+        self.player.setPosition(int(t * 1000))
+        self._nav_time = t
+        return t
+
     def _play(self):
         """Resume playback. Always ends a loop audit first — the audit is a
         paused-only inspection aid, so letting it keep looping would layer the
@@ -1044,17 +1087,39 @@ class AnnotatorWindow(QMainWindow):
         self.sel_idx = nxt
         self._seek_to_selection(play=False)
 
+    # Playhead may sit a fraction before a candidate after the millisecond
+    # rounding in setPosition; candidates are >=150 ms apart, so a 10 ms guard
+    # skips the current event without ever skipping a distinct one.
+    _STEP_EPS = 0.010
+
     def _step(self, delta):
+        """Move to the candidate before/after the playhead.
+
+        Anchoring on the playhead rather than on sel_idx matters: playing, or
+        seeking with the arrow keys, moves the playhead without touching the
+        selection, so stepping from a stale index could jump tens of seconds
+        away from what is on screen.
+        """
         if len(self.cand_times) == 0:
             return
-        self.sel_idx = max(0, min(len(self.cand_times) - 1, self.sel_idx + delta))
+        pos = self._nav_time
+        if delta > 0:
+            j = int(np.searchsorted(self.cand_times, pos + self._STEP_EPS,
+                                    side="right"))
+            j = min(j, len(self.cand_times) - 1)
+        else:
+            j = int(np.searchsorted(self.cand_times, pos - self._STEP_EPS,
+                                    side="left")) - 1
+            j = max(j, 0)
+        self.sel_idx = j
+        print(f"[nav] event {j + 1}/{len(self.cand_times)} at t={self.cand_times[j]:.3f}s")
         self._seek_to_selection(play=False)
 
     def _seek_to_selection(self, play=False):
         t = self._selected_time()
         if t is None:
             return
-        self.player.setPosition(int(t * 1000))
+        self._seek(t)
         # Manual navigation re-baselines the auto-pause crossing test, and lets
         # this candidate trigger again if the user plays back over it.
         self._last_pos      = None
@@ -1070,7 +1135,7 @@ class AnnotatorWindow(QMainWindow):
     def _add_manual(self, t=None):
         """Insert a candidate the detector missed, at the snapped playhead."""
         if t is None:
-            t = self.player.position() / 1000.0
+            t = self._nav_time
         t = self._snap(t)
         if self.candidate_near(t) is None:
             self.cand_times = np.sort(np.append(self.cand_times, t))
@@ -1141,23 +1206,19 @@ class AnnotatorWindow(QMainWindow):
             self.player.pause()
             self.is_paused = True
         self._preview_until = None
-        step_ms = int(round(n * 1000.0 / fps))
-        if step_ms == 0:
-            step_ms = 1 if n > 0 else -1
-        pos = max(0, min(int(self.duration * 1000),
-                         self.player.position() + step_ms))
-        self.player.setPosition(pos)
+        step_s = n / fps
+        pos = self._seek(self._nav_time + step_s)
         # Stepping is manual navigation: let auto-pause re-baseline so it does
         # not fire on an event the playhead was nudged across.
         self._last_pos      = None
         self._last_auto_idx = None
-        self._refresh(pos=pos / 1000.0)
+        self._refresh(pos=pos)
 
     def _preview(self):
         t = self._selected_time()
         if t is None:
             return
-        self.player.setPosition(int(max(0.0, t - PREVIEW_PRE_S) * 1000))
+        self._seek(t - PREVIEW_PRE_S)
         self._preview_until = t + PREVIEW_POST_S
         self._play()
 
@@ -1211,6 +1272,12 @@ class AnnotatorWindow(QMainWindow):
     # ------------------------------------------------------------------ tick
     def _tick(self):
         pos = self.player.position() / 1000.0
+        if self.is_paused:
+            # Paused: the player's reported position may lag a commanded seek,
+            # so the anchor is the truth. While playing it is the other way round.
+            pos = self._nav_time
+        else:
+            self._nav_time = pos
         if self._preview_until is not None and pos >= self._preview_until:
             self.player.pause()
             self.is_paused = True
@@ -1251,7 +1318,7 @@ class AnnotatorWindow(QMainWindow):
             self._auto_paused   = True
             self.sel_idx        = j
             self._last_auto_idx = j
-            self.player.setPosition(int(t * 1000))
+            self._seek(t)
             self._last_pos = t
             print(f"[auto-pause] candidate {j + 1}/{len(self.cand_times)} "
                   f"at t={t:.3f}s")
@@ -1262,7 +1329,9 @@ class AnnotatorWindow(QMainWindow):
 
     def _refresh(self, pos=None):
         if pos is None:
-            pos = self.player.position() / 1000.0
+            # Anchor while paused; the player's own position may lag a seek.
+            pos = (self._nav_time if self.is_paused
+                   else self.player.position() / 1000.0)
         t = self._selected_time()
         if t is not None:
             lab = self.label_at(t)
@@ -1285,6 +1354,16 @@ class AnnotatorWindow(QMainWindow):
         self.strip.update()
 
     # ------------------------------------------------------------------- keys
+    def event(self, ev):
+        # Tab and shift+tab drive focus navigation in Qt and are swallowed
+        # before keyPressEvent sees them. Nothing here is focusable, so claim
+        # them for event navigation instead.
+        if (ev.type() == QEvent.KeyPress
+                and ev.key() in (Qt.Key_Tab, Qt.Key_Backtab)):
+            self.keyPressEvent(ev)
+            return True
+        return super().event(ev)
+
     def keyPressEvent(self, ev: QKeyEvent):
         k = ev.key()
         shift = bool(ev.modifiers() & Qt.ShiftModifier)
@@ -1294,13 +1373,17 @@ class AnnotatorWindow(QMainWindow):
             self._reject()
         elif k == Qt.Key_U:
             self._undo()
-        elif k == Qt.Key_Tab:
-            nxt = self._next_unreviewed(self.sel_idx)
-            if nxt is not None:
-                self.sel_idx = nxt
+        elif k in (Qt.Key_Tab, Qt.Key_Backtab):
+            # Qt delivers shift+tab as Key_Backtab, not Key_Tab with a modifier.
+            back = k == Qt.Key_Backtab or shift
+            j = (self._prev_unreviewed(self.sel_idx) if back
+                 else self._next_unreviewed(self.sel_idx))
+            if j is not None:
+                self.sel_idx = j
                 self._seek_to_selection(play=False)
             else:
-                print("[nav] no unreviewed candidates after this point")
+                where = "before" if back else "after"
+                print(f"[nav] no unreviewed candidates {where} this point")
         elif k == Qt.Key_Period:
             self._step(+1)
         elif k == Qt.Key_Comma:
@@ -1330,15 +1413,14 @@ class AnnotatorWindow(QMainWindow):
             if shift:
                 self._frame_step(-1)
             else:
-                self.player.setPosition(max(0, self.player.position() - 5000))
+                self._seek(self._nav_time - 5.0)
                 self._last_pos = None
                 self._last_auto_idx = None
         elif k == Qt.Key_Right:
             if shift:
                 self._frame_step(+1)
             else:
-                self.player.setPosition(min(int(self.duration * 1000),
-                                            self.player.position() + 5000))
+                self._seek(self._nav_time + 5.0)
                 self._last_pos = None
                 self._last_auto_idx = None
         elif k == Qt.Key_Up:
