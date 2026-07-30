@@ -467,8 +467,11 @@ class CandidateStrip(QWidget):
         self.cand_times = np.zeros(0)
         self.sel_time   = None
         self.owner      = None     # AnnotatorWindow, for label lookups
-        self.on_click   = None     # callback(t)
+        self.on_click   = None     # callback(t, exact)
         self.on_hover   = None     # callback(t | None, x_px)
+        # Pointer x only — the time under it is derived at paint time, since
+        # the strip scrolls and a stored time would go stale.
+        self.hover_x    = None
         self.setMouseTracking(True)
 
     def mousePressEvent(self, ev):
@@ -477,7 +480,8 @@ class CandidateStrip(QWidget):
         w = max(1, self.width())
         t0 = self.pos - STRIP_WINDOW_S / 2.0
         t  = t0 + (ev.position().x() / w) * STRIP_WINDOW_S
-        self.on_click(max(0.0, min(self.duration, t)))
+        self.on_click(max(0.0, min(self.duration, t)),
+                      bool(ev.modifiers() & Qt.ShiftModifier))
 
     def _candidate_at_px(self, x_px, tol_px=HOVER_TOL_PX):
         """Candidate time within tol_px of x_px, or None."""
@@ -496,11 +500,15 @@ class CandidateStrip(QWidget):
         return best
 
     def mouseMoveEvent(self, ev):
+        x = ev.position().x()
+        self.hover_x = x
+        self.update()
         if self.on_hover:
-            x = ev.position().x()
             self.on_hover(self._candidate_at_px(x), x)
 
     def leaveEvent(self, ev):
+        self.hover_x = None
+        self.update()
         if self.on_hover:
             self.on_hover(None, 0.0)
         super().leaveEvent(ev)
@@ -611,6 +619,24 @@ class CandidateStrip(QWidget):
         p.setPen(QPen(qcolor((255, 90, 90)), 1))
         p.drawLine(cx, 0, cx, h)
 
+        # Pointer readout: the time under the cursor, so a point can be placed
+        # deliberately rather than by eye. Derived from hover_x every paint
+        # because the strip scrolls beneath a stationary pointer.
+        if self.hover_x is not None:
+            hx = int(self.hover_x)
+            ht = t0 + (self.hover_x / w) * STRIP_WINDOW_S
+            ht = max(0.0, min(self.duration, ht))
+            p.setPen(QPen(qcolor((120, 230, 230), 190), 1, Qt.DashLine))
+            p.drawLine(hx, 0, hx, h)
+            label = f"{ht:.3f}s"
+            p.setFont(QFont("Menlo", 10, QFont.Bold))
+            fm = p.fontMetrics()
+            tw = fm.horizontalAdvance(label) + 10
+            bx = min(max(0, hx + 6), max(0, w - tw))
+            p.fillRect(QRectF(bx, 2, tw, 16), qcolor((0, 0, 0), 210))
+            p.setPen(qcolor((120, 230, 230)))
+            p.drawText(int(bx) + 5, 14, label)
+
 
 # ============================ HUD =============================================
 class AnnotatorHud(QWidget):
@@ -684,8 +710,8 @@ class AnnotatorHud(QWidget):
         p.setFont(QFont("Menlo", 10))
         p.setPen(qcolor((150, 150, 150)))
         p.drawText(10, h - 24,
-                   "1-5 label · X reject · U undo · A add · S save · Q quit · "
-                   "L loop audit · P preview")
+                   "1-5 label · X reject · U undo · A add (snapped) · ⇧A / ⇧click add "
+                   "exact · S save · Q quit · L loop audit · P preview")
         p.drawText(10, h - 8,
                    "SPACE play · E auto-pause · TAB/⇧TAB next/prev unreviewed · "
                    ",/. prev/next event · ←→ seek 5s · ⇧←/⇧→ frame · ↑↓ speed · "
@@ -721,13 +747,20 @@ class AnnotatorWindow(QMainWindow):
         self.annotations = []          # [{"time": float, "label": str}] sorted by time
         self._ann_times  = []          # parallel sorted times, see _reindex()
         self.rejected    = set()       # rounded candidate times
+        # Manually inserted candidates, by rounded time. Held separately
+        # because peak-picking regenerates cand_times from scratch on every
+        # threshold change and would otherwise discard them.
+        self._manual_cands = set()
         self.undo_stack  = []
         self._saved      = True
 
         self._load_state()
         self._load_csv()
         self.cand_times = pick_candidates(self.env, self.sr, self.threshold)
-        print(f"  {len(self.cand_times)} candidates at threshold {self.threshold:.2f}")
+        self._apply_manual_cands()
+        self._adopt_orphan_annotations()
+        print(f"  {len(self.cand_times)} candidates at threshold {self.threshold:.2f}"
+              + (f" (+{len(self._manual_cands)} manual)" if self._manual_cands else ""))
 
         # Widget tree
         central = QWidget()
@@ -825,9 +858,12 @@ class AnnotatorWindow(QMainWindow):
             with open(self.state_path) as f:
                 st = json.load(f)
             self.rejected = {round(float(t), 3) for t in st.get("rejected", [])}
+            self._manual_cands = {round(float(t), 3)
+                                  for t in st.get("manual_candidates", [])}
             self.threshold = float(st.get("threshold", self.threshold))
             self._resume_time = st.get("last_time")
             print(f"  resumed state: {len(self.rejected)} rejected, "
+                  f"{len(self._manual_cands)} manual, "
                   f"threshold {self.threshold:.2f}")
         except (OSError, ValueError, KeyError) as e:
             print(f"  [warn] could not read {self.state_path}: {e}", file=sys.stderr)
@@ -838,6 +874,7 @@ class AnnotatorWindow(QMainWindow):
             "media": self.media_name,
             "threshold": self.threshold,
             "rejected": sorted(self.rejected),
+            "manual_candidates": sorted(self._manual_cands),
             "last_time": self._selected_time(),
         }
         try:
@@ -938,6 +975,31 @@ class AnnotatorWindow(QMainWindow):
                 return j
         return None
 
+    def _apply_manual_cands(self):
+        """Fold manually inserted candidates back into a freshly picked set."""
+        extra = [t for t in sorted(self._manual_cands)
+                 if self.candidate_near(t, tol=0.001) is None]
+        if extra:
+            self.cand_times = np.sort(np.append(self.cand_times, extra))
+
+    def _adopt_orphan_annotations(self):
+        """An annotation with no candidate under it was inserted by hand —
+        either before manual candidates were tracked, or at a different
+        threshold. Adopt it so navigation and the strip treat it like any
+        other candidate instead of leaving it stranded."""
+        adopted = 0
+        for a in self.annotations:
+            if self.candidate_near(a["time"], tol=MATCH_TOL_S) is None:
+                key = round(a["time"], 3)
+                if key not in self._manual_cands:
+                    self._manual_cands.add(key)
+                    adopted += 1
+        if adopted:
+            self._apply_manual_cands()
+            print(f"  adopted {adopted} hand-placed annotation(s) that had no "
+                  f"candidate under them")
+        return adopted
+
     def _prev_unreviewed(self, from_idx):
         for j in range(from_idx - 1, -1, -1):
             if not self._is_reviewed(float(self.cand_times[j])):
@@ -1009,12 +1071,25 @@ class AnnotatorWindow(QMainWindow):
         if i is not None:
             removed = self.annotations.pop(i)
             self._reindex()
-        self.rejected.add(round(t, 3))
-        self.undo_stack.append(("reject", round(t, 3), removed))
+        key = round(t, 3)
+        if key in self._manual_cands:
+            # Nothing detected this one — you did. "Reject" therefore means
+            # undo the insertion outright, rather than leaving a rejected tick
+            # behind for a detection that never happened.
+            self._manual_cands.discard(key)
+            j = self.candidate_near(t, tol=0.001)
+            if j is not None:
+                self.cand_times = np.delete(self.cand_times, j)
+            self.sel_idx = max(0, min(self.sel_idx, len(self.cand_times) - 1))
+            self.undo_stack.append(("unmanual", key, removed))
+            print(f"[delete] manual candidate removed at t={t:8.3f}s")
+        else:
+            self.rejected.add(key)
+            self.undo_stack.append(("reject", key, removed))
+            print(f"[reject] t={t:8.3f}s")
         self._saved = False
         self._save_csv()
         self._save_state()
-        print(f"[reject] t={t:8.3f}s")
         self._advance()
 
     def _undo(self):
@@ -1035,6 +1110,15 @@ class AnnotatorWindow(QMainWindow):
             if i is not None:
                 self.annotations[i]["label"] = prev["label"]
             target = prev["time"]
+        elif kind == "unmanual":
+            _, t, removed = entry
+            self._manual_cands.add(t)
+            if self.candidate_near(t, tol=0.001) is None:
+                self.cand_times = np.sort(np.append(self.cand_times, t))
+            if removed is not None:
+                bisect.insort(self.annotations, removed, key=lambda a: a["time"])
+                self._reindex()
+            target = t
         else:  # reject
             _, t, removed = entry
             self.rejected.discard(t)
@@ -1132,17 +1216,37 @@ class AnnotatorWindow(QMainWindow):
             self.auditor.play(self.y, self.sr, t)
         self._refresh()
 
-    def _add_manual(self, t=None):
-        """Insert a candidate the detector missed, at the snapped playhead."""
+    def _add_manual(self, t=None, snap=True):
+        """Insert a candidate the detector missed.
+
+        snap=True follows spec section 6.4 and pulls the point to the local
+        energy maximum within +/-30 ms. snap=False places it exactly where
+        asked, for marking something that is not a detected transient.
+        """
         if t is None:
             t = self._nav_time
-        t = self._snap(t)
-        if self.candidate_near(t) is None:
+        t = self._snap(t) if snap else max(0.0, min(self.duration, float(t)))
+        # A snapped insert folds into a candidate already within the match
+        # tolerance. An exact insert must not: being pulled onto a nearby spike
+        # is the very thing it exists to avoid, so only a true duplicate at the
+        # same millisecond is refused.
+        tol = MATCH_TOL_S if snap else 0.001
+        if self.candidate_near(t, tol=tol) is None:
             self.cand_times = np.sort(np.append(self.cand_times, t))
+            self._manual_cands.add(round(t, 3))
+            self._save_state()
         near = self._nearest_candidate_index(t)
         if near is not None:
             self.sel_idx = near
-        print(f"[manual] candidate inserted at t={t:.3f}s")
+        how = "snapped" if snap else "exact"
+        print(f"[manual] candidate inserted at t={t:.3f}s ({how})")
+        if not snap:
+            other = self.candidate_near(t, tol=SLICE_PRE_S + SLICE_POST_S)
+            if other is not None and abs(float(self.cand_times[other]) - t) > 1e-9:
+                dt = abs(float(self.cand_times[other]) - t) * 1000
+                print(f"  [warn] {dt:.0f} ms from the candidate at "
+                      f"{float(self.cand_times[other]):.3f}s — if both are "
+                      f"labelled their 150 ms slices overlap", file=sys.stderr)
         self._seek_to_selection(play=False)
 
     def _set_threshold(self, thr):
@@ -1152,6 +1256,7 @@ class AnnotatorWindow(QMainWindow):
         anchor = self._selected_time()
         self.threshold = thr
         self.cand_times = pick_candidates(self.env, self.sr, thr)
+        self._apply_manual_cands()     # peak-picking would otherwise drop them
         # Re-anchor the selection by time, never by index.
         if anchor is not None:
             near = self._nearest_candidate_index(anchor)
@@ -1261,7 +1366,12 @@ class AnnotatorWindow(QMainWindow):
         y = max(r.top()  + 4, min(r.bottom() - ph - 4, int(origin.y() - ph - 8)))
         self.mel_popup.move(x, y)
 
-    def _on_strip_click(self, t):
+    def _on_strip_click(self, t, exact=False):
+        # shift+click places a candidate exactly where clicked, without
+        # snapping and without being captured by a nearby existing one.
+        if exact:
+            self._add_manual(t, snap=False)
+            return
         near = self._nearest_candidate_index(t)
         if near is not None and abs(self.cand_times[near] - t) <= 0.15:
             self.sel_idx = near
@@ -1393,7 +1503,7 @@ class AnnotatorWindow(QMainWindow):
         elif k == Qt.Key_P:
             self._preview()
         elif k == Qt.Key_A:
-            self._add_manual()
+            self._add_manual(snap=not shift)   # shift+A = exact, no snapping
         elif k == Qt.Key_Space:
             self._preview_until = None
             if self.is_paused:
