@@ -352,10 +352,18 @@ class MelPopup(QWidget):
     IMG_W, IMG_H = 288, 150
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        # A top-level Qt.Tool rather than a child widget: QVideoWidget renders
+        # on a native surface that draws above sibling widgets, so a child
+        # popup is partly hidden behind the video no matter how it is raised.
+        # A tool window floats above its parent window instead. It must never
+        # take focus, or the annotator would stop receiving key presses.
+        super().__init__(parent,
+                         Qt.Tool | Qt.FramelessWindowHint |
+                         Qt.WindowDoesNotAcceptFocus | Qt.NoDropShadowWindowHint)
+        self.setAttribute(Qt.WA_ShowWithoutActivating)
+        self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.setFixedSize(self.PAD_L + self.IMG_W + self.PAD_R,
                           self.PAD_T + self.IMG_H + self.PAD_B)
-        self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.setFocusPolicy(Qt.NoFocus)
         self._img    = None
         self._title  = ""
@@ -726,9 +734,8 @@ class AnnotatorWindow(QMainWindow):
         self.strip.on_hover  = self._on_strip_hover
         layout.addWidget(self.strip)
 
-        # Floating child of the central widget so it can overlap the video
-        # without taking permanent layout space.
-        self.mel_popup  = MelPopup(central)
+        # Parented to the window, but a top-level tool window — see MelPopup.
+        self.mel_popup  = MelPopup(self)
         self._mel_cache = {}
         self._hover_t   = None
 
@@ -1179,15 +1186,18 @@ class AnnotatorWindow(QMainWindow):
         self.mel_popup.raise_()
 
     def _place_popup(self, x_px):
-        """Sit the popup just above the strip, centred on the pointer and
-        clamped inside the window."""
-        central = self.centralWidget()
-        origin  = self.strip.mapTo(central, QPoint(int(x_px), 0))
-        pw, ph  = self.mel_popup.width(), self.mel_popup.height()
-        x = int(origin.x() - pw / 2)
-        y = int(origin.y() - ph - 8)
-        x = max(4, min(central.width() - pw - 4, x))
-        y = max(4, min(central.height() - ph - 4, y))
+        """Sit the popup just above the strip, centred on the pointer. The
+        popup is its own window, so this works in global coordinates and
+        clamps to the screen rather than to the central widget.
+
+        Keeping it above the strip also means it never lands under the
+        pointer, which would make hover flicker between show and hide."""
+        origin = self.strip.mapToGlobal(QPoint(int(x_px), 0))
+        pw, ph = self.mel_popup.width(), self.mel_popup.height()
+        screen = self.screen() or QApplication.primaryScreen()
+        r      = screen.availableGeometry()
+        x = max(r.left() + 4, min(r.right()  - pw - 4, int(origin.x() - pw / 2)))
+        y = max(r.top()  + 4, min(r.bottom() - ph - 4, int(origin.y() - ph - 8)))
         self.mel_popup.move(x, y)
 
     def _on_strip_click(self, t):
@@ -1351,6 +1361,7 @@ class AnnotatorWindow(QMainWindow):
 
     def closeEvent(self, ev):
         self.auditor.stop()
+        self.mel_popup.hide()          # its own window now; close it explicitly
         self._save_csv()
         self._save_state()
         counts = self._counts()
