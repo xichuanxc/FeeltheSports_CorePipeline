@@ -186,6 +186,10 @@ def qcolor(rgb, alpha=255):
     return QColor(rgb[0], rgb[1], rgb[2], alpha)
 
 
+def utc_stamp():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def load_timeline(path):
     with open(path) as f:
         data = json.load(f)
@@ -864,6 +868,14 @@ class PlayerWindow(QMainWindow):
         self._original_updated_at = _orig_data.get("updated_at")
         # Carry forward any log entries from a previous annotation session
         self._annotation_log = list(self.data.get("annotation_log", []))
+        # Snapshot events as loaded — used at save time to compute the diff
+        self._load_events = copy.deepcopy(self.events)
+        # Edits are logged as a net diff at save time, but the log should still
+        # say when each edit actually happened rather than when it was saved.
+        # rounded event time -> (sequence, UTC stamp); sequence preserves the
+        # order edits were made, which the second-resolution stamp cannot.
+        self._edit_times = {}
+        self._edit_seq   = 0
         self._vision_avail = has_vision_data(self.events)
         self.use_vision    = True       # combined mode on by default
         self.show_types    = False      # T to toggle strike/bounce colours
@@ -1039,6 +1051,11 @@ class PlayerWindow(QMainWindow):
         print(f"[clean] {'ON (fullscreen, stretched, no overlays)' if clean else 'OFF'}")
 
     # -------------------------------------------------------------------------
+    def _mark_edit(self, t):
+        """Record when an event at time t was added or removed."""
+        self._edit_seq += 1
+        self._edit_times[round(t, 3)] = (self._edit_seq, utc_stamp())
+
     def _annotation_stats(self):
         added     = sum(1 for e in self.events if e.get("manual"))
         cur_times = {round(e["time"], 3) for e in self.events}
@@ -1049,15 +1066,11 @@ class PlayerWindow(QMainWindow):
     def _add_event(self, t):
         ev = {"time": round(t, 3), "intensity": 0.7, "type": "hit", "manual": True}
         self.events.append(ev)
+        self._mark_edit(ev["time"])
         self.events.sort(key=lambda e: e["time"])
         self.times = [e["time"] for e in self.events]
         self.strip.events = self.events
         self.strip.times  = self.times
-        self._annotation_log.append({
-            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "action": "add",
-            "event": copy.copy(ev),
-        })
         self._dirty = True
         self._sync_legend()
         added, removed = self._annotation_stats()
@@ -1079,11 +1092,7 @@ class PlayerWindow(QMainWindow):
         )
         if reply != QMessageBox.Yes:
             return
-        self._annotation_log.append({
-            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "action": "remove",
-            "event": copy.copy(ev),
-        })
+        self._mark_edit(t)
         self.events.pop(i)
         self.times = [e["time"] for e in self.events]
         self.strip.events = self.events
@@ -1103,7 +1112,35 @@ class PlayerWindow(QMainWindow):
             "original_updated_at":  self._original_updated_at,
             "original_event_count": len(self._original_events),
         }
+        # Compute net diff since last load/save — no transient add→remove noise.
+        # Each surviving entry keeps the timestamp of the edit itself, so a long
+        # session saved once does not collapse to a single save-time stamp.
+        load_times = {round(e["time"], 3) for e in self._load_events}
+        cur_times  = {round(e["time"], 3) for e in self.events}
+        now        = utc_stamp()
+        LAST       = float("inf")      # unrecorded edits sort after recorded ones
+
+        def edit_info(t):
+            return self._edit_times.get(round(t, 3), (LAST, now))
+
+        new_entries = []               # (sequence, entry)
+        for e in self.events:
+            if e.get("manual") and round(e["time"], 3) not in load_times:
+                seq, ts = edit_info(e["time"])
+                new_entries.append((seq, {"timestamp": ts, "action": "add",
+                                          "event": copy.copy(e)}))
+        for e in self._load_events:
+            if round(e["time"], 3) not in cur_times:
+                seq, ts = edit_info(e["time"])
+                new_entries.append((seq, {"timestamp": ts, "action": "remove",
+                                          "event": copy.copy(e)}))
+        # Chronological by edit, as the append-only log used to be; event time
+        # only breaks ties between edits with no recorded sequence.
+        new_entries.sort(key=lambda x: (x[0], x[1]["event"]["time"]))
+        self._annotation_log.extend(entry for _, entry in new_entries)
         out["annotation_log"] = self._annotation_log
+        self._load_events = copy.deepcopy(self.events)  # next diff starts from here
+        self._edit_times.clear()       # consumed; the next diff records afresh
         with open(self._annotated_path, "w") as f:
             json.dump(out, f, indent=2)
         self._dirty = False
