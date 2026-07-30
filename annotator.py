@@ -42,8 +42,8 @@ from pathlib import Path
 import numpy as np
 import librosa
 
-from PySide6.QtCore import Qt, QUrl, QTimer, QPointF
-from PySide6.QtGui import QPainter, QColor, QFont, QPen, QKeyEvent
+from PySide6.QtCore import Qt, QUrl, QTimer, QPointF, QPoint, QRectF
+from PySide6.QtGui import QPainter, QColor, QFont, QPen, QKeyEvent, QImage
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QSizePolicy, QMessageBox,
     QFileDialog,
@@ -90,6 +90,24 @@ LOOP_POST_GAP_S = 0.30
 # mistaken for the transient. A few ms of fade removes it; both fades sit
 # outside the event (the slice starts 30 ms before T and ends 120 ms after).
 LOOP_FADE_S  = 0.005
+
+# Mel spectrogram — spec section 3. These are the CNN's actual input params,
+# so the hover preview shows exactly what the model will see rather than an
+# approximation at the analysis rate. Milestone 2 must reuse mel_slice() so the
+# displayed representation and the training tensors cannot drift apart.
+#
+# Note the spec states Time_Frames=18, which is 2400/133 taken directly. With
+# librosa's default centring the real count is 19. It makes no difference to
+# the architecture: section 4 pools with AdaptiveAvgPool2D(1,1) before the
+# linear layer, so the time axis length never reaches a fixed-size weight.
+MEL_SR      = 16000
+MEL_SAMPLES = 2400       # exactly 150 ms at 16 kHz
+MEL_N_FFT   = 400
+MEL_HOP     = 133
+MEL_N_MELS  = 64
+MEL_DB_FLOOR = -80.0     # dB below peak mapped to the bottom of the colour ramp
+
+HOVER_TOL_PX = 12        # how near a spike the pointer must be to preview it
 
 STRIP_WINDOW_S = 8.0     # seconds visible in the waveform strip
 STRIP_H        = 150
@@ -201,6 +219,45 @@ def extract_slice(y, sr, t):
     return out
 
 
+def mel_slice(y, sr, t):
+    """Log-mel spectrogram of the 150 ms crop at t, exactly as spec section 3
+    defines the model input: resampled to 16 kHz, peak normalised, then STFT
+    to 64 mel bins. Returns dB relative to the slice peak, shape (64, frames).
+    """
+    seg = extract_slice(y, sr, t)
+    if sr != MEL_SR:
+        seg = librosa.resample(seg, orig_sr=sr, target_sr=MEL_SR)
+    # Resampling lands a sample either side of 2400; pin it so every slice is
+    # the same length the model will be fed.
+    if len(seg) < MEL_SAMPLES:
+        seg = np.pad(seg, (0, MEL_SAMPLES - len(seg)))
+    seg = seg[:MEL_SAMPLES].astype(np.float32)
+
+    peak = float(np.max(np.abs(seg)))
+    if peak > 0:
+        seg = seg / peak
+    mel = librosa.feature.melspectrogram(
+        y=seg, sr=MEL_SR, n_fft=MEL_N_FFT, hop_length=MEL_HOP,
+        n_mels=MEL_N_MELS)
+    return librosa.power_to_db(mel, ref=np.max)
+
+
+_VIRIDIS = np.array([
+    (68, 1, 84), (72, 40, 120), (62, 74, 137), (49, 104, 142),
+    (38, 130, 142), (31, 158, 137), (53, 183, 121), (109, 205, 89),
+    (180, 222, 44), (253, 231, 37),
+], dtype=np.float32)
+
+
+def colormap(norm):
+    """Map values in [0,1] to viridis RGB. Avoids pulling in matplotlib."""
+    x = np.clip(norm, 0.0, 1.0) * (len(_VIRIDIS) - 1)
+    lo = np.floor(x).astype(int)
+    hi = np.minimum(lo + 1, len(_VIRIDIS) - 1)
+    f  = (x - lo)[..., None]
+    return (_VIRIDIS[lo] * (1 - f) + _VIRIDIS[hi] * f).astype(np.uint8)
+
+
 def waveform_bins(y, sr, bin_s=0.005):
     bin_n = max(1, int(bin_s * sr))
     nbins = len(y) // bin_n
@@ -286,6 +343,86 @@ class LoopAuditor:
         return self.active_time is not None
 
 
+# ============================ MEL POPUP =======================================
+class MelPopup(QWidget):
+    """Hover preview of a candidate's log-mel spectrogram — the CNN's input."""
+
+    PAD_L, PAD_R = 44, 12
+    PAD_T, PAD_B = 40, 26
+    IMG_W, IMG_H = 288, 150
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(self.PAD_L + self.IMG_W + self.PAD_R,
+                          self.PAD_T + self.IMG_H + self.PAD_B)
+        self.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self.setFocusPolicy(Qt.NoFocus)
+        self._img    = None
+        self._title  = ""
+        self._shape  = (0, 0)
+        self.hide()
+
+    def set_data(self, mel_db, title):
+        """mel_db: (n_mels, frames) in dB relative to the slice peak."""
+        norm = (mel_db - MEL_DB_FLOOR) / (-MEL_DB_FLOOR)
+        rgb  = colormap(norm)                       # (n_mels, frames, 3)
+        rgb  = np.flipud(rgb)                       # low mel bins at the bottom
+        h, w, _ = rgb.shape
+        buf = np.ascontiguousarray(rgb)
+        self._img = QImage(buf.data, w, h, 3 * w,
+                           QImage.Format_RGB888).copy()
+        self._shape = (mel_db.shape[0], mel_db.shape[1])
+        self._title = title
+        self.update()
+
+    def paintEvent(self, _):
+        if self._img is None:
+            return
+        p = QPainter(self)
+        w, h = self.width(), self.height()
+        p.fillRect(0, 0, w, h, qcolor((10, 10, 12), 246))
+        p.setPen(QPen(qcolor((255, 220, 120)), 1))
+        p.drawRect(0, 0, w - 1, h - 1)
+
+        p.setFont(QFont("Menlo", 11, QFont.Bold))
+        p.setPen(qcolor((255, 230, 140)))
+        p.drawText(self.PAD_L, 18, self._title)
+        p.setFont(QFont("Menlo", 9))
+        p.setPen(qcolor((150, 150, 150)))
+        p.drawText(self.PAD_L, 32,
+                   f"log-mel {self._shape[0]}x{self._shape[1]} @ {MEL_SR//1000}kHz "
+                   f"— the CNN's input")
+
+        target = QRectF(self.PAD_L, self.PAD_T, self.IMG_W, self.IMG_H)
+        p.drawImage(target, self._img)
+        p.setPen(QPen(qcolor((90, 90, 90)), 1))
+        p.drawRect(target)
+
+        # Frequency axis: mel bins are non-linear, so label the extremes only.
+        p.setFont(QFont("Menlo", 9))
+        p.setPen(qcolor((180, 180, 180)))
+        p.drawText(4, self.PAD_T + 10, f"{MEL_SR // 2000}k")
+        p.drawText(4, self.PAD_T + self.IMG_H, "0")
+        p.save()
+        p.translate(14, self.PAD_T + self.IMG_H / 2 + 18)
+        p.rotate(-90)
+        p.setPen(qcolor((140, 140, 140)))
+        p.drawText(0, 0, "mel")
+        p.restore()
+
+        # Time axis spans the crop window; T sits 30 ms in.
+        onset_x = self.PAD_L + self.IMG_W * (SLICE_PRE_S / (SLICE_PRE_S + SLICE_POST_S))
+        p.setPen(QPen(qcolor((255, 255, 255), 200), 1, Qt.DashLine))
+        p.drawLine(int(onset_x), self.PAD_T, int(onset_x), self.PAD_T + self.IMG_H)
+        p.setPen(qcolor((255, 255, 255)))
+        p.drawText(int(onset_x) - 6, self.PAD_T + self.IMG_H + 12, "T")
+        p.setPen(qcolor((150, 150, 150)))
+        p.drawText(self.PAD_L - 8, self.PAD_T + self.IMG_H + 12,
+                   f"-{SLICE_PRE_S * 1000:.0f}ms")
+        p.drawText(self.PAD_L + self.IMG_W - 34, self.PAD_T + self.IMG_H + 12,
+                   f"+{SLICE_POST_S * 1000:.0f}ms")
+
+
 # ============================ STRIP WIDGET ====================================
 class CandidateStrip(QWidget):
     """Waveform + onset envelope + candidate/annotation ticks."""
@@ -306,6 +443,8 @@ class CandidateStrip(QWidget):
         self.sel_time   = None
         self.owner      = None     # AnnotatorWindow, for label lookups
         self.on_click   = None     # callback(t)
+        self.on_hover   = None     # callback(t | None, x_px)
+        self.setMouseTracking(True)
 
     def mousePressEvent(self, ev):
         if ev.button() != Qt.LeftButton or self.on_click is None:
@@ -314,6 +453,32 @@ class CandidateStrip(QWidget):
         t0 = self.pos - STRIP_WINDOW_S / 2.0
         t  = t0 + (ev.position().x() / w) * STRIP_WINDOW_S
         self.on_click(max(0.0, min(self.duration, t)))
+
+    def _candidate_at_px(self, x_px, tol_px=HOVER_TOL_PX):
+        """Candidate time within tol_px of x_px, or None."""
+        if len(self.cand_times) == 0:
+            return None
+        w  = max(1, self.width())
+        t0 = self.pos - STRIP_WINDOW_S / 2.0
+        best, best_dx = None, tol_px + 1
+        lo = int(np.searchsorted(self.cand_times, t0))
+        hi = int(np.searchsorted(self.cand_times, t0 + STRIP_WINDOW_S))
+        for i in range(lo, hi):
+            x = (float(self.cand_times[i]) - t0) / STRIP_WINDOW_S * w
+            dx = abs(x_px - x)
+            if dx < best_dx:
+                best, best_dx = float(self.cand_times[i]), dx
+        return best
+
+    def mouseMoveEvent(self, ev):
+        if self.on_hover:
+            x = ev.position().x()
+            self.on_hover(self._candidate_at_px(x), x)
+
+    def leaveEvent(self, ev):
+        if self.on_hover:
+            self.on_hover(None, 0.0)
+        super().leaveEvent(ev)
 
     def set_pos(self, pos):
         self.pos = pos
@@ -558,7 +723,14 @@ class AnnotatorWindow(QMainWindow):
         self.strip.threshold = self.threshold
         self.strip.owner     = self
         self.strip.on_click  = self._on_strip_click
+        self.strip.on_hover  = self._on_strip_hover
         layout.addWidget(self.strip)
+
+        # Floating child of the central widget so it can overlap the video
+        # without taking permanent layout space.
+        self.mel_popup  = MelPopup(central)
+        self._mel_cache = {}
+        self._hover_t   = None
 
         # Media
         self.audio_out = QAudioOutput()
@@ -843,6 +1015,8 @@ class AnnotatorWindow(QMainWindow):
         repeating slice over the video's own audio. Every resume path goes
         through here so that cannot be forgotten at one of them."""
         self.auditor.stop()
+        self.mel_popup.hide()          # preview is a paused-only aid
+        self._hover_t = None
         self.player.play()
         self.is_paused = False
 
@@ -979,6 +1153,42 @@ class AnnotatorWindow(QMainWindow):
         self.player.setPosition(int(max(0.0, t - PREVIEW_PRE_S) * 1000))
         self._preview_until = t + PREVIEW_POST_S
         self._play()
+
+    def _on_strip_hover(self, t, x_px):
+        """Preview the hovered spike's mel spectrogram. Paused only — during
+        playback the strip is scrolling and the pointer is not aimed at
+        anything in particular."""
+        if t is None or not self.is_paused:
+            self._hover_t = None
+            self.mel_popup.hide()
+            return
+        if t != self._hover_t:
+            self._hover_t = t
+            key = round(t, 3)
+            mel = self._mel_cache.get(key)
+            if mel is None:
+                mel = mel_slice(self.y, self.sr, t)
+                if len(self._mel_cache) > 256:      # bound a long session
+                    self._mel_cache.clear()
+                self._mel_cache[key] = mel
+            label  = self.label_at(t)
+            status = label or ("rejected" if self.is_rejected(t) else "unreviewed")
+            self.mel_popup.set_data(mel, f"t = {t:.3f} s   [{status}]")
+        self._place_popup(x_px)
+        self.mel_popup.show()
+        self.mel_popup.raise_()
+
+    def _place_popup(self, x_px):
+        """Sit the popup just above the strip, centred on the pointer and
+        clamped inside the window."""
+        central = self.centralWidget()
+        origin  = self.strip.mapTo(central, QPoint(int(x_px), 0))
+        pw, ph  = self.mel_popup.width(), self.mel_popup.height()
+        x = int(origin.x() - pw / 2)
+        y = int(origin.y() - ph - 8)
+        x = max(4, min(central.width() - pw - 4, x))
+        y = max(4, min(central.height() - ph - 4, y))
+        self.mel_popup.move(x, y)
 
     def _on_strip_click(self, t):
         near = self._nearest_candidate_index(t)
