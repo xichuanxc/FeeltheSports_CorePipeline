@@ -1,6 +1,13 @@
 {
   "media": "Nick Kyrgios vs Roger Federer Match - Miami 2017 Condensed Match Highlights.mp4",
-  "threshold": 0.12,
-  "rejected": [],
-  "last_time": 95.2714739229025
+  "threshold": 0.17,
+  "rejected": [
+    30.314
+  ],
+  "manual_candidates": [
+    19.901,
+    30.387,
+    67.442
+  ],
+  "last_time": 120.23292517006803
 }
