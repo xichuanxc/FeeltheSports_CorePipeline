@@ -1,0 +1,1005 @@
+{
+  "version": 2,
+  "source": "Aryna Sabalenka v Elena Rybakina Highlights | Australian Open 2026 Final_720p.mp4",
+  "duration": 217.733,
+  "sample_rate_analyzed": 22050,
+  "calibration": {
+    "pct_low": 10.0,
+    "pct_high": 90.0,
+    "lo_db": -42.9,
+    "hi_db": -33.7,
+    "note": "intensity is relative to THIS video's hit-loudness range"
+  },
+  "params": {
+    "hop_length": 256,
+    "threshold": 0.27,
+    "min_gap_s": 0.08,
+    "low_hz": 1000.0,
+    "high_hz": 10000.0,
+    "hf_cutoff_hz": 2500.0,
+    "min_flatness": 0.3,
+    "min_pre_flatness": 0.0,
+    "max_decay_ratio": 0.0
+  },
+  "events": [
+    {
+      "time": 3.738,
+      "intensity": 0.56,
+      "type": "hit",
+      "db": -37.7,
+      "hf_ratio": 0.173,
+      "centroid": 1670.5,
+      "flatness": 0.318,
+      "pre_flatness": 0.607,
+      "decay_ratio": 0.899
+    },
+    {
+      "time": 4.47,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 6.978,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 8.011,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -42.9,
+      "hf_ratio": 0.276,
+      "centroid": 2357.4,
+      "flatness": 0.48,
+      "pre_flatness": 0.564,
+      "decay_ratio": 0.594
+    },
+    {
+      "time": 9.451,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 11.343,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 12.632,
+      "intensity": 0.367,
+      "type": "hit",
+      "db": -39.5,
+      "hf_ratio": 0.168,
+      "centroid": 1541.2,
+      "flatness": 0.321,
+      "pre_flatness": 0.434,
+      "decay_ratio": 0.402
+    },
+    {
+      "time": 13.735,
+      "intensity": 0.66,
+      "type": "hit",
+      "db": -36.8,
+      "hf_ratio": 0.188,
+      "centroid": 1599.5,
+      "flatness": 0.341,
+      "pre_flatness": 0.455,
+      "decay_ratio": 0.999
+    },
+    {
+      "time": 15.047,
+      "intensity": 0.463,
+      "type": "hit",
+      "db": -38.6,
+      "hf_ratio": 0.189,
+      "centroid": 1570.7,
+      "flatness": 0.333,
+      "pre_flatness": 0.473,
+      "decay_ratio": 0.827
+    },
+    {
+      "time": 16.184,
+      "intensity": 0.531,
+      "type": "hit",
+      "db": -38.0,
+      "hf_ratio": 0.215,
+      "centroid": 1773.6,
+      "flatness": 0.359,
+      "pre_flatness": 0.485,
+      "decay_ratio": 1.149
+    },
+    {
+      "time": 17.461,
+      "intensity": 0.889,
+      "type": "hit",
+      "db": -34.7,
+      "hf_ratio": 0.224,
+      "centroid": 1822.0,
+      "flatness": 0.37,
+      "pre_flatness": 0.545,
+      "decay_ratio": 0.631
+    },
+    {
+      "time": 18.541,
+      "intensity": 0.416,
+      "type": "hit",
+      "db": -39.1,
+      "hf_ratio": 0.376,
+      "centroid": 2313.5,
+      "flatness": 0.468,
+      "pre_flatness": 0.444,
+      "decay_ratio": 0.759
+    },
+    {
+      "time": 20.248,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 27.829,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 28.491,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 29.536,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 30.813,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 34.284,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 43.328,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -44.3,
+      "hf_ratio": 0.239,
+      "centroid": 2012.4,
+      "flatness": 0.4,
+      "pre_flatness": 0.655,
+      "decay_ratio": 0.621
+    },
+    {
+      "time": 44.373,
+      "intensity": 0.772,
+      "type": "hit",
+      "db": -35.8,
+      "hf_ratio": 0.161,
+      "centroid": 1654.8,
+      "flatness": 0.333,
+      "pre_flatness": 0.433,
+      "decay_ratio": 0.478
+    },
+    {
+      "time": 45.581,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 46.66,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 47.903,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 49.006,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 70.217,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -33.7,
+      "hf_ratio": 0.213,
+      "centroid": 1793.4,
+      "flatness": 0.338,
+      "pre_flatness": 0.476,
+      "decay_ratio": 1.413
+    },
+    {
+      "time": 70.925,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 72.052,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 73.178,
+      "intensity": 0.611,
+      "type": "hit",
+      "db": -37.3,
+      "hf_ratio": 0.377,
+      "centroid": 2310.1,
+      "flatness": 0.513,
+      "pre_flatness": 0.527,
+      "decay_ratio": 1.29
+    },
+    {
+      "time": 74.35,
+      "intensity": 0.736,
+      "type": "hit",
+      "db": -36.1,
+      "hf_ratio": 0.432,
+      "centroid": 2974.7,
+      "flatness": 0.544,
+      "pre_flatness": 0.448,
+      "decay_ratio": 1.531
+    },
+    {
+      "time": 75.569,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 77.531,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 79.656,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 80.91,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 81.676,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 82.419,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 96.978,
+      "intensity": 0.063,
+      "type": "hit",
+      "db": -42.3,
+      "hf_ratio": 0.261,
+      "centroid": 2006.1,
+      "flatness": 0.443,
+      "pre_flatness": 0.619,
+      "decay_ratio": 1.159
+    },
+    {
+      "time": 97.884,
+      "intensity": 0.685,
+      "type": "hit",
+      "db": -36.6,
+      "hf_ratio": 0.31,
+      "centroid": 2222.8,
+      "flatness": 0.514,
+      "pre_flatness": 0.551,
+      "decay_ratio": 3.803
+    },
+    {
+      "time": 99.718,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 101.251,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 101.889,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 115.345,
+      "intensity": 0.344,
+      "type": "hit",
+      "db": -39.7,
+      "hf_ratio": 0.171,
+      "centroid": 1689.9,
+      "flatness": 0.308,
+      "pre_flatness": 0.623,
+      "decay_ratio": 0.384
+    },
+    {
+      "time": 116.1,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 117.063,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -45.1,
+      "hf_ratio": 0.175,
+      "centroid": 1523.7,
+      "flatness": 0.312,
+      "pre_flatness": 0.57,
+      "decay_ratio": 0.532
+    },
+    {
+      "time": 119.002,
+      "intensity": 0.63,
+      "type": "hit",
+      "db": -37.1,
+      "hf_ratio": 0.285,
+      "centroid": 2100.6,
+      "flatness": 0.399,
+      "pre_flatness": 0.522,
+      "decay_ratio": 1.437
+    },
+    {
+      "time": 127.431,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 128.337,
+      "intensity": 0.986,
+      "type": "hit",
+      "db": -33.8,
+      "hf_ratio": 0.202,
+      "centroid": 1702.7,
+      "flatness": 0.327,
+      "pre_flatness": 0.495,
+      "decay_ratio": 0.963
+    },
+    {
+      "time": 140.074,
+      "intensity": 0.782,
+      "type": "hit",
+      "db": -35.7,
+      "hf_ratio": 0.205,
+      "centroid": 1858.0,
+      "flatness": 0.362,
+      "pre_flatness": 0.518,
+      "decay_ratio": 1.16
+    },
+    {
+      "time": 140.736,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 142.141,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 143.302,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 143.302,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 145.705,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 154.517,
+      "intensity": 0.955,
+      "type": "hit",
+      "db": -34.1,
+      "hf_ratio": 0.171,
+      "centroid": 1606.5,
+      "flatness": 0.32,
+      "pre_flatness": 0.544,
+      "decay_ratio": 1.412
+    },
+    {
+      "time": 155.156,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 156.63,
+      "intensity": 0.469,
+      "type": "hit",
+      "db": -38.6,
+      "hf_ratio": 0.205,
+      "centroid": 1663.2,
+      "flatness": 0.369,
+      "pre_flatness": 0.667,
+      "decay_ratio": 0.784
+    },
+    {
+      "time": 158.105,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 164.13,
+      "intensity": 0.633,
+      "type": "hit",
+      "db": -37.1,
+      "hf_ratio": 0.193,
+      "centroid": 1764.8,
+      "flatness": 0.334,
+      "pre_flatness": 0.554,
+      "decay_ratio": 1.88
+    },
+    {
+      "time": 164.931,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 165.883,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -32.2,
+      "hf_ratio": 0.242,
+      "centroid": 2026.8,
+      "flatness": 0.426,
+      "pre_flatness": 0.439,
+      "decay_ratio": 0.587
+    },
+    {
+      "time": 167.044,
+      "intensity": 0.662,
+      "type": "hit",
+      "db": -36.8,
+      "hf_ratio": 0.235,
+      "centroid": 1736.3,
+      "flatness": 0.38,
+      "pre_flatness": 0.548,
+      "decay_ratio": 0.725
+    },
+    {
+      "time": 168.588,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 182.846,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    }
+  ],
+  "updated_at": "2026-06-23T03:55:30Z",
+  "annotation_meta": {
+    "original_updated_at": "2026-06-23T03:42:11Z",
+    "original_event_count": 32
+  },
+  "annotation_log": [
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 4.47,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 6.978,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 9.451,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 11.343,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 20.248,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 27.829,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 28.491,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 29.536,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 30.813,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "remove",
+      "event": {
+        "time": 31.057,
+        "intensity": 1.0,
+        "type": "hit",
+        "db": -32.7,
+        "hf_ratio": 0.367,
+        "centroid": 2423.1,
+        "flatness": 0.508,
+        "pre_flatness": 0.439,
+        "decay_ratio": 0.767
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "remove",
+      "event": {
+        "time": 33.472,
+        "intensity": 0.317,
+        "type": "hit",
+        "db": -40.0,
+        "hf_ratio": 0.65,
+        "centroid": 4014.4,
+        "flatness": 0.603,
+        "pre_flatness": 0.584,
+        "decay_ratio": 0.522
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 34.284,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 45.581,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 46.66,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 47.903,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 49.006,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 70.925,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 72.052,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 75.569,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 77.531,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 79.656,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 80.91,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 81.676,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 82.419,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "remove",
+      "event": {
+        "time": 99.277,
+        "intensity": 0.374,
+        "type": "hit",
+        "db": -39.4,
+        "hf_ratio": 0.661,
+        "centroid": 3868.6,
+        "flatness": 0.619,
+        "pre_flatness": 0.622,
+        "decay_ratio": 0.367
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 99.718,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 101.251,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 101.889,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "remove",
+      "event": {
+        "time": 102.133,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -43.2,
+        "hf_ratio": 0.254,
+        "centroid": 1810.9,
+        "flatness": 0.409,
+        "pre_flatness": 0.499,
+        "decay_ratio": 0.552
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 116.1,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 127.431,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 140.736,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "remove",
+      "event": {
+        "time": 141.108,
+        "intensity": 0.141,
+        "type": "hit",
+        "db": -41.6,
+        "hf_ratio": 0.418,
+        "centroid": 3149.1,
+        "flatness": 0.607,
+        "pre_flatness": 0.494,
+        "decay_ratio": 0.505
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 142.141,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 143.302,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 143.302,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 145.705,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 155.156,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 158.105,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 164.931,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 168.588,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "add",
+      "event": {
+        "time": 182.846,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "remove",
+      "event": {
+        "time": 183.647,
+        "intensity": 0.072,
+        "type": "hit",
+        "db": -42.2,
+        "hf_ratio": 0.167,
+        "centroid": 1534.8,
+        "flatness": 0.346,
+        "pre_flatness": 0.651,
+        "decay_ratio": 0.653
+      }
+    },
+    {
+      "timestamp": "2026-06-23T03:55:30Z",
+      "action": "remove",
+      "event": {
+        "time": 207.911,
+        "intensity": 1.0,
+        "type": "hit",
+        "db": -23.4,
+        "hf_ratio": 0.606,
+        "centroid": 3431.9,
+        "flatness": 0.634,
+        "pre_flatness": 0.448,
+        "decay_ratio": 1.274
+      }
+    }
+  ]
+}

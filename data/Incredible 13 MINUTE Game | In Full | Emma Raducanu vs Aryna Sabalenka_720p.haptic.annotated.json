@@ -1,0 +1,1385 @@
+{
+  "version": 2,
+  "source": "Incredible 13 MINUTE Game | In Full | Emma Raducanu vs Aryna Sabalenka_720p.mp4",
+  "duration": 825.423,
+  "sample_rate_analyzed": 22050,
+  "calibration": {
+    "pct_low": 10.0,
+    "pct_high": 90.0,
+    "lo_db": -50.2,
+    "hi_db": -32.1,
+    "note": "intensity is relative to THIS video's hit-loudness range"
+  },
+  "params": {
+    "hop_length": 256,
+    "threshold": 0.2,
+    "min_gap_s": 0.08,
+    "low_hz": 1000.0,
+    "high_hz": 10000.0,
+    "hf_cutoff_hz": 2500.0,
+    "min_flatness": 0.0,
+    "min_pre_flatness": 0.0,
+    "max_decay_ratio": 0.0,
+    "vad_threshold": 0.5,
+    "vad_margin": 0.15
+  },
+  "events": [
+    {
+      "time": 6.084,
+      "intensity": 0.109,
+      "type": "hit",
+      "db": -48.2,
+      "hf_ratio": 0.338,
+      "centroid": 2564.1,
+      "flatness": 0.557,
+      "pre_flatness": 0.71,
+      "decay_ratio": 2.735
+    },
+    {
+      "time": 6.885,
+      "intensity": 0.004,
+      "type": "hit",
+      "db": -50.1,
+      "hf_ratio": 0.203,
+      "centroid": 1826.4,
+      "flatness": 0.365,
+      "pre_flatness": 0.344,
+      "decay_ratio": 1.569
+    },
+    {
+      "time": 8.522,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -50.9,
+      "hf_ratio": 0.334,
+      "centroid": 2616.3,
+      "flatness": 0.546,
+      "pre_flatness": 0.528,
+      "decay_ratio": 2.154
+    },
+    {
+      "time": 9.613,
+      "intensity": 0.077,
+      "type": "hit",
+      "db": -48.8,
+      "hf_ratio": 0.223,
+      "centroid": 1708.7,
+      "flatness": 0.375,
+      "pre_flatness": 0.671,
+      "decay_ratio": 1.081
+    },
+    {
+      "time": 32.02,
+      "intensity": 0.365,
+      "type": "hit",
+      "db": -43.6,
+      "hf_ratio": 0.308,
+      "centroid": 2335.9,
+      "flatness": 0.513,
+      "pre_flatness": 0.627,
+      "decay_ratio": 4.718
+    },
+    {
+      "time": 32.845,
+      "intensity": 0.307,
+      "type": "hit",
+      "db": -44.6,
+      "hf_ratio": 0.291,
+      "centroid": 2117.2,
+      "flatness": 0.418,
+      "pre_flatness": 0.345,
+      "decay_ratio": 0.821
+    },
+    {
+      "time": 34.122,
+      "intensity": 0.122,
+      "type": "hit",
+      "db": -48.0,
+      "hf_ratio": 0.209,
+      "centroid": 1968.6,
+      "flatness": 0.379,
+      "pre_flatness": 0.287,
+      "decay_ratio": 1.41
+    },
+    {
+      "time": 35.457,
+      "intensity": 0.316,
+      "type": "hit",
+      "db": -44.5,
+      "hf_ratio": 0.205,
+      "centroid": 1918.0,
+      "flatness": 0.329,
+      "pre_flatness": 0.54,
+      "decay_ratio": 1.033
+    },
+    {
+      "time": 36.804,
+      "intensity": 0.462,
+      "type": "hit",
+      "db": -41.8,
+      "hf_ratio": 0.242,
+      "centroid": 1996.7,
+      "flatness": 0.419,
+      "pre_flatness": 0.382,
+      "decay_ratio": 0.529
+    },
+    {
+      "time": 63.367,
+      "intensity": 0.436,
+      "type": "hit",
+      "db": -42.3,
+      "hf_ratio": 0.339,
+      "centroid": 2408.5,
+      "flatness": 0.551,
+      "pre_flatness": 0.595,
+      "decay_ratio": 4.016
+    },
+    {
+      "time": 64.192,
+      "intensity": 0.604,
+      "type": "hit",
+      "db": -39.3,
+      "hf_ratio": 0.269,
+      "centroid": 1992.1,
+      "flatness": 0.371,
+      "pre_flatness": 0.486,
+      "decay_ratio": 2.369
+    },
+    {
+      "time": 65.202,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 99.509,
+      "intensity": 0.348,
+      "type": "hit",
+      "db": -43.9,
+      "hf_ratio": 0.269,
+      "centroid": 2065.3,
+      "flatness": 0.445,
+      "pre_flatness": 0.542,
+      "decay_ratio": 3.85
+    },
+    {
+      "time": 100.322,
+      "intensity": 0.99,
+      "type": "hit",
+      "db": -32.3,
+      "hf_ratio": 0.126,
+      "centroid": 1282.0,
+      "flatness": 0.206,
+      "pre_flatness": 0.375,
+      "decay_ratio": 1.758
+    },
+    {
+      "time": 102.156,
+      "intensity": 0.239,
+      "type": "hit",
+      "db": -45.9,
+      "hf_ratio": 0.281,
+      "centroid": 2170.3,
+      "flatness": 0.474,
+      "pre_flatness": 0.535,
+      "decay_ratio": 2.89
+    },
+    {
+      "time": 103.236,
+      "intensity": 0.339,
+      "type": "hit",
+      "db": -44.1,
+      "hf_ratio": 0.21,
+      "centroid": 1767.6,
+      "flatness": 0.382,
+      "pre_flatness": 0.448,
+      "decay_ratio": 0.765
+    },
+    {
+      "time": 105.349,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -52.0,
+      "hf_ratio": 0.267,
+      "centroid": 2055.5,
+      "flatness": 0.445,
+      "pre_flatness": 0.532,
+      "decay_ratio": 0.852
+    },
+    {
+      "time": 107.439,
+      "intensity": 0.737,
+      "type": "hit",
+      "db": -36.9,
+      "hf_ratio": 0.263,
+      "centroid": 2080.4,
+      "flatness": 0.371,
+      "pre_flatness": 0.488,
+      "decay_ratio": 2.252
+    },
+    {
+      "time": 135.175,
+      "intensity": 0.252,
+      "type": "hit",
+      "db": -45.6,
+      "hf_ratio": 0.266,
+      "centroid": 2074.8,
+      "flatness": 0.461,
+      "pre_flatness": 0.639,
+      "decay_ratio": 2.014
+    },
+    {
+      "time": 136.104,
+      "intensity": 0.305,
+      "type": "hit",
+      "db": -44.7,
+      "hf_ratio": 0.207,
+      "centroid": 1659.8,
+      "flatness": 0.368,
+      "pre_flatness": 0.58,
+      "decay_ratio": 0.698
+    },
+    {
+      "time": 137.648,
+      "intensity": 0.208,
+      "type": "hit",
+      "db": -46.4,
+      "hf_ratio": 0.213,
+      "centroid": 1914.2,
+      "flatness": 0.351,
+      "pre_flatness": 0.288,
+      "decay_ratio": 0.958
+    },
+    {
+      "time": 138.913,
+      "intensity": 0.498,
+      "type": "hit",
+      "db": -41.2,
+      "hf_ratio": 0.198,
+      "centroid": 1716.1,
+      "flatness": 0.366,
+      "pre_flatness": 0.644,
+      "decay_ratio": 0.406
+    },
+    {
+      "time": 140.608,
+      "intensity": 0.392,
+      "type": "hit",
+      "db": -43.1,
+      "hf_ratio": 0.224,
+      "centroid": 1999.3,
+      "flatness": 0.413,
+      "pre_flatness": 0.508,
+      "decay_ratio": 0.61
+    },
+    {
+      "time": 173.256,
+      "intensity": 0.166,
+      "type": "hit",
+      "db": -47.2,
+      "hf_ratio": 0.267,
+      "centroid": 2221.9,
+      "flatness": 0.453,
+      "pre_flatness": 0.603,
+      "decay_ratio": 2.323
+    },
+    {
+      "time": 201.607,
+      "intensity": 0.585,
+      "type": "hit",
+      "db": -39.6,
+      "hf_ratio": 0.299,
+      "centroid": 2386.7,
+      "flatness": 0.492,
+      "pre_flatness": 0.525,
+      "decay_ratio": 4.027
+    },
+    {
+      "time": 202.466,
+      "intensity": 0.42,
+      "type": "hit",
+      "db": -42.6,
+      "hf_ratio": 0.165,
+      "centroid": 1541.8,
+      "flatness": 0.292,
+      "pre_flatness": 0.401,
+      "decay_ratio": 0.876
+    },
+    {
+      "time": 203.836,
+      "intensity": 0.307,
+      "type": "hit",
+      "db": -44.6,
+      "hf_ratio": 0.241,
+      "centroid": 2091.3,
+      "flatness": 0.422,
+      "pre_flatness": 0.318,
+      "decay_ratio": 1.682
+    },
+    {
+      "time": 205.055,
+      "intensity": 0.306,
+      "type": "hit",
+      "db": -44.7,
+      "hf_ratio": 0.205,
+      "centroid": 1833.3,
+      "flatness": 0.375,
+      "pre_flatness": 0.589,
+      "decay_ratio": 1.249
+    },
+    {
+      "time": 206.274,
+      "intensity": 0.687,
+      "type": "hit",
+      "db": -37.8,
+      "hf_ratio": 0.133,
+      "centroid": 1553.5,
+      "flatness": 0.253,
+      "pre_flatness": 0.2,
+      "decay_ratio": 0.71
+    },
+    {
+      "time": 231.398,
+      "intensity": 0.236,
+      "type": "hit",
+      "db": -45.9,
+      "hf_ratio": 0.256,
+      "centroid": 1984.7,
+      "flatness": 0.42,
+      "pre_flatness": 0.547,
+      "decay_ratio": 2.122
+    },
+    {
+      "time": 232.269,
+      "intensity": 0.489,
+      "type": "hit",
+      "db": -41.4,
+      "hf_ratio": 0.209,
+      "centroid": 1764.1,
+      "flatness": 0.366,
+      "pre_flatness": 0.51,
+      "decay_ratio": 0.724
+    },
+    {
+      "time": 258.543,
+      "intensity": 0.383,
+      "type": "hit",
+      "db": -43.3,
+      "hf_ratio": 0.252,
+      "centroid": 2054.3,
+      "flatness": 0.412,
+      "pre_flatness": 0.553,
+      "decay_ratio": 2.371
+    },
+    {
+      "time": 273.752,
+      "intensity": 0.224,
+      "type": "hit",
+      "db": -46.1,
+      "hf_ratio": 0.278,
+      "centroid": 1990.3,
+      "flatness": 0.429,
+      "pre_flatness": 0.592,
+      "decay_ratio": 2.288
+    },
+    {
+      "time": 274.727,
+      "intensity": 0.538,
+      "type": "hit",
+      "db": -40.5,
+      "hf_ratio": 0.193,
+      "centroid": 1789.1,
+      "flatness": 0.336,
+      "pre_flatness": 0.27,
+      "decay_ratio": 2.225
+    },
+    {
+      "time": 276.062,
+      "intensity": 0.489,
+      "type": "hit",
+      "db": -41.3,
+      "hf_ratio": 0.165,
+      "centroid": 1635.1,
+      "flatness": 0.314,
+      "pre_flatness": 0.363,
+      "decay_ratio": 0.432
+    },
+    {
+      "time": 277.571,
+      "intensity": 0.549,
+      "type": "hit",
+      "db": -40.3,
+      "hf_ratio": 0.212,
+      "centroid": 1894.7,
+      "flatness": 0.398,
+      "pre_flatness": 0.379,
+      "decay_ratio": 0.498
+    },
+    {
+      "time": 278.721,
+      "intensity": 0.456,
+      "type": "hit",
+      "db": -41.9,
+      "hf_ratio": 0.183,
+      "centroid": 1677.2,
+      "flatness": 0.324,
+      "pre_flatness": 0.317,
+      "decay_ratio": 0.402
+    },
+    {
+      "time": 280.114,
+      "intensity": 0.305,
+      "type": "hit",
+      "db": -44.7,
+      "hf_ratio": 0.178,
+      "centroid": 1879.5,
+      "flatness": 0.355,
+      "pre_flatness": 0.608,
+      "decay_ratio": 1.764
+    },
+    {
+      "time": 310.137,
+      "intensity": 0.502,
+      "type": "hit",
+      "db": -41.1,
+      "hf_ratio": 0.343,
+      "centroid": 2576.7,
+      "flatness": 0.553,
+      "pre_flatness": 0.605,
+      "decay_ratio": 4.973
+    },
+    {
+      "time": 310.95,
+      "intensity": 0.626,
+      "type": "hit",
+      "db": -38.9,
+      "hf_ratio": 0.228,
+      "centroid": 1837.7,
+      "flatness": 0.373,
+      "pre_flatness": 0.41,
+      "decay_ratio": 0.446
+    },
+    {
+      "time": 336.805,
+      "intensity": 0.68,
+      "type": "hit",
+      "db": -37.9,
+      "hf_ratio": 0.228,
+      "centroid": 1838.6,
+      "flatness": 0.316,
+      "pre_flatness": 0.545,
+      "decay_ratio": 2.553
+    },
+    {
+      "time": 337.653,
+      "intensity": 0.376,
+      "type": "hit",
+      "db": -43.4,
+      "hf_ratio": 0.167,
+      "centroid": 1552.6,
+      "flatness": 0.308,
+      "pre_flatness": 0.418,
+      "decay_ratio": 1.181
+    },
+    {
+      "time": 339.104,
+      "intensity": 0.409,
+      "type": "hit",
+      "db": -42.8,
+      "hf_ratio": 0.192,
+      "centroid": 1830.0,
+      "flatness": 0.348,
+      "pre_flatness": 0.258,
+      "decay_ratio": 0.675
+    },
+    {
+      "time": 340.393,
+      "intensity": 0.425,
+      "type": "hit",
+      "db": -42.5,
+      "hf_ratio": 0.2,
+      "centroid": 1789.8,
+      "flatness": 0.321,
+      "pre_flatness": 0.499,
+      "decay_ratio": 1.147
+    },
+    {
+      "time": 341.786,
+      "intensity": 0.504,
+      "type": "hit",
+      "db": -41.1,
+      "hf_ratio": 0.222,
+      "centroid": 1855.6,
+      "flatness": 0.38,
+      "pre_flatness": 0.38,
+      "decay_ratio": 0.342
+    },
+    {
+      "time": 365.912,
+      "intensity": 0.437,
+      "type": "hit",
+      "db": -42.3,
+      "hf_ratio": 0.3,
+      "centroid": 2279.0,
+      "flatness": 0.481,
+      "pre_flatness": 0.585,
+      "decay_ratio": 2.85
+    },
+    {
+      "time": 366.678,
+      "intensity": 0.575,
+      "type": "hit",
+      "db": -39.8,
+      "hf_ratio": 0.23,
+      "centroid": 1830.4,
+      "flatness": 0.382,
+      "pre_flatness": 0.281,
+      "decay_ratio": 0.652
+    },
+    {
+      "time": 399.604,
+      "intensity": 0.174,
+      "type": "hit",
+      "db": -47.1,
+      "hf_ratio": 0.317,
+      "centroid": 2356.5,
+      "flatness": 0.541,
+      "pre_flatness": 0.661,
+      "decay_ratio": 3.663
+    },
+    {
+      "time": 414.383,
+      "intensity": 0.291,
+      "type": "hit",
+      "db": -44.9,
+      "hf_ratio": 0.24,
+      "centroid": 1978.2,
+      "flatness": 0.391,
+      "pre_flatness": 0.645,
+      "decay_ratio": 3.742
+    },
+    {
+      "time": 415.219,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -28.4,
+      "hf_ratio": 0.373,
+      "centroid": 2182.8,
+      "flatness": 0.337,
+      "pre_flatness": 0.323,
+      "decay_ratio": 1.131
+    },
+    {
+      "time": 440.575,
+      "intensity": 0.166,
+      "type": "hit",
+      "db": -47.2,
+      "hf_ratio": 0.303,
+      "centroid": 2173.7,
+      "flatness": 0.491,
+      "pre_flatness": 0.659,
+      "decay_ratio": 2.492
+    },
+    {
+      "time": 441.388,
+      "intensity": 0.444,
+      "type": "hit",
+      "db": -42.2,
+      "hf_ratio": 0.27,
+      "centroid": 1977.0,
+      "flatness": 0.403,
+      "pre_flatness": 0.483,
+      "decay_ratio": 0.468
+    },
+    {
+      "time": 442.897,
+      "intensity": 0.189,
+      "type": "hit",
+      "db": -46.8,
+      "hf_ratio": 0.191,
+      "centroid": 1674.0,
+      "flatness": 0.33,
+      "pre_flatness": 0.395,
+      "decay_ratio": 1.677
+    },
+    {
+      "time": 444.209,
+      "intensity": 0.293,
+      "type": "hit",
+      "db": -44.9,
+      "hf_ratio": 0.24,
+      "centroid": 1907.5,
+      "flatness": 0.39,
+      "pre_flatness": 0.338,
+      "decay_ratio": 0.917
+    },
+    {
+      "time": 445.405,
+      "intensity": 0.471,
+      "type": "hit",
+      "db": -41.7,
+      "hf_ratio": 0.155,
+      "centroid": 1599.8,
+      "flatness": 0.267,
+      "pre_flatness": 0.211,
+      "decay_ratio": 0.64
+    },
+    {
+      "time": 446.914,
+      "intensity": 0.17,
+      "type": "hit",
+      "db": -47.1,
+      "hf_ratio": 0.213,
+      "centroid": 1704.4,
+      "flatness": 0.372,
+      "pre_flatness": 0.521,
+      "decay_ratio": 2.612
+    },
+    {
+      "time": 478.9,
+      "intensity": 0.551,
+      "type": "hit",
+      "db": -40.2,
+      "hf_ratio": 0.387,
+      "centroid": 2634.5,
+      "flatness": 0.568,
+      "pre_flatness": 0.631,
+      "decay_ratio": 5.027
+    },
+    {
+      "time": 479.666,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -25.7,
+      "hf_ratio": 0.192,
+      "centroid": 1431.6,
+      "flatness": 0.216,
+      "pre_flatness": 0.416,
+      "decay_ratio": 1.244
+    },
+    {
+      "time": 492.391,
+      "intensity": 0.395,
+      "type": "hit",
+      "db": -43.1,
+      "hf_ratio": 0.321,
+      "centroid": 2335.2,
+      "flatness": 0.512,
+      "pre_flatness": 0.583,
+      "decay_ratio": 4.309
+    },
+    {
+      "time": 493.389,
+      "intensity": 0.668,
+      "type": "hit",
+      "db": -38.1,
+      "hf_ratio": 0.196,
+      "centroid": 1859.8,
+      "flatness": 0.303,
+      "pre_flatness": 0.621,
+      "decay_ratio": 1.822
+    },
+    {
+      "time": 494.562,
+      "intensity": 0.521,
+      "type": "hit",
+      "db": -40.8,
+      "hf_ratio": 0.131,
+      "centroid": 1520.5,
+      "flatness": 0.26,
+      "pre_flatness": 0.197,
+      "decay_ratio": 0.624
+    },
+    {
+      "time": 523.738,
+      "intensity": 0.435,
+      "type": "hit",
+      "db": -42.3,
+      "hf_ratio": 0.321,
+      "centroid": 2385.2,
+      "flatness": 0.526,
+      "pre_flatness": 0.529,
+      "decay_ratio": 4.152
+    },
+    {
+      "time": 524.492,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 536.938,
+      "intensity": 0.372,
+      "type": "hit",
+      "db": -43.5,
+      "hf_ratio": 0.314,
+      "centroid": 2324.2,
+      "flatness": 0.511,
+      "pre_flatness": 0.564,
+      "decay_ratio": 5.016
+    },
+    {
+      "time": 537.797,
+      "intensity": 0.394,
+      "type": "hit",
+      "db": -43.1,
+      "hf_ratio": 0.202,
+      "centroid": 1784.0,
+      "flatness": 0.358,
+      "pre_flatness": 0.496,
+      "decay_ratio": 2.39
+    },
+    {
+      "time": 569.69,
+      "intensity": 0.149,
+      "type": "hit",
+      "db": -47.5,
+      "hf_ratio": 0.313,
+      "centroid": 2229.0,
+      "flatness": 0.504,
+      "pre_flatness": 0.63,
+      "decay_ratio": 2.573
+    },
+    {
+      "time": 570.561,
+      "intensity": 0.092,
+      "type": "hit",
+      "db": -48.5,
+      "hf_ratio": 0.168,
+      "centroid": 1645.4,
+      "flatness": 0.3,
+      "pre_flatness": 0.345,
+      "decay_ratio": 0.886
+    },
+    {
+      "time": 572.291,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -52.7,
+      "hf_ratio": 0.266,
+      "centroid": 2066.4,
+      "flatness": 0.443,
+      "pre_flatness": 0.601,
+      "decay_ratio": 3.063
+    },
+    {
+      "time": 573.521,
+      "intensity": 0.545,
+      "type": "hit",
+      "db": -40.3,
+      "hf_ratio": 0.211,
+      "centroid": 1875.4,
+      "flatness": 0.313,
+      "pre_flatness": 0.385,
+      "decay_ratio": 0.759
+    },
+    {
+      "time": 574.682,
+      "intensity": 0.5,
+      "type": "hit",
+      "db": -41.2,
+      "hf_ratio": 0.164,
+      "centroid": 1657.0,
+      "flatness": 0.313,
+      "pre_flatness": 0.249,
+      "decay_ratio": 0.427
+    },
+    {
+      "time": 576.296,
+      "intensity": 0.924,
+      "type": "hit",
+      "db": -33.5,
+      "hf_ratio": 0.211,
+      "centroid": 1988.4,
+      "flatness": 0.292,
+      "pre_flatness": 0.632,
+      "decay_ratio": 1.09
+    },
+    {
+      "time": 577.399,
+      "intensity": 0.467,
+      "type": "hit",
+      "db": -41.7,
+      "hf_ratio": 0.249,
+      "centroid": 2088.1,
+      "flatness": 0.404,
+      "pre_flatness": 0.222,
+      "decay_ratio": 0.683
+    },
+    {
+      "time": 615.213,
+      "intensity": 0.028,
+      "type": "hit",
+      "db": -49.7,
+      "hf_ratio": 0.289,
+      "centroid": 2389.7,
+      "flatness": 0.477,
+      "pre_flatness": 0.625,
+      "decay_ratio": 2.339
+    },
+    {
+      "time": 616.002,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -26.9,
+      "hf_ratio": 0.178,
+      "centroid": 1440.4,
+      "flatness": 0.239,
+      "pre_flatness": 0.404,
+      "decay_ratio": 0.912
+    },
+    {
+      "time": 631.618,
+      "intensity": 0.084,
+      "type": "hit",
+      "db": -48.7,
+      "hf_ratio": 0.302,
+      "centroid": 2291.1,
+      "flatness": 0.536,
+      "pre_flatness": 0.602,
+      "decay_ratio": 4.507
+    },
+    {
+      "time": 632.535,
+      "intensity": 0.238,
+      "type": "hit",
+      "db": -45.9,
+      "hf_ratio": 0.203,
+      "centroid": 1923.2,
+      "flatness": 0.359,
+      "pre_flatness": 0.389,
+      "decay_ratio": 2.381
+    },
+    {
+      "time": 663.812,
+      "intensity": 0.321,
+      "type": "hit",
+      "db": -44.4,
+      "hf_ratio": 0.249,
+      "centroid": 1950.1,
+      "flatness": 0.349,
+      "pre_flatness": 0.615,
+      "decay_ratio": 1.722
+    },
+    {
+      "time": 664.718,
+      "intensity": 0.474,
+      "type": "hit",
+      "db": -41.6,
+      "hf_ratio": 0.231,
+      "centroid": 1972.7,
+      "flatness": 0.346,
+      "pre_flatness": 0.362,
+      "decay_ratio": 1.511
+    },
+    {
+      "time": 666.134,
+      "intensity": 0.251,
+      "type": "hit",
+      "db": -45.7,
+      "hf_ratio": 0.157,
+      "centroid": 1691.4,
+      "flatness": 0.289,
+      "pre_flatness": 0.316,
+      "decay_ratio": 1.424
+    },
+    {
+      "time": 667.748,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -51.8,
+      "hf_ratio": 0.279,
+      "centroid": 2128.3,
+      "flatness": 0.481,
+      "pre_flatness": 0.619,
+      "decay_ratio": 0.855
+    },
+    {
+      "time": 669.431,
+      "intensity": 0.065,
+      "type": "hit",
+      "db": -49.0,
+      "hf_ratio": 0.252,
+      "centroid": 2048.6,
+      "flatness": 0.427,
+      "pre_flatness": 0.551,
+      "decay_ratio": 1.773
+    },
+    {
+      "time": 670.674,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -32.0,
+      "hf_ratio": 0.1,
+      "centroid": 1053.0,
+      "flatness": 0.205,
+      "pre_flatness": 0.484,
+      "decay_ratio": 0.451
+    },
+    {
+      "time": 706.421,
+      "intensity": 0.452,
+      "type": "hit",
+      "db": -42.0,
+      "hf_ratio": 0.308,
+      "centroid": 2076.8,
+      "flatness": 0.405,
+      "pre_flatness": 0.631,
+      "decay_ratio": 1.327
+    },
+    {
+      "time": 707.257,
+      "intensity": 0.9,
+      "type": "hit",
+      "db": -33.9,
+      "hf_ratio": 0.19,
+      "centroid": 1983.3,
+      "flatness": 0.304,
+      "pre_flatness": 0.365,
+      "decay_ratio": 1.193
+    },
+    {
+      "time": 708.522,
+      "intensity": 0.45,
+      "type": "hit",
+      "db": -42.1,
+      "hf_ratio": 0.218,
+      "centroid": 1977.8,
+      "flatness": 0.368,
+      "pre_flatness": 0.298,
+      "decay_ratio": 0.496
+    },
+    {
+      "time": 710.02,
+      "intensity": 0.733,
+      "type": "hit",
+      "db": -36.9,
+      "hf_ratio": 0.211,
+      "centroid": 2011.6,
+      "flatness": 0.324,
+      "pre_flatness": 0.607,
+      "decay_ratio": 1.03
+    },
+    {
+      "time": 711.239,
+      "intensity": 0.467,
+      "type": "hit",
+      "db": -41.7,
+      "hf_ratio": 0.259,
+      "centroid": 2146.6,
+      "flatness": 0.439,
+      "pre_flatness": 0.364,
+      "decay_ratio": 0.56
+    },
+    {
+      "time": 712.574,
+      "intensity": 0.541,
+      "type": "hit",
+      "db": -40.4,
+      "hf_ratio": 0.266,
+      "centroid": 2029.7,
+      "flatness": 0.282,
+      "pre_flatness": 0.664,
+      "decay_ratio": 1.233
+    },
+    {
+      "time": 713.909,
+      "intensity": 0.331,
+      "type": "hit",
+      "db": -44.2,
+      "hf_ratio": 0.271,
+      "centroid": 2103.6,
+      "flatness": 0.444,
+      "pre_flatness": 0.509,
+      "decay_ratio": 0.825
+    },
+    {
+      "time": 715.059,
+      "intensity": 0.657,
+      "type": "hit",
+      "db": -38.3,
+      "hf_ratio": 0.175,
+      "centroid": 1633.4,
+      "flatness": 0.269,
+      "pre_flatness": 0.524,
+      "decay_ratio": 0.718
+    },
+    {
+      "time": 716.51,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -60.1,
+      "hf_ratio": 0.264,
+      "centroid": 2156.9,
+      "flatness": 0.469,
+      "pre_flatness": 0.529,
+      "decay_ratio": 1.043
+    },
+    {
+      "time": 750.422,
+      "intensity": 0.337,
+      "type": "hit",
+      "db": -44.1,
+      "hf_ratio": 0.232,
+      "centroid": 1909.1,
+      "flatness": 0.359,
+      "pre_flatness": 0.611,
+      "decay_ratio": 1.8
+    },
+    {
+      "time": 751.316,
+      "intensity": 0.715,
+      "type": "hit",
+      "db": -37.3,
+      "hf_ratio": 0.184,
+      "centroid": 1795.9,
+      "flatness": 0.248,
+      "pre_flatness": 0.34,
+      "decay_ratio": 1.573
+    },
+    {
+      "time": 752.93,
+      "intensity": 0.347,
+      "type": "hit",
+      "db": -43.9,
+      "hf_ratio": 0.237,
+      "centroid": 1947.0,
+      "flatness": 0.4,
+      "pre_flatness": 0.402,
+      "decay_ratio": 3.485
+    },
+    {
+      "time": 754.033,
+      "intensity": 0.752,
+      "type": "hit",
+      "db": -36.6,
+      "hf_ratio": 0.186,
+      "centroid": 1767.7,
+      "flatness": 0.284,
+      "pre_flatness": 0.617,
+      "decay_ratio": 1.046
+    },
+    {
+      "time": 789.281,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -54.7,
+      "hf_ratio": 0.356,
+      "centroid": 2464.2,
+      "flatness": 0.526,
+      "pre_flatness": 0.636,
+      "decay_ratio": 4.313
+    },
+    {
+      "time": 790.314,
+      "intensity": 0.782,
+      "type": "hit",
+      "db": -36.0,
+      "hf_ratio": 0.161,
+      "centroid": 1807.0,
+      "flatness": 0.271,
+      "pre_flatness": 0.42,
+      "decay_ratio": 0.89
+    },
+    {
+      "time": 791.545,
+      "intensity": 0.195,
+      "type": "hit",
+      "db": -46.7,
+      "hf_ratio": 0.157,
+      "centroid": 1590.4,
+      "flatness": 0.296,
+      "pre_flatness": 0.353,
+      "decay_ratio": 1.805
+    },
+    {
+      "time": 792.927,
+      "intensity": 0.421,
+      "type": "hit",
+      "db": -42.6,
+      "hf_ratio": 0.266,
+      "centroid": 2174.6,
+      "flatness": 0.406,
+      "pre_flatness": 0.316,
+      "decay_ratio": 0.69
+    },
+    {
+      "time": 793.972,
+      "intensity": 0.132,
+      "type": "hit",
+      "db": -47.8,
+      "hf_ratio": 0.155,
+      "centroid": 1581.3,
+      "flatness": 0.302,
+      "pre_flatness": 0.376,
+      "decay_ratio": 0.741
+    }
+  ],
+  "updated_at": "2026-06-21T23:41:01Z",
+  "annotation_meta": {
+    "original_updated_at": "2026-06-21T11:00:28Z",
+    "original_event_count": 114
+  },
+  "annotation_log": [
+    {
+      "timestamp": "2026-06-21T11:01:54Z",
+      "action": "remove",
+      "event": {
+        "time": 37.581,
+        "intensity": 0.181,
+        "type": "hit",
+        "db": -46.9,
+        "hf_ratio": 0.155,
+        "centroid": 1406.2,
+        "flatness": 0.314,
+        "pre_flatness": 0.485,
+        "decay_ratio": 0.559
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:04:37Z",
+      "action": "remove",
+      "event": {
+        "time": 194.746,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -64.0,
+        "hf_ratio": 0.447,
+        "centroid": 3019.8,
+        "flatness": 0.672,
+        "pre_flatness": 0.647,
+        "decay_ratio": 0.892
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:05:33Z",
+      "action": "remove",
+      "event": {
+        "time": 259.286,
+        "intensity": 1.0,
+        "type": "hit",
+        "db": -28.0,
+        "hf_ratio": 0.37,
+        "centroid": 2186.2,
+        "flatness": 0.286,
+        "pre_flatness": 0.26,
+        "decay_ratio": 1.065
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:06:02Z",
+      "action": "remove",
+      "event": {
+        "time": 303.404,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -54.9,
+        "hf_ratio": 0.781,
+        "centroid": 5017.0,
+        "flatness": 0.772,
+        "pre_flatness": 0.599,
+        "decay_ratio": 0.329
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:06:38Z",
+      "action": "remove",
+      "event": {
+        "time": 332.765,
+        "intensity": 0.395,
+        "type": "hit",
+        "db": -43.1,
+        "hf_ratio": 0.078,
+        "centroid": 1160.5,
+        "flatness": 0.187,
+        "pre_flatness": 0.614,
+        "decay_ratio": 0.552
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:06:41Z",
+      "action": "remove",
+      "event": {
+        "time": 332.951,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -54.4,
+        "hf_ratio": 0.407,
+        "centroid": 2535.1,
+        "flatness": 0.497,
+        "pre_flatness": 0.316,
+        "decay_ratio": 0.688
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:06:43Z",
+      "action": "remove",
+      "event": {
+        "time": 333.067,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -50.2,
+        "hf_ratio": 0.45,
+        "centroid": 2619.1,
+        "flatness": 0.468,
+        "pre_flatness": 0.617,
+        "decay_ratio": 0.636
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:06:46Z",
+      "action": "remove",
+      "event": {
+        "time": 333.23,
+        "intensity": 0.213,
+        "type": "hit",
+        "db": -46.3,
+        "hf_ratio": 0.849,
+        "centroid": 4643.6,
+        "flatness": 0.614,
+        "pre_flatness": 0.485,
+        "decay_ratio": 0.702
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:07:36Z",
+      "action": "remove",
+      "event": {
+        "time": 400.486,
+        "intensity": 1.0,
+        "type": "hit",
+        "db": -26.3,
+        "hf_ratio": 0.165,
+        "centroid": 1319.0,
+        "flatness": 0.15,
+        "pre_flatness": 0.36,
+        "decay_ratio": 0.868
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:08:29Z",
+      "action": "remove",
+      "event": {
+        "time": 483.463,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -60.5,
+        "hf_ratio": 0.399,
+        "centroid": 2758.8,
+        "flatness": 0.631,
+        "pre_flatness": 0.662,
+        "decay_ratio": 0.72
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:09:06Z",
+      "action": "add",
+      "event": {
+        "time": 524.492,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:10:44Z",
+      "action": "remove",
+      "event": {
+        "time": 702.833,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -59.9,
+        "hf_ratio": 0.606,
+        "centroid": 3797.3,
+        "flatness": 0.788,
+        "pre_flatness": 0.696,
+        "decay_ratio": 0.515
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:10:55Z",
+      "action": "remove",
+      "event": {
+        "time": 704.319,
+        "intensity": 0.004,
+        "type": "hit",
+        "db": -50.1,
+        "hf_ratio": 0.617,
+        "centroid": 3461.2,
+        "flatness": 0.645,
+        "pre_flatness": 0.62,
+        "decay_ratio": 0.444
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:12:02Z",
+      "action": "remove",
+      "event": {
+        "time": 787.145,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -71.8,
+        "hf_ratio": 0.455,
+        "centroid": 3422.9,
+        "flatness": 0.655,
+        "pre_flatness": 0.748,
+        "decay_ratio": 0.826
+      }
+    },
+    {
+      "timestamp": "2026-06-21T21:55:24Z",
+      "action": "remove",
+      "event": {
+        "time": 54.416,
+        "intensity": 0.269,
+        "type": "hit",
+        "db": -45.3,
+        "hf_ratio": 0.202,
+        "centroid": 1778.4,
+        "flatness": 0.352,
+        "pre_flatness": 0.31,
+        "decay_ratio": 1.782
+      }
+    },
+    {
+      "timestamp": "2026-06-21T21:55:27Z",
+      "action": "remove",
+      "event": {
+        "time": 54.996,
+        "intensity": 0.596,
+        "type": "hit",
+        "db": -39.4,
+        "hf_ratio": 0.754,
+        "centroid": 4280.5,
+        "flatness": 0.72,
+        "pre_flatness": 0.585,
+        "decay_ratio": 1.554
+      }
+    },
+    {
+      "timestamp": "2026-06-21T21:59:08Z",
+      "action": "remove",
+      "event": {
+        "time": 257.01,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -65.8,
+        "hf_ratio": 0.299,
+        "centroid": 2195.0,
+        "flatness": 0.585,
+        "pre_flatness": 0.646,
+        "decay_ratio": 0.536
+      }
+    },
+    {
+      "timestamp": "2026-06-21T23:40:17Z",
+      "action": "add",
+      "event": {
+        "time": 65.202,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,1941 @@
+{
+  "version": 2,
+  "source": "The Best of the World No.1! | Aryna Sabalenka at Wimbledon 2025_720p.mp4",
+  "duration": 372.843,
+  "sample_rate_analyzed": 22050,
+  "calibration": {
+    "pct_low": 10.0,
+    "pct_high": 90.0,
+    "lo_db": -50.7,
+    "hi_db": -33.1,
+    "note": "intensity is relative to THIS video's hit-loudness range"
+  },
+  "params": {
+    "hop_length": 256,
+    "threshold": 0.2,
+    "min_gap_s": 0.08,
+    "low_hz": 1000.0,
+    "high_hz": 10000.0,
+    "hf_cutoff_hz": 2500.0,
+    "min_flatness": 0.0,
+    "min_pre_flatness": 0.0,
+    "max_decay_ratio": 0.0,
+    "vad_threshold": 0.5,
+    "vad_margin": 0.15
+  },
+  "events": [
+    {
+      "time": 5.236,
+      "intensity": 0.917,
+      "type": "hit",
+      "db": -34.5,
+      "hf_ratio": 0.193,
+      "centroid": 1777.6,
+      "flatness": 0.35,
+      "pre_flatness": 0.401,
+      "decay_ratio": 0.968
+    },
+    {
+      "time": 6.06,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 9.973,
+      "intensity": 0.764,
+      "type": "hit",
+      "db": -37.2,
+      "hf_ratio": 0.195,
+      "centroid": 1912.1,
+      "flatness": 0.326,
+      "pre_flatness": 0.518,
+      "decay_ratio": 1.952
+    },
+    {
+      "time": 11.204,
+      "intensity": 0.538,
+      "type": "hit",
+      "db": -41.2,
+      "hf_ratio": 0.179,
+      "centroid": 1611.6,
+      "flatness": 0.296,
+      "pre_flatness": 0.458,
+      "decay_ratio": 0.733
+    },
+    {
+      "time": 12.399,
+      "intensity": 0.031,
+      "type": "hit",
+      "db": -50.1,
+      "hf_ratio": 0.176,
+      "centroid": 1699.7,
+      "flatness": 0.346,
+      "pre_flatness": 0.433,
+      "decay_ratio": 1.004
+    },
+    {
+      "time": 18.913,
+      "intensity": 0.469,
+      "type": "hit",
+      "db": -42.4,
+      "hf_ratio": 0.256,
+      "centroid": 2109.1,
+      "flatness": 0.39,
+      "pre_flatness": 0.383,
+      "decay_ratio": 1.474
+    },
+    {
+      "time": 20.004,
+      "intensity": 0.726,
+      "type": "hit",
+      "db": -37.9,
+      "hf_ratio": 0.212,
+      "centroid": 1794.2,
+      "flatness": 0.368,
+      "pre_flatness": 0.451,
+      "decay_ratio": 1.013
+    },
+    {
+      "time": 21.269,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 22.802,
+      "intensity": 0.121,
+      "type": "hit",
+      "db": -48.5,
+      "hf_ratio": 0.443,
+      "centroid": 3046.6,
+      "flatness": 0.594,
+      "pre_flatness": 0.56,
+      "decay_ratio": 0.603
+    },
+    {
+      "time": 24.126,
+      "intensity": 0.521,
+      "type": "hit",
+      "db": -41.5,
+      "hf_ratio": 0.196,
+      "centroid": 1833.3,
+      "flatness": 0.347,
+      "pre_flatness": 0.317,
+      "decay_ratio": 0.938
+    },
+    {
+      "time": 32.438,
+      "intensity": 0.919,
+      "type": "hit",
+      "db": -34.5,
+      "hf_ratio": 0.282,
+      "centroid": 1984.3,
+      "flatness": 0.353,
+      "pre_flatness": 0.386,
+      "decay_ratio": 0.82
+    },
+    {
+      "time": 33.216,
+      "intensity": 0.651,
+      "type": "hit",
+      "db": -39.2,
+      "hf_ratio": 0.232,
+      "centroid": 1986.1,
+      "flatness": 0.362,
+      "pre_flatness": 0.253,
+      "decay_ratio": 1.183
+    },
+    {
+      "time": 36.362,
+      "intensity": 0.873,
+      "type": "hit",
+      "db": -35.3,
+      "hf_ratio": 0.221,
+      "centroid": 1956.5,
+      "flatness": 0.3,
+      "pre_flatness": 0.41,
+      "decay_ratio": 1.89
+    },
+    {
+      "time": 46.289,
+      "intensity": 0.77,
+      "type": "hit",
+      "db": -37.1,
+      "hf_ratio": 0.251,
+      "centroid": 1955.7,
+      "flatness": 0.385,
+      "pre_flatness": 0.43,
+      "decay_ratio": 1.119
+    },
+    {
+      "time": 47.195,
+      "intensity": 0.785,
+      "type": "hit",
+      "db": -36.9,
+      "hf_ratio": 0.204,
+      "centroid": 1881.3,
+      "flatness": 0.372,
+      "pre_flatness": 0.352,
+      "decay_ratio": 0.877
+    },
+    {
+      "time": 48.274,
+      "intensity": 0.664,
+      "type": "hit",
+      "db": -39.0,
+      "hf_ratio": 0.241,
+      "centroid": 1965.7,
+      "flatness": 0.423,
+      "pre_flatness": 0.412,
+      "decay_ratio": 1.058
+    },
+    {
+      "time": 49.575,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -50.8,
+      "hf_ratio": 0.22,
+      "centroid": 1814.2,
+      "flatness": 0.406,
+      "pre_flatness": 0.496,
+      "decay_ratio": 0.757
+    },
+    {
+      "time": 53.174,
+      "intensity": 0.55,
+      "type": "hit",
+      "db": -41.0,
+      "hf_ratio": 0.27,
+      "centroid": 2105.5,
+      "flatness": 0.463,
+      "pre_flatness": 0.513,
+      "decay_ratio": 4.858
+    },
+    {
+      "time": 63.1,
+      "intensity": 0.82,
+      "type": "hit",
+      "db": -36.3,
+      "hf_ratio": 0.24,
+      "centroid": 1919.3,
+      "flatness": 0.401,
+      "pre_flatness": 0.519,
+      "decay_ratio": 0.688
+    },
+    {
+      "time": 63.739,
+      "intensity": 0.798,
+      "type": "hit",
+      "db": -36.6,
+      "hf_ratio": 0.134,
+      "centroid": 1491.3,
+      "flatness": 0.244,
+      "pre_flatness": 0.427,
+      "decay_ratio": 0.481
+    },
+    {
+      "time": 65.039,
+      "intensity": 0.67,
+      "type": "hit",
+      "db": -38.9,
+      "hf_ratio": 0.196,
+      "centroid": 1718.5,
+      "flatness": 0.331,
+      "pre_flatness": 0.444,
+      "decay_ratio": 1.544
+    },
+    {
+      "time": 66.653,
+      "intensity": 0.638,
+      "type": "hit",
+      "db": -39.4,
+      "hf_ratio": 0.206,
+      "centroid": 1780.2,
+      "flatness": 0.331,
+      "pre_flatness": 0.364,
+      "decay_ratio": 0.923
+    },
+    {
+      "time": 68.348,
+      "intensity": 0.687,
+      "type": "hit",
+      "db": -38.6,
+      "hf_ratio": 0.177,
+      "centroid": 1715.7,
+      "flatness": 0.308,
+      "pre_flatness": 0.435,
+      "decay_ratio": 1.324
+    },
+    {
+      "time": 72.319,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 72.319,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 73.619,
+      "intensity": 0.333,
+      "type": "hit",
+      "db": -44.8,
+      "hf_ratio": 0.219,
+      "centroid": 1804.2,
+      "flatness": 0.345,
+      "pre_flatness": 0.39,
+      "decay_ratio": 0.58
+    },
+    {
+      "time": 83.638,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -31.8,
+      "hf_ratio": 0.28,
+      "centroid": 2523.7,
+      "flatness": 0.406,
+      "pre_flatness": 0.422,
+      "decay_ratio": 2.597
+    },
+    {
+      "time": 84.416,
+      "intensity": 0.794,
+      "type": "hit",
+      "db": -36.7,
+      "hf_ratio": 0.225,
+      "centroid": 1853.8,
+      "flatness": 0.362,
+      "pre_flatness": 0.476,
+      "decay_ratio": 0.769
+    },
+    {
+      "time": 85.38,
+      "intensity": 0.376,
+      "type": "hit",
+      "db": -44.0,
+      "hf_ratio": 0.341,
+      "centroid": 2524.0,
+      "flatness": 0.491,
+      "pre_flatness": 0.452,
+      "decay_ratio": 1.152
+    },
+    {
+      "time": 86.936,
+      "intensity": 0.546,
+      "type": "hit",
+      "db": -41.1,
+      "hf_ratio": 0.216,
+      "centroid": 1814.0,
+      "flatness": 0.373,
+      "pre_flatness": 0.586,
+      "decay_ratio": 0.444
+    },
+    {
+      "time": 88.329,
+      "intensity": 0.544,
+      "type": "hit",
+      "db": -41.1,
+      "hf_ratio": 0.293,
+      "centroid": 2142.9,
+      "flatness": 0.426,
+      "pre_flatness": 0.654,
+      "decay_ratio": 0.471
+    },
+    {
+      "time": 90.07,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 91.823,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 92.833,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 98.801,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 99.614,
+      "intensity": 0.32,
+      "type": "hit",
+      "db": -45.0,
+      "hf_ratio": 0.207,
+      "centroid": 1709.8,
+      "flatness": 0.357,
+      "pre_flatness": 0.468,
+      "decay_ratio": 0.956
+    },
+    {
+      "time": 100.949,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 102.284,
+      "intensity": 0.646,
+      "type": "hit",
+      "db": -39.3,
+      "hf_ratio": 0.283,
+      "centroid": 2221.9,
+      "flatness": 0.464,
+      "pre_flatness": 0.564,
+      "decay_ratio": 2.409
+    },
+    {
+      "time": 103.48,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 104.896,
+      "intensity": 0.705,
+      "type": "hit",
+      "db": -38.3,
+      "hf_ratio": 0.274,
+      "centroid": 2013.3,
+      "flatness": 0.414,
+      "pre_flatness": 0.417,
+      "decay_ratio": 2.026
+    },
+    {
+      "time": 111.409,
+      "intensity": 0.875,
+      "type": "hit",
+      "db": -35.3,
+      "hf_ratio": 0.354,
+      "centroid": 2485.9,
+      "flatness": 0.365,
+      "pre_flatness": 0.439,
+      "decay_ratio": 1.158
+    },
+    {
+      "time": 112.187,
+      "intensity": 0.622,
+      "type": "hit",
+      "db": -39.7,
+      "hf_ratio": 0.205,
+      "centroid": 1694.6,
+      "flatness": 0.335,
+      "pre_flatness": 0.399,
+      "decay_ratio": 1.234
+    },
+    {
+      "time": 120.488,
+      "intensity": 0.666,
+      "type": "hit",
+      "db": -39.0,
+      "hf_ratio": 0.339,
+      "centroid": 2471.2,
+      "flatness": 0.453,
+      "pre_flatness": 0.464,
+      "decay_ratio": 1.91
+    },
+    {
+      "time": 121.324,
+      "intensity": 0.829,
+      "type": "hit",
+      "db": -36.1,
+      "hf_ratio": 0.165,
+      "centroid": 1830.8,
+      "flatness": 0.278,
+      "pre_flatness": 0.304,
+      "decay_ratio": 0.751
+    },
+    {
+      "time": 122.613,
+      "intensity": 0.469,
+      "type": "hit",
+      "db": -42.4,
+      "hf_ratio": 0.244,
+      "centroid": 2023.7,
+      "flatness": 0.385,
+      "pre_flatness": 0.528,
+      "decay_ratio": 1.058
+    },
+    {
+      "time": 123.89,
+      "intensity": 0.793,
+      "type": "hit",
+      "db": -36.7,
+      "hf_ratio": 0.215,
+      "centroid": 2022.1,
+      "flatness": 0.338,
+      "pre_flatness": 0.574,
+      "decay_ratio": 1.08
+    },
+    {
+      "time": 125.33,
+      "intensity": 0.362,
+      "type": "hit",
+      "db": -44.3,
+      "hf_ratio": 0.224,
+      "centroid": 1996.1,
+      "flatness": 0.394,
+      "pre_flatness": 0.52,
+      "decay_ratio": 0.851
+    },
+    {
+      "time": 126.549,
+      "intensity": 0.575,
+      "type": "hit",
+      "db": -40.6,
+      "hf_ratio": 0.195,
+      "centroid": 1866.6,
+      "flatness": 0.327,
+      "pre_flatness": 0.376,
+      "decay_ratio": 0.913
+    },
+    {
+      "time": 127.849,
+      "intensity": 0.647,
+      "type": "hit",
+      "db": -39.3,
+      "hf_ratio": 0.237,
+      "centroid": 2132.2,
+      "flatness": 0.384,
+      "pre_flatness": 0.318,
+      "decay_ratio": 1.033
+    },
+    {
+      "time": 128.72,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 138.17,
+      "intensity": 0.864,
+      "type": "hit",
+      "db": -35.5,
+      "hf_ratio": 0.271,
+      "centroid": 2152.9,
+      "flatness": 0.375,
+      "pre_flatness": 0.42,
+      "decay_ratio": 1.29
+    },
+    {
+      "time": 138.948,
+      "intensity": 0.2,
+      "type": "hit",
+      "db": -47.1,
+      "hf_ratio": 0.23,
+      "centroid": 2092.9,
+      "flatness": 0.406,
+      "pre_flatness": 0.328,
+      "decay_ratio": 0.982
+    },
+    {
+      "time": 140.562,
+      "intensity": 0.819,
+      "type": "hit",
+      "db": -36.3,
+      "hf_ratio": 0.283,
+      "centroid": 2135.6,
+      "flatness": 0.388,
+      "pre_flatness": 0.587,
+      "decay_ratio": 1.313
+    },
+    {
+      "time": 148.852,
+      "intensity": 0.561,
+      "type": "hit",
+      "db": -40.8,
+      "hf_ratio": 0.315,
+      "centroid": 2299.2,
+      "flatness": 0.374,
+      "pre_flatness": 0.324,
+      "decay_ratio": 1.811
+    },
+    {
+      "time": 149.734,
+      "intensity": 0.467,
+      "type": "hit",
+      "db": -42.4,
+      "hf_ratio": 0.145,
+      "centroid": 1646.9,
+      "flatness": 0.275,
+      "pre_flatness": 0.219,
+      "decay_ratio": 1.108
+    },
+    {
+      "time": 150.953,
+      "intensity": 0.242,
+      "type": "hit",
+      "db": -46.4,
+      "hf_ratio": 0.21,
+      "centroid": 1822.2,
+      "flatness": 0.395,
+      "pre_flatness": 0.459,
+      "decay_ratio": 1.649
+    },
+    {
+      "time": 152.137,
+      "intensity": 0.202,
+      "type": "hit",
+      "db": -47.1,
+      "hf_ratio": 0.223,
+      "centroid": 1780.8,
+      "flatness": 0.365,
+      "pre_flatness": 0.505,
+      "decay_ratio": 1.076
+    },
+    {
+      "time": 153.426,
+      "intensity": 0.276,
+      "type": "hit",
+      "db": -45.8,
+      "hf_ratio": 0.271,
+      "centroid": 2217.3,
+      "flatness": 0.449,
+      "pre_flatness": 0.508,
+      "decay_ratio": 0.475
+    },
+    {
+      "time": 154.773,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 162.807,
+      "intensity": 0.507,
+      "type": "hit",
+      "db": -41.7,
+      "hf_ratio": 0.252,
+      "centroid": 2170.1,
+      "flatness": 0.382,
+      "pre_flatness": 0.458,
+      "decay_ratio": 2.261
+    },
+    {
+      "time": 163.712,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 164.989,
+      "intensity": 0.758,
+      "type": "hit",
+      "db": -37.3,
+      "hf_ratio": 0.273,
+      "centroid": 2165.1,
+      "flatness": 0.401,
+      "pre_flatness": 0.465,
+      "decay_ratio": 1.855
+    },
+    {
+      "time": 165.953,
+      "intensity": 0.666,
+      "type": "hit",
+      "db": -39.0,
+      "hf_ratio": 0.154,
+      "centroid": 1779.7,
+      "flatness": 0.287,
+      "pre_flatness": 0.239,
+      "decay_ratio": 0.662
+    },
+    {
+      "time": 167.277,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 176.181,
+      "intensity": 0.338,
+      "type": "hit",
+      "db": -44.7,
+      "hf_ratio": 0.298,
+      "centroid": 2274.3,
+      "flatness": 0.424,
+      "pre_flatness": 0.534,
+      "decay_ratio": 1.256
+    },
+    {
+      "time": 176.994,
+      "intensity": 0.353,
+      "type": "hit",
+      "db": -44.5,
+      "hf_ratio": 0.208,
+      "centroid": 1866.7,
+      "flatness": 0.335,
+      "pre_flatness": 0.39,
+      "decay_ratio": 1.66
+    },
+    {
+      "time": 178.202,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 179.618,
+      "intensity": 0.66,
+      "type": "hit",
+      "db": -39.1,
+      "hf_ratio": 0.262,
+      "centroid": 2165.3,
+      "flatness": 0.395,
+      "pre_flatness": 0.614,
+      "decay_ratio": 2.102
+    },
+    {
+      "time": 180.709,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 181.615,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -53.4,
+      "hf_ratio": 0.262,
+      "centroid": 2241.8,
+      "flatness": 0.417,
+      "pre_flatness": 0.468,
+      "decay_ratio": 0.789
+    },
+    {
+      "time": 197.695,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -52.0,
+      "hf_ratio": 0.359,
+      "centroid": 2584.6,
+      "flatness": 0.54,
+      "pre_flatness": 0.647,
+      "decay_ratio": 0.976
+    },
+    {
+      "time": 198.473,
+      "intensity": 0.335,
+      "type": "hit",
+      "db": -44.8,
+      "hf_ratio": 0.264,
+      "centroid": 2049.2,
+      "flatness": 0.438,
+      "pre_flatness": 0.507,
+      "decay_ratio": 0.812
+    },
+    {
+      "time": 199.552,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -50.7,
+      "hf_ratio": 0.312,
+      "centroid": 2310.2,
+      "flatness": 0.505,
+      "pre_flatness": 0.535,
+      "decay_ratio": 1.601
+    },
+    {
+      "time": 201.352,
+      "intensity": 0.273,
+      "type": "hit",
+      "db": -45.9,
+      "hf_ratio": 0.331,
+      "centroid": 2295.0,
+      "flatness": 0.516,
+      "pre_flatness": 0.463,
+      "decay_ratio": 0.592
+    },
+    {
+      "time": 202.559,
+      "intensity": 0.16,
+      "type": "hit",
+      "db": -47.8,
+      "hf_ratio": 0.269,
+      "centroid": 2214.0,
+      "flatness": 0.436,
+      "pre_flatness": 0.412,
+      "decay_ratio": 0.377
+    },
+    {
+      "time": 204.092,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -63.8,
+      "hf_ratio": 0.447,
+      "centroid": 3044.9,
+      "flatness": 0.641,
+      "pre_flatness": 0.621,
+      "decay_ratio": 1.205
+    },
+    {
+      "time": 209.514,
+      "intensity": 0.559,
+      "type": "hit",
+      "db": -40.8,
+      "hf_ratio": 0.272,
+      "centroid": 2097.6,
+      "flatness": 0.318,
+      "pre_flatness": 0.612,
+      "decay_ratio": 1.27
+    },
+    {
+      "time": 210.373,
+      "intensity": 0.548,
+      "type": "hit",
+      "db": -41.0,
+      "hf_ratio": 0.274,
+      "centroid": 2229.7,
+      "flatness": 0.455,
+      "pre_flatness": 0.479,
+      "decay_ratio": 0.698
+    },
+    {
+      "time": 211.743,
+      "intensity": 0.217,
+      "type": "hit",
+      "db": -46.8,
+      "hf_ratio": 0.162,
+      "centroid": 1707.6,
+      "flatness": 0.305,
+      "pre_flatness": 0.421,
+      "decay_ratio": 0.908
+    },
+    {
+      "time": 213.124,
+      "intensity": 0.693,
+      "type": "hit",
+      "db": -38.5,
+      "hf_ratio": 0.191,
+      "centroid": 1814.0,
+      "flatness": 0.316,
+      "pre_flatness": 0.583,
+      "decay_ratio": 0.717
+    },
+    {
+      "time": 214.785,
+      "intensity": 0.278,
+      "type": "hit",
+      "db": -45.8,
+      "hf_ratio": 0.219,
+      "centroid": 1924.1,
+      "flatness": 0.386,
+      "pre_flatness": 0.305,
+      "decay_ratio": 0.424
+    },
+    {
+      "time": 216.294,
+      "intensity": 0.643,
+      "type": "hit",
+      "db": -39.4,
+      "hf_ratio": 0.194,
+      "centroid": 1965.8,
+      "flatness": 0.325,
+      "pre_flatness": 0.615,
+      "decay_ratio": 1.101
+    },
+    {
+      "time": 224.374,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -51.9,
+      "hf_ratio": 0.33,
+      "centroid": 2504.4,
+      "flatness": 0.503,
+      "pre_flatness": 0.614,
+      "decay_ratio": 1.792
+    },
+    {
+      "time": 225.35,
+      "intensity": 0.586,
+      "type": "hit",
+      "db": -40.4,
+      "hf_ratio": 0.273,
+      "centroid": 2226.3,
+      "flatness": 0.393,
+      "pre_flatness": 0.515,
+      "decay_ratio": 1.127
+    },
+    {
+      "time": 226.58,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 229.448,
+      "intensity": 0.472,
+      "type": "hit",
+      "db": -42.4,
+      "hf_ratio": 0.166,
+      "centroid": 1750.5,
+      "flatness": 0.279,
+      "pre_flatness": 0.412,
+      "decay_ratio": 0.331
+    },
+    {
+      "time": 237.378,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 238.272,
+      "intensity": 0.632,
+      "type": "hit",
+      "db": -39.5,
+      "hf_ratio": 0.178,
+      "centroid": 1768.0,
+      "flatness": 0.313,
+      "pre_flatness": 0.341,
+      "decay_ratio": 0.798
+    },
+    {
+      "time": 239.421,
+      "intensity": 0.523,
+      "type": "hit",
+      "db": -41.5,
+      "hf_ratio": 0.168,
+      "centroid": 1826.6,
+      "flatness": 0.321,
+      "pre_flatness": 0.328,
+      "decay_ratio": 1.193
+    },
+    {
+      "time": 240.814,
+      "intensity": 0.334,
+      "type": "hit",
+      "db": -44.8,
+      "hf_ratio": 0.249,
+      "centroid": 2158.3,
+      "flatness": 0.38,
+      "pre_flatness": 0.353,
+      "decay_ratio": 1.271
+    },
+    {
+      "time": 254.932,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 255.64,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 256.987,
+      "intensity": 0.001,
+      "type": "hit",
+      "db": -50.6,
+      "hf_ratio": 0.237,
+      "centroid": 1943.4,
+      "flatness": 0.419,
+      "pre_flatness": 0.552,
+      "decay_ratio": 1.652
+    },
+    {
+      "time": 257.997,
+      "intensity": 0.246,
+      "type": "hit",
+      "db": -46.3,
+      "hf_ratio": 0.272,
+      "centroid": 2064.5,
+      "flatness": 0.424,
+      "pre_flatness": 0.369,
+      "decay_ratio": 1.089
+    },
+    {
+      "time": 259.762,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -33.1,
+      "hf_ratio": 0.304,
+      "centroid": 2252.8,
+      "flatness": 0.317,
+      "pre_flatness": 0.564,
+      "decay_ratio": 1.086
+    },
+    {
+      "time": 260.853,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 270.129,
+      "intensity": 0.817,
+      "type": "hit",
+      "db": -36.3,
+      "hf_ratio": 0.225,
+      "centroid": 2107.1,
+      "flatness": 0.329,
+      "pre_flatness": 0.507,
+      "decay_ratio": 1.665
+    },
+    {
+      "time": 270.861,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 272.556,
+      "intensity": 0.112,
+      "type": "hit",
+      "db": -48.7,
+      "hf_ratio": 0.235,
+      "centroid": 2182.2,
+      "flatness": 0.359,
+      "pre_flatness": 0.465,
+      "decay_ratio": 0.907
+    },
+    {
+      "time": 273.891,
+      "intensity": 0.14,
+      "type": "hit",
+      "db": -48.2,
+      "hf_ratio": 0.252,
+      "centroid": 2070.5,
+      "flatness": 0.394,
+      "pre_flatness": 0.607,
+      "decay_ratio": 2.562
+    },
+    {
+      "time": 274.692,
+      "intensity": 0.0,
+      "type": "hit",
+      "db": -51.7,
+      "hf_ratio": 0.266,
+      "centroid": 2212.4,
+      "flatness": 0.425,
+      "pre_flatness": 0.318,
+      "decay_ratio": 0.797
+    },
+    {
+      "time": 284.63,
+      "intensity": 0.908,
+      "type": "hit",
+      "db": -34.7,
+      "hf_ratio": 0.261,
+      "centroid": 2161.0,
+      "flatness": 0.405,
+      "pre_flatness": 0.361,
+      "decay_ratio": 2.138
+    },
+    {
+      "time": 285.443,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 288.856,
+      "intensity": 0.894,
+      "type": "hit",
+      "db": -34.9,
+      "hf_ratio": 0.245,
+      "centroid": 2005.8,
+      "flatness": 0.39,
+      "pre_flatness": 0.494,
+      "decay_ratio": 0.96
+    },
+    {
+      "time": 295.834,
+      "intensity": 0.706,
+      "type": "hit",
+      "db": -38.2,
+      "hf_ratio": 0.158,
+      "centroid": 1667.4,
+      "flatness": 0.259,
+      "pre_flatness": 0.665,
+      "decay_ratio": 0.876
+    },
+    {
+      "time": 296.647,
+      "intensity": 0.865,
+      "type": "hit",
+      "db": -35.5,
+      "hf_ratio": 0.247,
+      "centroid": 1915.8,
+      "flatness": 0.351,
+      "pre_flatness": 0.442,
+      "decay_ratio": 1.03
+    },
+    {
+      "time": 297.831,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -32.7,
+      "hf_ratio": 0.106,
+      "centroid": 1128.8,
+      "flatness": 0.218,
+      "pre_flatness": 0.388,
+      "decay_ratio": 0.606
+    },
+    {
+      "time": 300.826,
+      "intensity": 0.802,
+      "type": "hit",
+      "db": -36.6,
+      "hf_ratio": 0.187,
+      "centroid": 1887.2,
+      "flatness": 0.327,
+      "pre_flatness": 0.346,
+      "decay_ratio": 0.44
+    },
+    {
+      "time": 308.524,
+      "intensity": 0.944,
+      "type": "hit",
+      "db": -34.1,
+      "hf_ratio": 0.238,
+      "centroid": 1998.3,
+      "flatness": 0.382,
+      "pre_flatness": 0.469,
+      "decay_ratio": 1.903
+    },
+    {
+      "time": 309.267,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 310.741,
+      "intensity": 0.217,
+      "type": "hit",
+      "db": -46.8,
+      "hf_ratio": 0.259,
+      "centroid": 2082.2,
+      "flatness": 0.425,
+      "pre_flatness": 0.315,
+      "decay_ratio": 0.774
+    },
+    {
+      "time": 312.517,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -31.7,
+      "hf_ratio": 0.179,
+      "centroid": 1662.9,
+      "flatness": 0.272,
+      "pre_flatness": 0.591,
+      "decay_ratio": 1.273
+    },
+    {
+      "time": 313.748,
+      "intensity": 0.575,
+      "type": "hit",
+      "db": -40.6,
+      "hf_ratio": 0.137,
+      "centroid": 1382.1,
+      "flatness": 0.27,
+      "pre_flatness": 0.516,
+      "decay_ratio": 0.975
+    },
+    {
+      "time": 314.921,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 314.921,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 317.208,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 317.881,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 318.961,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 320.052,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 322.072,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 328.377,
+      "intensity": 0.421,
+      "type": "hit",
+      "db": -43.3,
+      "hf_ratio": 0.213,
+      "centroid": 1764.2,
+      "flatness": 0.377,
+      "pre_flatness": 0.518,
+      "decay_ratio": 1.476
+    },
+    {
+      "time": 329.224,
+      "intensity": 0.462,
+      "type": "hit",
+      "db": -42.5,
+      "hf_ratio": 0.165,
+      "centroid": 1434.0,
+      "flatness": 0.315,
+      "pre_flatness": 0.527,
+      "decay_ratio": 1.137
+    },
+    {
+      "time": 331.314,
+      "intensity": 0.454,
+      "type": "hit",
+      "db": -42.7,
+      "hf_ratio": 0.18,
+      "centroid": 1615.8,
+      "flatness": 0.352,
+      "pre_flatness": 0.499,
+      "decay_ratio": 1.013
+    },
+    {
+      "time": 332.637,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -32.5,
+      "hf_ratio": 0.174,
+      "centroid": 1540.5,
+      "flatness": 0.302,
+      "pre_flatness": 0.462,
+      "decay_ratio": 0.424
+    },
+    {
+      "time": 334.042,
+      "intensity": 0.514,
+      "type": "hit",
+      "db": -41.6,
+      "hf_ratio": 0.231,
+      "centroid": 1849.5,
+      "flatness": 0.414,
+      "pre_flatness": 0.56,
+      "decay_ratio": 0.628
+    },
+    {
+      "time": 335.401,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -31.1,
+      "hf_ratio": 0.218,
+      "centroid": 1916.1,
+      "flatness": 0.362,
+      "pre_flatness": 0.49,
+      "decay_ratio": 1.297
+    },
+    {
+      "time": 336.794,
+      "intensity": 0.793,
+      "type": "hit",
+      "db": -36.7,
+      "hf_ratio": 0.284,
+      "centroid": 2014.4,
+      "flatness": 0.441,
+      "pre_flatness": 0.584,
+      "decay_ratio": 0.543
+    },
+    {
+      "time": 337.885,
+      "intensity": 0.817,
+      "type": "hit",
+      "db": -36.3,
+      "hf_ratio": 0.158,
+      "centroid": 1422.4,
+      "flatness": 0.277,
+      "pre_flatness": 0.466,
+      "decay_ratio": 0.846
+    },
+    {
+      "time": 339.232,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 340.985,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 345.327,
+      "intensity": 0.595,
+      "type": "hit",
+      "db": -40.2,
+      "hf_ratio": 0.255,
+      "centroid": 2021.2,
+      "flatness": 0.418,
+      "pre_flatness": 0.609,
+      "decay_ratio": 1.511
+    },
+    {
+      "time": 346.198,
+      "intensity": 0.95,
+      "type": "hit",
+      "db": -34.0,
+      "hf_ratio": 0.189,
+      "centroid": 1721.5,
+      "flatness": 0.337,
+      "pre_flatness": 0.502,
+      "decay_ratio": 0.971
+    },
+    {
+      "time": 347.452,
+      "intensity": 0.677,
+      "type": "hit",
+      "db": -38.8,
+      "hf_ratio": 0.226,
+      "centroid": 1995.9,
+      "flatness": 0.392,
+      "pre_flatness": 0.36,
+      "decay_ratio": 0.863
+    },
+    {
+      "time": 348.543,
+      "intensity": 0.408,
+      "type": "hit",
+      "db": -43.5,
+      "hf_ratio": 0.154,
+      "centroid": 1487.8,
+      "flatness": 0.278,
+      "pre_flatness": 0.489,
+      "decay_ratio": 0.77
+    },
+    {
+      "time": 350.505,
+      "intensity": 1.0,
+      "type": "hit",
+      "db": -33.1,
+      "hf_ratio": 0.173,
+      "centroid": 1557.6,
+      "flatness": 0.268,
+      "pre_flatness": 0.475,
+      "decay_ratio": 0.656
+    },
+    {
+      "time": 351.666,
+      "intensity": 0.569,
+      "type": "hit",
+      "db": -40.7,
+      "hf_ratio": 0.172,
+      "centroid": 1527.3,
+      "flatness": 0.319,
+      "pre_flatness": 0.283,
+      "decay_ratio": 0.92
+    },
+    {
+      "time": 353.466,
+      "intensity": 0.849,
+      "type": "hit",
+      "db": -35.7,
+      "hf_ratio": 0.154,
+      "centroid": 1561.2,
+      "flatness": 0.27,
+      "pre_flatness": 0.513,
+      "decay_ratio": 0.678
+    },
+    {
+      "time": 354.813,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    },
+    {
+      "time": 357.088,
+      "intensity": 0.486,
+      "type": "hit",
+      "db": -42.1,
+      "hf_ratio": 0.276,
+      "centroid": 2201.2,
+      "flatness": 0.45,
+      "pre_flatness": 0.513,
+      "decay_ratio": 0.865
+    },
+    {
+      "time": 357.866,
+      "intensity": 0.449,
+      "type": "hit",
+      "db": -42.8,
+      "hf_ratio": 0.17,
+      "centroid": 1560.1,
+      "flatness": 0.325,
+      "pre_flatness": 0.473,
+      "decay_ratio": 0.714
+    },
+    {
+      "time": 359.189,
+      "intensity": 0.7,
+      "type": "hit",
+      "manual": true
+    }
+  ],
+  "updated_at": "2026-07-27T05:29:43Z",
+  "annotation_meta": {
+    "original_updated_at": "2026-06-21T11:25:16Z",
+    "original_event_count": 116
+  },
+  "annotation_log": [
+    {
+      "timestamp": "2026-06-21T11:26:11Z",
+      "action": "add",
+      "event": {
+        "time": 6.06,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:26:29Z",
+      "action": "add",
+      "event": {
+        "time": 21.269,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:26:32Z",
+      "action": "remove",
+      "event": {
+        "time": 20.503,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -52.5,
+        "hf_ratio": 0.265,
+        "centroid": 2205.8,
+        "flatness": 0.476,
+        "pre_flatness": 0.295,
+        "decay_ratio": 0.659
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:26:39Z",
+      "action": "remove",
+      "event": {
+        "time": 23.533,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -51.2,
+        "hf_ratio": 0.268,
+        "centroid": 2185.3,
+        "flatness": 0.462,
+        "pre_flatness": 0.41,
+        "decay_ratio": 0.445
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:27:27Z",
+      "action": "add",
+      "event": {
+        "time": 67.849,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:27:30Z",
+      "action": "remove",
+      "event": {
+        "time": 67.849,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:27:52Z",
+      "action": "remove",
+      "event": {
+        "time": 68.197,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -59.5,
+        "hf_ratio": 0.203,
+        "centroid": 1745.7,
+        "flatness": 0.419,
+        "pre_flatness": 0.562,
+        "decay_ratio": 1.368
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:28:10Z",
+      "action": "remove",
+      "event": {
+        "time": 75.059,
+        "intensity": 1.0,
+        "type": "hit",
+        "db": -22.1,
+        "hf_ratio": 0.259,
+        "centroid": 1974.4,
+        "flatness": 0.241,
+        "pre_flatness": 0.294,
+        "decay_ratio": 0.851
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:28:28Z",
+      "action": "add",
+      "event": {
+        "time": 90.07,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:28:39Z",
+      "action": "add",
+      "event": {
+        "time": 91.823,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:28:42Z",
+      "action": "add",
+      "event": {
+        "time": 92.833,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:28:59Z",
+      "action": "add",
+      "event": {
+        "time": 98.801,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:29:03Z",
+      "action": "add",
+      "event": {
+        "time": 100.949,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:29:06Z",
+      "action": "add",
+      "event": {
+        "time": 103.48,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:29:49Z",
+      "action": "add",
+      "event": {
+        "time": 128.72,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:30:24Z",
+      "action": "remove",
+      "event": {
+        "time": 141.677,
+        "intensity": 0.484,
+        "type": "hit",
+        "db": -42.2,
+        "hf_ratio": 0.24,
+        "centroid": 1985.5,
+        "flatness": 0.418,
+        "pre_flatness": 0.431,
+        "decay_ratio": 1.219
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:30:39Z",
+      "action": "add",
+      "event": {
+        "time": 154.773,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:31:03Z",
+      "action": "add",
+      "event": {
+        "time": 163.712,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:31:08Z",
+      "action": "add",
+      "event": {
+        "time": 167.277,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:31:22Z",
+      "action": "add",
+      "event": {
+        "time": 178.202,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:31:25Z",
+      "action": "add",
+      "event": {
+        "time": 180.709,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:32:38Z",
+      "action": "add",
+      "event": {
+        "time": 226.58,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:32:50Z",
+      "action": "remove",
+      "event": {
+        "time": 234.893,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -65.0,
+        "hf_ratio": 0.496,
+        "centroid": 3384.7,
+        "flatness": 0.714,
+        "pre_flatness": 0.776,
+        "decay_ratio": 1.713
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:32:54Z",
+      "action": "remove",
+      "event": {
+        "time": 235.207,
+        "intensity": 0.742,
+        "type": "hit",
+        "db": -37.6,
+        "hf_ratio": 0.213,
+        "centroid": 1697.9,
+        "flatness": 0.253,
+        "pre_flatness": 0.625,
+        "decay_ratio": 1.089
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:33:55Z",
+      "action": "add",
+      "event": {
+        "time": 270.861,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:34:17Z",
+      "action": "add",
+      "event": {
+        "time": 285.443,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:34:37Z",
+      "action": "remove",
+      "event": {
+        "time": 289.205,
+        "intensity": 0.936,
+        "type": "hit",
+        "db": -34.2,
+        "hf_ratio": 0.171,
+        "centroid": 1466.9,
+        "flatness": 0.306,
+        "pre_flatness": 0.41,
+        "decay_ratio": 2.776
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:34:49Z",
+      "action": "remove",
+      "event": {
+        "time": 295.219,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -62.6,
+        "hf_ratio": 0.467,
+        "centroid": 3014.8,
+        "flatness": 0.629,
+        "pre_flatness": 0.75,
+        "decay_ratio": 0.803
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:35:21Z",
+      "action": "add",
+      "event": {
+        "time": 309.267,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:35:36Z",
+      "action": "add",
+      "event": {
+        "time": 314.921,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:35:38Z",
+      "action": "add",
+      "event": {
+        "time": 314.921,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:35:59Z",
+      "action": "add",
+      "event": {
+        "time": 317.881,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:36:15Z",
+      "action": "add",
+      "event": {
+        "time": 317.208,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:36:22Z",
+      "action": "add",
+      "event": {
+        "time": 320.052,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-06-21T11:37:19Z",
+      "action": "add",
+      "event": {
+        "time": 354.813,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:14:37Z",
+      "action": "add",
+      "event": {
+        "time": 237.192,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:15:03Z",
+      "action": "remove",
+      "event": {
+        "time": 237.192,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:15:03Z",
+      "action": "add",
+      "event": {
+        "time": 237.378,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:16:41Z",
+      "action": "add",
+      "event": {
+        "time": 72.319,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:20:06Z",
+      "action": "remove",
+      "event": {
+        "time": 259.622,
+        "intensity": 0.0,
+        "type": "hit",
+        "db": -67.0,
+        "hf_ratio": 0.36,
+        "centroid": 2642.7,
+        "flatness": 0.56,
+        "pre_flatness": 0.64,
+        "decay_ratio": 0.965
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:22:31Z",
+      "action": "add",
+      "event": {
+        "time": 260.853,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:23:10Z",
+      "action": "add",
+      "event": {
+        "time": 254.932,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:26:47Z",
+      "action": "add",
+      "event": {
+        "time": 255.64,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:28:18Z",
+      "action": "add",
+      "event": {
+        "time": 318.961,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:28:18Z",
+      "action": "add",
+      "event": {
+        "time": 322.072,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:28:55Z",
+      "action": "add",
+      "event": {
+        "time": 339.232,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:29:21Z",
+      "action": "add",
+      "event": {
+        "time": 340.985,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    },
+    {
+      "timestamp": "2026-07-27T05:29:43Z",
+      "action": "add",
+      "event": {
+        "time": 359.189,
+        "intensity": 0.7,
+        "type": "hit",
+        "manual": true
+      }
+    }
+  ]
+}

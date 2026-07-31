@@ -25,6 +25,9 @@ data/*
 # are the same human decisions in a different form.
 !data/*.csv
 !data/*.annotator_state.json
+# Player corrections are hand-made too: re-running analyzer.py restores the
+# detected events but not the manual additions and removals layered on top.
+!data/*.haptic.annotated.json
 
 # Old iterations — reference only, not part of active history
 archive/
