@@ -29,6 +29,11 @@ data/*
 # detected events but not the manual additions and removals layered on top.
 !data/*.haptic.annotated.json
 
+# Compiled training tensors — regenerable from the tracked CSVs by
+# `python3 build_dataset.py`, so by the rule in docs/DATA_LAYOUT.md they stay
+# out of git. 10 MB and rebuilt in about a minute.
+dataset/
+
 # Old iterations — reference only, not part of active history
 archive/
 
