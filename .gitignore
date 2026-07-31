@@ -34,6 +34,12 @@ data/*
 # out of git. 10 MB and rebuilt in about a minute.
 dataset/
 
+# Trained weights — rebuilt by train.py from the same CSVs, and retrained
+# every time the dataset grows, so tracking them means binary churn for a
+# derived artifact. Track one deliberately if a baseline needs pinning.
+*.pth
+*.onnx
+
 # Old iterations — reference only, not part of active history
 archive/
 
