@@ -19,6 +19,11 @@ candidate threshold is adjustable live with [ and ].
 Annotations are keyed by absolute timestamp, never by candidate index, so
 changing the threshold between sessions never desynchronises saved labels.
 
+Placing a candidate puts it at the exact instant asked for. Snapping to the
+local energy maximum (spec 6.4) is opt-in via ctrl/cmd/right click or ctrl+A:
+when a point is placed deliberately it is usually because no detected transient
+is there, so moving it defeats the purpose.
+
 Labelling rule for the two rejection paths:
   X  the candidate is not a real sound event (detector artefact) — dropped.
   5  a real audible sound that is none of the four target classes (applause,
@@ -475,13 +480,21 @@ class CandidateStrip(QWidget):
         self.setMouseTracking(True)
 
     def mousePressEvent(self, ev):
-        if ev.button() != Qt.LeftButton or self.on_click is None:
+        if self.on_click is None or ev.button() not in (Qt.LeftButton, Qt.RightButton):
             return
         w = max(1, self.width())
         t0 = self.pos - STRIP_WINDOW_S / 2.0
         t  = t0 + (ev.position().x() / w) * STRIP_WINDOW_S
-        self.on_click(max(0.0, min(self.duration, t)),
-                      bool(ev.modifiers() & Qt.ShiftModifier))
+        mods = ev.modifiers()
+        # Qt maps ControlModifier to Command on macOS and MetaModifier to the
+        # physical Control key, and macOS may turn ctrl+click into a right
+        # click before Qt sees it. Accept all three routes so "hold a modifier
+        # to snap" works whatever the platform delivers.
+        snap = (bool(mods & (Qt.ControlModifier | Qt.MetaModifier))
+                or ev.button() == Qt.RightButton)
+        self.on_click(max(0.0, min(self.duration, t)), snap,
+                      bool(mods & Qt.ShiftModifier),
+                      HOVER_TOL_PX / w * STRIP_WINDOW_S)
 
     def _candidate_at_px(self, x_px, tol_px=HOVER_TOL_PX):
         """Candidate time within tol_px of x_px, or None."""
@@ -710,8 +723,8 @@ class AnnotatorHud(QWidget):
         p.setFont(QFont("Menlo", 10))
         p.setPen(qcolor((150, 150, 150)))
         p.drawText(10, h - 24,
-                   "1-5 label · X reject · U undo · A add (snapped) · ⇧A / ⇧click add "
-                   "exact · S save · Q quit · L loop audit · P preview")
+                   "1-5 label · X reject · U undo · click/A add at the exact instant · "
+                   "^click/^A snap to peak · S save · Q quit · L loop · P preview")
         p.drawText(10, h - 8,
                    "SPACE play · E auto-pause · TAB/⇧TAB next/prev unreviewed · "
                    ",/. prev/next event · ←→ seek 5s · ⇧←/⇧→ frame · ↑↓ speed · "
@@ -1366,18 +1379,25 @@ class AnnotatorWindow(QMainWindow):
         y = max(r.top()  + 4, min(r.bottom() - ph - 4, int(origin.y() - ph - 8)))
         self.mel_popup.move(x, y)
 
-    def _on_strip_click(self, t, exact=False):
-        # shift+click places a candidate exactly where clicked, without
-        # snapping and without being captured by a nearby existing one.
-        if exact:
-            self._add_manual(t, snap=False)
+    def _on_strip_click(self, t, snap=False, force_add=False, select_tol=0.05):
+        """A plain click means the instant under the pointer.
+
+        Snapping to the nearest energy peak is opt-in (ctrl/cmd/right click),
+        because when a point is being placed deliberately, moving it is wrong.
+        Selection capture is likewise narrowed to the width of the tick itself
+        — it used to reach 0.15 s, five times the snap distance, which read as
+        the same unwanted jump.
+        """
+        if snap:
+            self._add_manual(t, snap=True)
             return
-        near = self._nearest_candidate_index(t)
-        if near is not None and abs(self.cand_times[near] - t) <= 0.15:
-            self.sel_idx = near
-            self._seek_to_selection(play=False)
-        else:
-            self._add_manual(t)
+        if not force_add:
+            near = self._nearest_candidate_index(t)
+            if near is not None and abs(self.cand_times[near] - t) <= select_tol:
+                self.sel_idx = near
+                self._seek_to_selection(play=False)
+                return
+        self._add_manual(t, snap=False)
 
     # ------------------------------------------------------------------ tick
     def _tick(self):
@@ -1477,6 +1497,7 @@ class AnnotatorWindow(QMainWindow):
     def keyPressEvent(self, ev: QKeyEvent):
         k = ev.key()
         shift = bool(ev.modifiers() & Qt.ShiftModifier)
+        ctrl  = bool(ev.modifiers() & (Qt.ControlModifier | Qt.MetaModifier))
         if k in LABEL_KEYS:
             self._apply_label(LABEL_KEYS[k])
         elif k in (Qt.Key_X, Qt.Key_Delete, Qt.Key_Backspace):
@@ -1503,7 +1524,9 @@ class AnnotatorWindow(QMainWindow):
         elif k == Qt.Key_P:
             self._preview()
         elif k == Qt.Key_A:
-            self._add_manual(snap=not shift)   # shift+A = exact, no snapping
+            # Exact by default, matching a plain click; ctrl+A opts into the
+            # spec 6.4 snap.
+            self._add_manual(snap=ctrl)
         elif k == Qt.Key_Space:
             self._preview_until = None
             if self.is_paused:
