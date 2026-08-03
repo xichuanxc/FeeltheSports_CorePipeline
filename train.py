@@ -63,16 +63,16 @@ class TennisHitCNN(nn.Module):
         return self.classifier(self.features(x))
 
 
-def pick_val_group(y, groups, n_classes):
-    """Hold out the video whose class mix best matches the whole dataset.
+def rank_groups(y, groups, n_classes):
+    """Videos ordered by how well their class mix represents the dataset.
 
-    Chosen rather than fixed because coverage is uneven: grass carries no
-    shoe_squeak and two videos carry no grunt_speech, so an arbitrary choice
-    can leave a class with no test examples at all.
+    Coverage is uneven — grass carries no shoe_squeak, two videos carry no
+    grunt_speech — so held-out videos are chosen rather than fixed, or a class
+    can end up with no examples to score against.
     """
     overall = np.array([(y == c).sum() for c in range(n_classes)], dtype=float)
     overall /= overall.sum()
-    best, best_score = None, 1e9
+    scored = []
     for g in np.unique(groups):
         sel = groups == g
         if sel.sum() < 50:
@@ -83,10 +83,9 @@ def pick_val_group(y, groups, n_classes):
         missing = int((dist == 0).sum())
         dist /= dist.sum()
         # L1 distance from the overall mix, with a penalty per absent class
-        score = float(np.abs(dist - overall).sum()) + missing
-        if score < best_score:
-            best, best_score = int(g), score
-    return best
+        scored.append((float(np.abs(dist - overall).sum()) + missing, int(g)))
+    scored.sort()
+    return [g for _, g in scored]
 
 
 def class_weights(y_train, n_classes, mode):
@@ -144,7 +143,12 @@ def main():
     ap.add_argument("--data", default="dataset")
     ap.add_argument("-o", "--out", default="tennis_hit_model.pth")
     ap.add_argument("--val-group", type=int, default=None,
-                    help="video index to hold out (default: auto, best class coverage)")
+                    help="video used to choose the stopping epoch (default: auto)")
+    ap.add_argument("--test-group", type=int, default=None,
+                    help="video scored once at the end (default: auto). Must "
+                         "differ from --val-group: choosing the epoch on the "
+                         "same video that reports the result inflates it — "
+                         "measured at +0.102 macro-F1 on this dataset")
     ap.add_argument("--epochs", type=int, default=60)
     ap.add_argument("--batch", type=int, default=64)
     ap.add_argument("--lr", type=float, default=1e-3)
@@ -169,16 +173,29 @@ def main():
     n_classes = len(names)
     print(f"{len(y)} samples  {X.shape}  {n_classes} classes")
 
+    # Three-way split. The epoch is chosen on validation and the test video is
+    # scored once, at the end. Selecting the epoch on the video that reports
+    # the result overstates macro-F1 by ~0.102 here, measured by leave-one-out.
+    ranked = rank_groups(y, groups, n_classes)
+    test_g = args.test_group if args.test_group is not None else ranked[0]
     val_g = args.val_group if args.val_group is not None else \
-        pick_val_group(y, groups, n_classes)
-    tr, va = groups != val_g, groups == val_g
-    vname = meta["per_video"][val_g]["name"][:44]
-    print(f"held-out video for test: group {val_g} — {vname} "
-          f"[{meta['per_video'][val_g]['surface']}]")
-    print(f"  train {tr.sum()} samples ({len(np.unique(groups[tr]))} videos)   "
-          f"test {va.sum()}")
+        next(g for g in ranked if g != test_g)
+    if val_g == test_g:
+        print("--val-group and --test-group must differ", file=sys.stderr)
+        return 1
 
-    present = [(y[va] == c).sum() > 0 for c in range(n_classes)]
+    tr = (groups != val_g) & (groups != test_g)
+    va, te = groups == val_g, groups == test_g
+    vname = meta["per_video"][val_g]["name"][:44]
+    tname = meta["per_video"][test_g]["name"][:44]
+    print(f"  train      {tr.sum():5d} samples ({len(np.unique(groups[tr]))} videos)")
+    print(f"  validation {va.sum():5d}  group {val_g} — {vname}  "
+          f"[{meta['per_video'][val_g]['surface']}]   (picks the epoch)")
+    print(f"  test       {te.sum():5d}  group {test_g} — {tname}  "
+          f"[{meta['per_video'][test_g]['surface']}]   (scored once)")
+
+    present = [(y[te] == c).sum() > 0 for c in range(n_classes)]
+    present_va = [(y[va] == c).sum() > 0 for c in range(n_classes)]
     missing = [names[i] for i, p in enumerate(present) if not p]
     if missing:
         print(f"  note: absent from the test video — {', '.join(missing)}; "
@@ -195,6 +212,7 @@ def main():
 
     Xtr = torch.from_numpy(Xn[tr]); ytr = torch.from_numpy(y[tr])
     Xva = torch.from_numpy(Xn[va]).to(dev); yva_np = y[va]
+    Xte = torch.from_numpy(Xn[te]).to(dev); yte_np = y[te]
 
     w = class_weights(y[tr], n_classes, args.class_weight)
     print("  weights: " + ", ".join(f"{n}={v:.2f}" for n, v in zip(names, w)))
@@ -209,7 +227,7 @@ def main():
     dl = torch.utils.data.DataLoader(ds, batch_size=args.batch, shuffle=True)
 
     best_f1, best_state, best_epoch, since = -1.0, None, 0, 0
-    print("\n  epoch    loss   test-acc   macro-F1")
+    print("\n  epoch    loss    val-F1   test-F1")
     for ep in range(1, args.epochs + 1):
         model.train()
         tot = 0.0
@@ -222,16 +240,25 @@ def main():
             tot += loss.item() * len(xb)
         model.eval()
         with torch.no_grad():
-            pred = model(Xva).argmax(1).cpu().numpy()
-        cm = confusion(yva_np, pred, n_classes)
-        f1s = [(lambda tp, fp, fn: (lambda p, r: 2*p*r/(p+r) if p+r else 0.0)(
-                    tp/(tp+fp) if tp+fp else 0.0, tp/(tp+fn) if tp+fn else 0.0))(
-                cm[i, i], cm[:, i].sum()-cm[i, i], cm[i].sum()-cm[i, i])
-               for i in range(n_classes) if present[i]]
-        f1 = float(np.mean(f1s))
-        acc = float((pred == yva_np).mean())
+            pv = model(Xva).argmax(1).cpu().numpy()
+            pt = model(Xte).argmax(1).cpu().numpy()
+
+        def macro(pred, truth, pres):
+            cm = confusion(truth, pred, n_classes)
+            f1s = []
+            for i in range(n_classes):
+                if not pres[i]:
+                    continue
+                tp = cm[i, i]; fp = cm[:, i].sum()-tp; fn = cm[i].sum()-tp
+                p_ = tp/(tp+fp) if tp+fp else 0.0
+                r_ = tp/(tp+fn) if tp+fn else 0.0
+                f1s.append(2*p_*r_/(p_+r_) if p_+r_ else 0.0)
+            return float(np.mean(f1s)) if f1s else 0.0
+
+        f1 = macro(pv, yva_np, present_va)      # selection signal
+        f1_te = macro(pt, yte_np, present)      # shown for context only
         if ep % 5 == 0 or ep == 1:
-            print(f"  {ep:5d}  {tot/len(ytr):6.3f}    {acc:7.3f}    {f1:7.3f}")
+            print(f"  {ep:5d}  {tot/len(ytr):6.3f}   {f1:7.3f}  {f1_te:7.3f}")
         if f1 > best_f1:
             best_f1, best_epoch, since = f1, ep, 0
             best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
@@ -241,21 +268,22 @@ def main():
                 print(f"  early stop at epoch {ep} (no gain for {args.patience})")
                 break
 
-    print(f"\nbest epoch {best_epoch}  macro-F1 {best_f1:.3f}")
+    print(f"\nepoch {best_epoch} chosen on validation (val macro-F1 {best_f1:.3f})")
+    print("the numbers below are the test video, scored once at that epoch")
     model.load_state_dict(best_state)
     model.eval()
     with torch.no_grad():
-        pred = model(Xva).argmax(1).cpu().numpy()
-    cm = confusion(yva_np, pred, n_classes)
-    print_report(cm, names, present)
+        pred = model(Xte).argmax(1).cpu().numpy()
+    cm = confusion(yte_np, pred, n_classes)
+    test_f1 = print_report(cm, names, present)
 
     # Argmax is not the deployment rule. Section 5 fires only on
     # P(racket_hit) >= 0.85, which is much stricter, so the numbers that
     # actually predict field behaviour are the ones at that operating point.
     with torch.no_grad():
-        prob = torch.softmax(model(Xva), dim=1)[:, names.index("racket_hit")]
+        prob = torch.softmax(model(Xte), dim=1)[:, names.index("racket_hit")]
         prob = prob.cpu().numpy()
-    is_hit = yva_np == names.index("racket_hit")
+    is_hit = yte_np == names.index("racket_hit")
     print("\nracket_hit at the section 5 decision rule")
     print(f"  {'threshold':>10s} {'precision':>10s} {'recall':>8s} {'missed':>8s} "
           f"{'false fires':>12s}")
@@ -281,7 +309,9 @@ def main():
         "input_norm": {"mean": mu, "std": sd},
         "features": meta["features"],
         "train": {"val_group": val_g, "val_video": vname,
-                  "epochs_run": best_epoch, "macro_f1": best_f1,
+                  "test_group": test_g, "test_video": tname,
+                  "epochs_run": best_epoch,
+                  "val_macro_f1": best_f1, "test_macro_f1": test_f1,
                   "class_weight": args.class_weight, "seed": args.seed},
     }, args.out)
     print(f"\nwrote {args.out}")
