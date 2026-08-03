@@ -95,6 +95,8 @@ def discover(data_dir):
 
 def read_annotations(csv_path):
     rows = []
+    if not os.path.exists(csv_path):
+        return rows
     with open(csv_path, newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
             lab = (r.get("label") or "").strip()
