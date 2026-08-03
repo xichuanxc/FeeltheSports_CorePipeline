@@ -39,6 +39,7 @@ dataset/
 # derived artifact. Track one deliberately if a baseline needs pinning.
 *.pth
 *.onnx
+*.npz
 
 # Old iterations — reference only, not part of active history
 archive/

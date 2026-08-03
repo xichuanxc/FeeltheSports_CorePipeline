@@ -48,7 +48,8 @@ import numpy as np
 import librosa
 
 from PySide6.QtCore import Qt, QUrl, QTimer, QPointF, QPoint, QRectF, QEvent
-from PySide6.QtGui import QPainter, QColor, QFont, QPen, QKeyEvent, QImage
+from PySide6.QtGui import (QPainter, QColor, QFont, QPen, QKeyEvent, QImage,
+                           QPolygonF)
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QSizePolicy, QMessageBox,
     QFileDialog,
@@ -57,6 +58,7 @@ from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput, QMediaMetaData
 from PySide6.QtMultimediaWidgets import QVideoWidget
 
 from analyzer import load_audio, bandpass
+import model_infer          # numpy only — safe to import without torch present
 
 # ============================ CONFIG ==========================================
 A_SR    = 22050          # analysis sample rate (matches analyzer.py)
@@ -113,6 +115,23 @@ MEL_N_MELS  = 64
 MEL_DB_FLOOR = -80.0     # dB below peak mapped to the bottom of the colour ramp
 
 HOVER_TOL_PX = 12        # how near a spike the pointer must be to preview it
+
+# Live model readout is scored every Nth tick during playback (16 ms ticks, so
+# ~7 Hz) — fast enough to read, cheap enough not to compete with playback.
+LIVE_PREDICT_EVERY = 8
+# "Uncertain" for the M key: the model's own top probability is this low.
+UNCERTAIN_BELOW = 0.60
+
+# Specification section 5's decision rule, applied to the scored candidates so
+# the model's firings can be shown on the timeline. 0.85 is the figure the
+# specification states; measured on a held-out video it gives precision 0.93 at
+# recall 0.68, so --hit-threshold 0.70 trades almost no precision for a lot of
+# recall. NMS is the section's 200 ms lock-out.
+MODEL_HIT_THRESHOLD = 0.85
+NMS_LOCKOUT_S = 0.200
+# How long a firing stays lit on the playhead while watching it run.
+DETECT_FLASH_S = 0.25
+DETECT_COLOR = (255, 255, 255)
 
 STRIP_WINDOW_S = 8.0     # seconds visible in the waveform strip
 STRIP_H        = 150
@@ -470,6 +489,8 @@ class CandidateStrip(QWidget):
         self.threshold = DEFAULT_THRESHOLD
         self.pos       = 0.0
         self.cand_times = np.zeros(0)
+        self.detections = []       # model firings, spec section 5
+        self.firing     = False    # a firing is lit right now
         self.sel_time   = None
         self.owner      = None     # AnnotatorWindow, for label lookups
         self.on_click   = None     # callback(t, exact)
@@ -605,6 +626,12 @@ class CandidateStrip(QWidget):
             x = x_of(t)
             p.drawLine(x, wave_top, x, wave_top + panel_h)
             p.drawLine(x, env_top,  x, env_top + panel_h)
+            # Small red cap where the model contradicts the label given —
+            # a review queue you can see, without hiding anything.
+            if self.owner is not None and self.owner._disagrees(t):
+                p.setPen(Qt.NoPen)
+                p.setBrush(qcolor((255, 90, 90)))
+                p.drawEllipse(QPointF(x, wave_top + 3), 3, 3)
 
         # Manual annotations that no candidate covers
         if self.owner is not None:
@@ -627,10 +654,36 @@ class CandidateStrip(QWidget):
             p.setPen(Qt.NoPen)
             p.drawEllipse(QPointF(x, 4), 4, 4)
 
+        # Model firings. Deliberately a different visual language from the
+        # labels: a white wedge on the top edge plus a full-height hairline,
+        # so it reads as a separate layer over the annotation rather than as
+        # another class colour to decode.
+        if self.detections:
+            det = np.asarray(self.detections)
+            lo_d = int(np.searchsorted(det, t0))
+            hi_d = int(np.searchsorted(det, t1))
+            for i in range(lo_d, hi_d):
+                dt = float(det[i])
+                x = x_of(dt)
+                p.setPen(QPen(qcolor(DETECT_COLOR, 70), 1))
+                p.drawLine(x, 0, x, h)
+                p.setPen(Qt.NoPen)
+                p.setBrush(qcolor(DETECT_COLOR, 235))
+                p.drawPolygon(QPolygonF([QPointF(x - 5, 0), QPointF(x + 5, 0),
+                                         QPointF(x, 9)]))
+
         # Playhead
         cx = x_of(self.pos)
         p.setPen(QPen(qcolor((255, 90, 90)), 1))
         p.drawLine(cx, 0, cx, h)
+        # Firing right now: a halo on the playhead, so the moment is visible
+        # while watching rather than only in the marker trail.
+        if self.firing:
+            p.setPen(Qt.NoPen)
+            p.setBrush(qcolor(DETECT_COLOR, 60))
+            p.drawEllipse(QPointF(cx, h / 2), 22, 22)
+            p.setBrush(qcolor(DETECT_COLOR, 220))
+            p.drawEllipse(QPointF(cx, h / 2), 7, 7)
 
         # Pointer readout: the time under the cursor, so a point can be placed
         # deliberately rather than by eye. Derived from hover_x every paint
@@ -697,6 +750,22 @@ class AnnotatorHud(QWidget):
         if sel:
             p.setPen(qcolor((255, 230, 140)))
             p.drawText(10, 58, sel)
+        # Model opinion for the selected candidate, and the live one during
+        # playback. Advisory: shown, never acted on.
+        mp = s.get("model_info", "")
+        if mp:
+            p.setFont(QFont("Menlo", 11, QFont.Bold))
+            p.setPen(qcolor(s.get("model_color", (200, 200, 200))))
+            p.drawText(470, 58, mp)
+        if s.get("n_detections") is not None:
+            p.setFont(QFont("Menlo", 11, QFont.Bold))
+            p.setPen(qcolor((190, 190, 190)))
+            p.drawText(760, 40, f"model fires {s['n_detections']}  "
+                                f"@P>={s.get('hit_threshold', 0):.2f}")
+            if s.get("firing"):
+                p.setFont(QFont("Menlo", 15, QFont.Bold))
+                p.setPen(qcolor(DETECT_COLOR))
+                p.drawText(760, 20, f"HIT  ({s.get('fire_count', 0)})")
 
         # Per-class progress against spec targets
         counts = s.get("counts", {})
@@ -722,13 +791,15 @@ class AnnotatorHud(QWidget):
         # line was silently clipped at the right edge.
         p.setFont(QFont("Menlo", 10))
         p.setPen(qcolor((150, 150, 150)))
+        # Keep both lines short enough to fit the window: a longer one is
+        # silently clipped at the right edge rather than wrapped.
         p.drawText(10, h - 24,
-                   "1-5 label · X reject · U undo · click/A add at the exact instant · "
-                   "^click/^A snap to peak · S save · Q quit · L loop · P preview")
+                   "1-5 label · X reject · U undo · click/A add exact · "
+                   "^click/^A snap · S save · Q quit · L loop · P preview")
         p.drawText(10, h - 8,
-                   "SPACE play · E auto-pause · TAB/⇧TAB next/prev unreviewed · "
-                   ",/. prev/next event · ←→ seek 5s · ⇧←/⇧→ frame · ↑↓ speed · "
-                   "[ ] threshold")
+                   "SPACE play · E auto-pause · TAB/⇧TAB unreviewed · ,/. event · "
+                   "←→ 5s · ⇧←/⇧→ frame · ↑↓ speed · [ ] thr · "
+                   "M model-unsure · D disagrees")
 
         saved = s.get("saved", True)
         p.setFont(QFont("Menlo", 11, QFont.Bold))
@@ -738,7 +809,8 @@ class AnnotatorHud(QWidget):
 
 # ============================ MAIN WINDOW =====================================
 class AnnotatorWindow(QMainWindow):
-    def __init__(self, video_path, threshold=DEFAULT_THRESHOLD):
+    def __init__(self, video_path, threshold=DEFAULT_THRESHOLD, model_path=None,
+                 hit_threshold=MODEL_HIT_THRESHOLD, auto_pause=None):
         super().__init__()
         self.video_path = video_path
         self.media_name = Path(video_path).name
@@ -769,9 +841,22 @@ class AnnotatorWindow(QMainWindow):
 
         self._load_state()
         self._load_csv()
+        # Optional model scoring. Advisory only: predictions are displayed and
+        # can be navigated by, but no candidate is ever hidden or removed on
+        # the model's say-so. Filtering would make its mistakes invisible and
+        # unlabelled, so the next training set would confirm the model rather
+        # than correct it.
+        self.clf = model_infer.load(model_path) if model_path else None
+        self._pred = {}          # rounded time -> (label, confidence)
+        self.hit_threshold = hit_threshold
+        self.detections = []
+        if self.clf:
+            print(f"  model loaded: {', '.join(self.clf.labels)}")
+
         self.cand_times = pick_candidates(self.env, self.sr, self.threshold)
         self._apply_manual_cands()
         self._adopt_orphan_annotations()
+        self._score_candidates()
         print(f"  {len(self.cand_times)} candidates at threshold {self.threshold:.2f}"
               + (f" (+{len(self._manual_cands)} manual)" if self._manual_cands else ""))
 
@@ -833,10 +918,19 @@ class AnnotatorWindow(QMainWindow):
         # Auto-pause state. _last_pos baselines the crossing test; None means
         # "re-baseline next tick" and is set on every seek. _last_auto_idx stops
         # the candidate we just parked on from re-triggering on resume.
-        self.auto_pause     = True
+        # Watching the model run wants continuous playback, so a model turns
+        # auto-pause off unless it was asked for explicitly. E still toggles it.
+        self.auto_pause     = (self.clf is None) if auto_pause is None else auto_pause
         self._last_pos      = None
         self._last_auto_idx = None
         self._auto_paused   = False
+        # Live model readout during playback. Scored on a throttle rather than
+        # every tick: one evaluation is ~3 ms, which at 60 Hz would burn a
+        # fifth of the frame budget for a number the eye cannot read that fast.
+        self._live_pred     = None
+        self._live_tick     = 0
+        self._fired_until   = None      # playhead time the firing halo lasts to
+        self._fire_count    = 0         # firings seen since playback started
 
         # Selection: resume where the last session stopped
         self.sel_idx = 0
@@ -849,6 +943,8 @@ class AnnotatorWindow(QMainWindow):
             if nxt is not None:
                 self.sel_idx = nxt
         self._seek_to_selection(play=False)
+
+        self._compute_detections()
 
         self.timer = QTimer(self)
         # 16 ms (~60 Hz), matching player.py. The tick interval bounds how late
@@ -987,6 +1083,60 @@ class AnnotatorWindow(QMainWindow):
             if not self._is_reviewed(float(self.cand_times[j])):
                 return j
         return None
+
+    def _score_candidates(self):
+        """Predict a class for every candidate not already scored.
+
+        Cached by timestamp, so sweeping the threshold rescoring only the
+        candidates that are genuinely new.
+        """
+        if not self.clf:
+            return
+        todo = [float(t) for t in self.cand_times
+                if round(float(t), 3) not in self._pred]
+        if not todo:
+            return
+        mels = np.stack([mel_slice(self.y, self.sr, t) for t in todo])
+        labels, conf, _ = self.clf.predict(mels)
+        for t, lab, c in zip(todo, labels, conf):
+            self._pred[round(t, 3)] = (lab, float(c))
+        print(f"  scored {len(todo)} candidates")
+
+    def prediction(self, t):
+        """(label, confidence) for a candidate, or None when unscored."""
+        return self._pred.get(round(float(t), 3))
+
+    def _compute_detections(self):
+        """Where the model would fire, per specification section 5.
+
+        P(racket_hit) >= threshold, then a 200 ms lock-out so one impact cannot
+        register twice. Evaluated at the candidates rather than on a 10 ms
+        rolling buffer: those are already scored, so this costs nothing, and it
+        answers the question being demonstrated — which events does the model
+        call a hit — without a minute of dead time before playback can start.
+        """
+        self.detections = []
+        if not self.clf:
+            return
+        hit = "racket_hit"
+        last = -1e9
+        for t in self.cand_times:
+            t = float(t)
+            pr = self._pred.get(round(t, 3))
+            if not pr or pr[0] != hit or pr[1] < self.hit_threshold:
+                continue
+            if t - last < NMS_LOCKOUT_S:      # section 5 NMS
+                continue
+            self.detections.append(t)
+            last = t
+        print(f"  model fires on {len(self.detections)} events "
+              f"at P(racket_hit) >= {self.hit_threshold:.2f}")
+
+    def _disagrees(self, t):
+        """True when the model's call differs from the label already given."""
+        p = self.prediction(t)
+        lab = self.label_at(t)
+        return bool(p and lab and p[0] != lab)
 
     def _apply_manual_cands(self):
         """Fold manually inserted candidates back into a freshly picked set."""
@@ -1167,6 +1317,30 @@ class AnnotatorWindow(QMainWindow):
         self.player.play()
         self.is_paused = False
 
+    def _jump_model(self, pred, what):
+        """Move to the next candidate after the playhead satisfying `pred`.
+
+        This is how the model earns its keep without filtering anything:
+        it points at where your attention is worth most — what it cannot
+        classify, and where it contradicts you — while every candidate stays
+        in the list.
+        """
+        if not self.clf:
+            print("[model] no model loaded — pass --model")
+            return
+        n = len(self.cand_times)
+        start = self.sel_idx
+        for step in range(1, n + 1):                      # wrap around
+            j = (start + step) % n
+            if pred(float(self.cand_times[j])):
+                self.sel_idx = j
+                wrapped = " (wrapped)" if j <= start else ""
+                print(f"[model] -> candidate {j+1}/{n} at "
+                      f"t={self.cand_times[j]:.3f}s{wrapped}")
+                self._seek_to_selection(play=False)
+                return
+        print(f"[model] no {what} found")
+
     def _advance(self):
         # If playback parked us here, resume instead of jumping: the next
         # auto-pause lands on the following event, so labelling never breaks
@@ -1270,6 +1444,8 @@ class AnnotatorWindow(QMainWindow):
         self.threshold = thr
         self.cand_times = pick_candidates(self.env, self.sr, thr)
         self._apply_manual_cands()     # peak-picking would otherwise drop them
+        self._score_candidates()       # cached, so only new candidates cost
+        self._compute_detections()
         # Re-anchor the selection by time, never by index.
         if anchor is not None:
             near = self._nearest_candidate_index(anchor)
@@ -1359,7 +1535,11 @@ class AnnotatorWindow(QMainWindow):
                 self._mel_cache[key] = mel
             label  = self.label_at(t)
             status = label or ("rejected" if self.is_rejected(t) else "unreviewed")
-            self.mel_popup.set_data(mel, f"t = {t:.3f} s   [{status}]")
+            title  = f"t = {t:.3f} s   [{status}]"
+            pr = self.prediction(t)
+            if pr:
+                title += f"   model: {pr[0]} {pr[1]:.2f}"
+            self.mel_popup.set_data(mel, title)
         self._place_popup(x_px)
         self.mel_popup.show()
         self.mel_popup.raise_()
@@ -1407,7 +1587,25 @@ class AnnotatorWindow(QMainWindow):
             # so the anchor is the truth. While playing it is the other way round.
             pos = self._nav_time
         else:
+            prev_pos = self._nav_time
             self._nav_time = pos
+            if self.clf:
+                self._live_tick += 1
+                if self._live_tick >= LIVE_PREDICT_EVERY:
+                    self._live_tick = 0
+                    lab, conf, _ = self.clf.predict(
+                        mel_slice(self.y, self.sr, pos)[None])
+                    self._live_pred = (lab[0], float(conf[0]))
+                # Light the halo when playback crosses a firing. Checked on the
+                # interval covered since the last tick, so a detection cannot
+                # fall between two frames and go unseen.
+                if self.detections and pos > prev_pos:
+                    det = np.asarray(self.detections)
+                    i = int(np.searchsorted(det, prev_pos, side="right"))
+                    j = int(np.searchsorted(det, pos, side="right"))
+                    if j > i:
+                        self._fired_until = float(det[j - 1]) + DETECT_FLASH_S
+                        self._fire_count += 1
         if self._preview_until is not None and pos >= self._preview_until:
             self.player.pause()
             self.is_paused = True
@@ -1470,8 +1668,25 @@ class AnnotatorWindow(QMainWindow):
                         f"t={t:.3f}s  [{status}]")
         else:
             sel_info = "no candidates"
+        model_info, model_color = "", (200, 200, 200)
+        if self.clf:
+            if not self.is_paused and self._live_pred:
+                lab, conf = self._live_pred
+                model_info = f"live: {lab} {conf:.2f}"
+                model_color = LABEL_COLORS.get(lab, (200, 200, 200))
+            elif t is not None:
+                pr = self.prediction(t)
+                if pr:
+                    lab, conf = pr
+                    mark = "  ✗ differs" if self._disagrees(t) else ""
+                    model_info = f"model: {lab} {conf:.2f}{mark}"
+                    model_color = ((255, 120, 120) if self._disagrees(t)
+                                   else LABEL_COLORS.get(lab, (200, 200, 200)))
         reviewed = sum(1 for ct in self.cand_times if self._is_reviewed(float(ct)))
         self.strip.cand_times = self.cand_times
+        self.strip.detections = self.detections
+        self.strip.firing     = bool(self._fired_until is not None
+                                     and pos <= self._fired_until)
         self.strip.sel_time   = t
         self.hud.set_state(
             pos=pos, duration=self.duration, paused=self.is_paused,
@@ -1480,6 +1695,10 @@ class AnnotatorWindow(QMainWindow):
             speed=SPEED_STEPS[self.speed_index],
             n_candidates=len(self.cand_times), n_reviewed=reviewed,
             sel_info=sel_info, counts=self._counts(), saved=self._saved,
+            model_info=model_info, model_color=model_color,
+            n_detections=(len(self.detections) if self.clf else None),
+            hit_threshold=self.hit_threshold, fire_count=self._fire_count,
+            firing=bool(self._fired_until is not None and pos <= self._fired_until),
         )
         self.strip.update()
 
@@ -1519,6 +1738,14 @@ class AnnotatorWindow(QMainWindow):
             self._step(+1)
         elif k == Qt.Key_Comma:
             self._step(-1)
+        elif k == Qt.Key_M:
+            self._jump_model(lambda t: (self.prediction(t) is not None
+                                        and self.prediction(t)[1] < UNCERTAIN_BELOW
+                                        and not self._is_reviewed(t)),
+                             "unreviewed candidate the model is unsure about")
+        elif k == Qt.Key_D:
+            self._jump_model(self._disagrees,
+                             "labelled candidate the model disagrees with")
         elif k == Qt.Key_L:
             self._toggle_audit()
         elif k == Qt.Key_P:
@@ -1598,6 +1825,21 @@ def main():
     ap.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD,
                     help=f"candidate onset threshold (default {DEFAULT_THRESHOLD}; "
                          "lower = more candidates)")
+    ap.add_argument("--model", default=None,
+                    help="tennis_hit_model.npz from train.py — scores candidates "
+                         "and shows a live prediction during playback. Advisory "
+                         "only: nothing is ever hidden or relabelled for you.")
+    ap.add_argument("--hit-threshold", type=float, default=MODEL_HIT_THRESHOLD,
+                    dest="hit_threshold",
+                    help=f"P(racket_hit) at which the model fires (spec 5 says "
+                         f"{MODEL_HIT_THRESHOLD}; measured recall there is 0.68, "
+                         f"so 0.70 is worth trying)")
+    g = ap.add_mutually_exclusive_group()
+    g.add_argument("--auto-pause", dest="auto_pause", action="store_true",
+                   default=None, help="stop at each unreviewed event (default "
+                                      "when no model is loaded)")
+    g.add_argument("--no-auto-pause", dest="auto_pause", action="store_false",
+                   help="play straight through (default with --model)")
     args = ap.parse_args()
 
     app = QApplication(sys.argv)
@@ -1615,7 +1857,10 @@ def main():
         return 1
 
     try:
-        win = AnnotatorWindow(video, threshold=args.threshold)
+        win = AnnotatorWindow(video, threshold=args.threshold,
+                              model_path=args.model,
+                              hit_threshold=args.hit_threshold,
+                              auto_pause=args.auto_pause)
     except Exception as e:
         QMessageBox.critical(None, "Annotator", f"Could not open {video}:\n{e}")
         raise

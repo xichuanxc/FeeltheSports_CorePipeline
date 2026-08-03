@@ -285,6 +285,25 @@ def main():
                   "class_weight": args.class_weight, "seed": args.seed},
     }, args.out)
     print(f"\nwrote {args.out}")
+
+    # Also export plain arrays. The annotator runs on system python3, where
+    # neither torch nor onnxruntime imports, so it reads this with numpy alone
+    # (see model_infer.py). Keeping the export here means the weights the
+    # annotator scores with are always the ones just trained.
+    npz = str(Path(args.out).with_suffix(".npz"))
+    st = best_state
+    arrays = {"input_mean": np.float32(mu), "input_std": np.float32(sd),
+              "labels": np.array(names), "bn_eps": np.float32(1e-5)}
+    for tag, idx in (("c1", 0), ("c2", 4), ("c3", 8)):        # Conv2d layers
+        arrays[f"{tag}_w"] = st[f"features.{idx}.weight"].numpy()
+        arrays[f"{tag}_b"] = st[f"features.{idx}.bias"].numpy()
+    for tag, idx in (("b1", 1), ("b2", 5), ("b3", 9)):        # BatchNorm2d
+        for k in ("weight", "bias", "running_mean", "running_var"):
+            arrays[f"{tag}_{k}"] = st[f"features.{idx}.{k}"].numpy()
+    arrays["fc_w"] = st["classifier.2.weight"].numpy()
+    arrays["fc_b"] = st["classifier.2.bias"].numpy()
+    np.savez(npz, **arrays)
+    print(f"wrote {npz}  (numpy weights for the annotator)")
     return 0
 
 
