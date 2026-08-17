@@ -114,6 +114,7 @@ figcaption{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-to
   margin:0;font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.005em;
 }
 .panel p{font-size:15.5px;line-height:1.5;margin:0;color:var(--muted);}
+.panel p em{font-style:normal;color:var(--faint);font-size:13px;}
 .tag{
   font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--faint);
@@ -264,9 +265,10 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       Acoustic racket-strike detection for synchronised haptic feedback
     </p>
     <div class="byline">
-      <span><b>MSc Research Project</b></span>
-      <span>Feel-the-Sports</span>
-      <span class="mono">2026</span>
+      <span><b>Chuan Xi</b></span>
+      <span>Supervisors: David Nichols &amp; Jemma K&ouml;nig</span>
+      <span>University of Waikato</span>
+      <span class="mono">COMPX520 &middot; 2026</span>
     </div>
   </div>
 </section>
@@ -306,31 +308,39 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <div class="cols" style="grid-template-columns:repeat(3,1fr);align-items:start;">
     <div class="panel">
       <span class="tag">Strand 01</span>
-      <h3>Haptics for spectating</h3>
-      <p>Vibration as a channel for sports and media accessibility; what
-      intensity and timing viewers can actually resolve.</p>
-      <p><span class="todo">add citations</span></p>
+      <h3>Haptics for spectators</h3>
+      <p>All event-driven; they differ in what is sensed &mdash; sound, vision,
+      or the body. <em>Iekura 2015 &middot; Handa 2019 &middot; Peng 2022</em></p>
+      <p>Nearly all need <strong>custom hardware</strong>.
+      <em>Mizushina 2015 &middot; Takahashi 2021 &middot; de Graaf 2022</em></p>
+      <p>Earlier <em>Feel the Sports</em> work drove a wrist device from motion
+      capture. <em>Poutoa 2025 &middot; Nichols et al. 2026</em></p>
     </div>
     <div class="panel">
       <span class="tag">Strand 02</span>
-      <h3>Audio event detection</h3>
-      <p>CNNs on log-mel representations for short environmental and impact
-      sounds; lightweight models for on-device inference.</p>
-      <p><span class="todo">add citations</span></p>
+      <h3>Acoustic detection in tennis</h3>
+      <p>Peak energy on a filtered waveform. <em>Caprioli et al. 2024</em></p>
+      <p>MFCC + CNN, <strong>F1 92.4%</strong>. <em>Baughman et al. 2019</em></p>
+      <p>XGBoost, <strong>0.98</strong> for impacts &mdash; but bounces need an
+      ensemble, and real-court noise drops the system to
+      <strong>~85%</strong>. <em>Caprioli et al. 2025</em></p>
     </div>
     <div class="panel">
       <span class="tag">Strand 03</span>
-      <h3>Sports audio analysis</h3>
-      <p>Onset detection and stroke recognition in racket sports; broadcast
-      audio as a noisy, uncontrolled source.</p>
-      <p><span class="todo">add citations</span></p>
+      <h3>What is missing</h3>
+      <p>Those systems analyse <strong>performance</strong>, not spectating, and
+      are recorded on court.</p>
+      <p>None addresses <strong>broadcast audio</strong> &mdash; crowd and
+      commentary over every rally.</p>
+      <p>The nearest consumer-device work is outside sport.
+      <em>G&oacute;mez-Monroy et al. 2026</em></p>
     </div>
   </div>
   <div class="callout" style="margin-top:8px;">
     <span class="lbl">The gap</span>
-    Detection and haptic rendering are studied separately. This project runs the
-    chain end to end &mdash; and the end-to-end constraint changes what counts as
-    a good detector.
+    No existing work connects audio-based tennis event detection to haptic
+    feedback on a device the spectator <strong>already owns</strong> &mdash; and
+    70% of people now carry one.
   </div>
 </section>
 
@@ -570,9 +580,9 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 <section class="slide vc" data-act="4" data-time="1:05">
   <div class="eyebrow"><i class="dot"></i>The feeling</div>
   <h2>Feel it</h2>
-  <p class="lede" style="margin-bottom:30px;">The same rally twice, played normally
-  &mdash; once <strong>without</strong> vibration, once <strong>with</strong>.
-  Exactly the comparison the study participants made.</p>
+  <p class="lede" style="margin-bottom:30px;">Two clips, played normally &mdash;
+  one <strong>without</strong> vibration, one <strong>with</strong>. The same
+  comparison the study participants made.</p>
   <div class="demo-steps" style="margin-bottom:26px;">
     <div class="step">
       <span class="i">STEP 01</span>
@@ -582,7 +592,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <div class="step">
       <span class="i">STEP 02</span>
       <span class="t">Clip A, then clip B</span>
-      <span class="d">Identical footage. Only the vibration changes.</span>
+      <span class="d">Different rallies; one of them carries the haptics.</span>
     </div>
     <div class="step">
       <span class="i">STEP 03</span>
@@ -604,7 +614,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <h2>What 11 people said</h2>
   <figure>
     <img src="__ASSET:docs/figures/fig_c_user_study.png__" alt="Likert responses from 11 participants: system-quality items cluster at strongly agree, experience items spread across the whole scale">
-    <figcaption>Within-subject A/B, counterbalanced &nbsp;·&nbsp; 5-point Likert &nbsp;·&nbsp; n = 11</figcaption>
+    <figcaption>Within-subject, order counterbalanced &nbsp;·&nbsp; two clips, one haptic &nbsp;·&nbsp; 5-point Likert &nbsp;·&nbsp; n = 11</figcaption>
   </figure>
   <div class="cols" style="grid-template-columns:1fr 1fr;flex:none;gap:24px;margin-top:14px;">
     <div class="callout" style="border-left-color:var(--good);">

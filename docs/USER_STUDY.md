@@ -12,12 +12,16 @@ Committee. Participants gave written consent and are identified only by code.*
 
 ## Method
 
-Within-subject A/B comparison. Each participant watched the same tennis footage
-twice — once with synchronised haptic feedback delivered to a handheld
-smartphone, once without — with **presentation order counterbalanced** (6
-participants saw the haptic condition first, 5 saw it second). Both conditions
-played with **sound at normal level**; the vibration was the only manipulated
-variable.
+Within-subject A/B comparison. Each participant watched **two tennis clips** —
+one with synchronised haptic feedback delivered to a handheld smartphone, one
+without — with **presentation order counterbalanced** (6 participants received
+the haptic condition first, 5 received it second). Both clips played with
+**sound at normal level**.
+
+The two clips were different footage rather than the same clip repeated, which
+avoids the participant having already seen the rally in the second condition
+but means **clip content varies alongside the haptic condition**. See
+Limitations.
 
 Participants completed a pre-study questionnaire (demographics, viewing habits,
 haptic familiarity) and a post-study questionnaire: a nine-item 5-point Likert
@@ -120,6 +124,23 @@ how incoming notifications would be prevented from being mistaken for feedback
 (P05); one suggested a racket-shaped prop instead of a phone (P01).
 
 ## Limitations
+
+- **Clip content is confounded with condition.** The haptic and non-haptic
+  clips were different footage. Condition order was counterbalanced and is
+  recorded; which clip carried the haptics is not. A participant reporting the
+  haptic clip as more engaging may in part be reporting that it was the more
+  engaging rally. This bears directly on Q10 and Q11 and on the free-text
+  comparisons, and cannot be separated out from these responses alone.
+
+  It bears much less on the system-quality items. "The vibrations were clearly
+  noticeable", "fitted what I saw and heard" and "were synchronised with the
+  hits" are judgements about the haptic channel itself, answerable only from
+  the clip that had it, and are not comparative. The principal finding — that
+  the detector was not in dispute — is therefore robust to this confound; the
+  experience finding is not.
+
+  A repeat should either counterbalance clip against condition or record the
+  clip-to-condition assignment per participant, which costs one extra field.
 
 - **n = 11**, convenience sample, no regular tennis viewers. Sufficient to
   establish that the experience response is divided; insufficient to explain

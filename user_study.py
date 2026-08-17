@@ -7,9 +7,14 @@ in docs/user_study_results/ (gitignored: those are participant records). The
 transcription is kept separate from this analysis on purpose, so a disputed
 reading can be corrected in one place without touching the statistics.
 
-Design: within-subject A/B. Each participant watched the same match twice,
-once with haptic feedback and once without, with the order counterbalanced,
-and answered a 5-point Likert battery afterwards.
+Design: within-subject A/B. Each participant watched two tennis clips, one
+with haptic feedback and one without, with the order counterbalanced, and
+answered a 5-point Likert battery afterwards.
+
+The two clips were DIFFERENT footage, not the same clip twice. Condition order
+is recorded (q2); which clip carried the haptics is not. Clip content is
+therefore a potential confound on every experience item, and cannot be ruled
+out from these responses alone -- see the caveats in the generated report.
 
 The battery splits cleanly into two groups, and the split is the finding:
 
@@ -250,9 +255,9 @@ def write_report(rows, path):
              f"`{os.path.basename(DATA)}` and `{os.path.basename(FREETEXT)}`. "
              f"Do not edit by hand — rerun the script.*\n")
     L.append(f"**N = {n}** " + f"({', '.join(r['participant'] for r in rows)}). "
-             "Within-subject A/B: every participant saw the same footage with "
-             "and without haptic feedback, order counterbalanced, sound on in "
-             "both conditions.\n")
+             "Within-subject A/B: every participant saw two tennis clips, one "
+             "with haptic feedback and one without, order counterbalanced, "
+             "sound on in both conditions.\n")
     L.append("---\n")
 
     # ---------------- pre-study ----------------
@@ -342,6 +347,12 @@ def write_report(rows, path):
     L.append("- **Participant codes P07 and P12 are absent** from the returned "
              "forms. Confirm against the recruitment log whether those "
              "sessions took place.\n")
+    L.append("- **The two clips were different footage.** Condition order was "
+             "counterbalanced and is recorded, but which clip carried the "
+             "haptics is not, so clip content is a potential confound on every "
+             "experience item. The system-quality items (noticeable, fits, "
+             "synchronised) are judgements about the haptics themselves and "
+             "are far less exposed to it.\n")
     L.append(f"- **n = {n}, convenience sample, no regular tennis viewers.** "
              "Enough to establish that the experience response is divided; not "
              "enough to explain who falls on which side.\n")
