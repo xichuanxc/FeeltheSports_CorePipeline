@@ -23,8 +23,10 @@ The battery splits cleanly into two groups, and the split is the finding:
     experience       q3 enjoyed, q10 engagement, q11 would install
                      -- did the participant want it?
 
-q8 (distraction) is negatively worded and is reversed for the summary so that
-a higher score always means a better outcome.
+q8 (distraction) is negatively worded and is reported exactly as answered --
+not reversed. On that row alone a LOW score is the good outcome. Flipping it
+would make every row point the same way, but at the cost of showing a number no
+participant actually gave.
 
     python3 user_study.py                 # report
     python3 user_study.py --figure        # also write the deck figure
@@ -85,14 +87,13 @@ LABELS = {
     "q5_noticeable": "Vibrations clearly noticeable",
     "q6_fit": "Fitted what I saw and heard",
     "q7_synchronised": "Synchronised with the hits",
-    "q8_distracted": "Distracted me (reversed)",
+    "q8_distracted": "Distracted me",
     "q9_variation": "Enough variation between hits",
     "q10_engagement": "More engaging than without",
     "q11_install": "Would install it",
 }
 SYSTEM = ["q5_noticeable", "q6_fit", "q7_synchronised"]
 EXPERIENCE = ["q3_enjoyed", "q10_engagement", "q11_install"]
-REVERSED = {"q8_distracted"}
 
 BG, INK, MUTED, FAINT, LINE = "#0B0F14", "#E8EDF4", "#8A97A8", "#5A6675", "#1E2733"
 AMBER, SKY, GOOD = "#F5A524", "#38BDF8", "#34D399"
@@ -162,7 +163,7 @@ def main():
     print("\nRESPONSES   (1 = strongly disagree, 5 = strongly agree)")
     print(f"  {'':38s} {'1':<28s}5")
     for k in LIKERT + ["q10_engagement", "q11_install"]:
-        v = col(rows, k, k in REVERSED)
+        v = col(rows, k)
         print(f"  {LABELS[k]:38s} {bar(v)}  {describe(v)}")
     print("\n  q10 scale: 1 much less engaging .. 5 much more engaging")
     print("  q11 scale: 1 definitely not .. 5 definitely yes")
@@ -280,13 +281,14 @@ def write_report(rows, path):
 
     L.append("### Likert items (Q3–Q9)\n")
     L.append("Counts at each scale point, 1 = strongly disagree … "
-             "5 = strongly agree. **Q8 is negatively worded and is reported "
-             "raw here** — a low score is the good outcome for that row only.\n")
+             "5 = strongly agree. Every item is reported exactly as answered. "
+             "**Q8 is negatively worded**, so on that row alone a low score is "
+             "the good outcome.\n")
     body = []
     for k in LIKERT:
         v = col(rows, k)                      # raw, unreversed
         counts = [int((v == p).sum()) for p in range(1, 6)]
-        body.append([LABELS[k].replace(" (reversed)", "")] + counts +
+        body.append([LABELS[k]] + counts +
                     [f"{v.mean():.2f}", f"{np.median(v):.0f}",
                      f"{v.std(ddof=1):.2f}"])
     L.append(md_table(["Item", "1", "2", "3", "4", "5", "mean", "med", "sd"],
@@ -379,7 +381,7 @@ def make_figure(rows):
     ax.set_facecolor(BG)
     ys = np.arange(len(keys))[::-1]
     for y, k, g in zip(ys, keys, groups):
-        v = col(rows, k, k in REVERSED)
+        v = col(rows, k)
         c = colours[g]
         ax.plot([1, 5], [y, y], color=LINE, lw=1, zorder=1)
         # every participant, jittered, so the spread is visible not just the mean

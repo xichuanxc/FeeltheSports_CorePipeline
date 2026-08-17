@@ -90,7 +90,7 @@
 
 ### Likert items (Q3–Q9)
 
-Counts at each scale point, 1 = strongly disagree … 5 = strongly agree. **Q8 is negatively worded and is reported raw here** — a low score is the good outcome for that row only.
+Counts at each scale point, 1 = strongly disagree … 5 = strongly agree. Every item is reported exactly as answered. **Q8 is negatively worded**, so on that row alone a low score is the good outcome.
 
 | Item                          | 1 | 2 | 3 | 4 | 5 | mean | med | sd   |
 |-------------------------------|---|---|---|---|---|------|-----|------|
