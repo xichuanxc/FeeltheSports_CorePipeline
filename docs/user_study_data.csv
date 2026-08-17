@@ -1,0 +1,12 @@
+participant,age,gender,watch_sport,phone_while_watching,watch_tennis,play_tennis,vib_familiar,sequence,q3_enjoyed,q4_helped_follow,q5_noticeable,q6_fit,q7_synchronised,q8_distracted,q9_variation,q10_engagement,q11_install,flag
+P01,35-44,F,a few times a year,rarely,a few times a year,never,very,no_vib_first,3,4,5,5,5,3,4,3,2,
+P02,55+,M,a few times a year,never,a few times a year,never,very,no_vib_first,1,4,5,4,4,1,1,5,4,q3_suspect
+P03,35-44,F,a few times a year,sometimes,a few times a year,occasionally,moderately,no_vib_first,5,5,4,5,5,1,4,5,5,
+P04,35-44,M,a few times a year,sometimes,a few times a year,never,slightly,vib_first,4,5,5,5,5,3,4,5,4,
+P05,25-34,M,weekly,sometimes,never,never,moderately,vib_first,4,3,5,4,5,1,3,4,3,
+P06,35-44,M,a few times a year,sometimes,a few times a year,occasionally,moderately,no_vib_first,4,4,5,4,5,2,2,4,2,
+P08,35-44,M,monthly,sometimes,a few times a year,never,not_at_all,vib_first,2,2,5,5,4,3,4,3,1,
+P09,25-34,M,a few times a year,sometimes,never,never,very,vib_first,1,4,5,5,5,1,4,5,5,q3_suspect
+P10,25-34,M,a few times a year,often,never,never,slightly,vib_first,4,5,5,5,4,2,4,4,4,
+P11,35-44,F,a few times a year,never,never,never,slightly,no_vib_first,2,2,5,5,5,5,4,1,1,
+P13,18-24,F,a few times a year,often,a few times a year,occasionally,very,vib_first,4,4,3,5,5,2,4,4,4,
