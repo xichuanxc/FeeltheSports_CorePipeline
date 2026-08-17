@@ -1,0 +1,805 @@
+<title>Feeling the Game — Acoustic Strike Detection for Haptic Sports Viewing</title>
+<style>
+/* ---------------------------------------------------------------------------
+   A projected deck commits to one visual world: the figures are rendered on
+   #0B0F14, so a light theme would float them in dark boxes. Every colour is
+   painted explicitly so the page holds on either host ground.
+   --------------------------------------------------------------------------- */
+:root{
+  --ground:#0B0F14;
+  --surface:#131A24;
+  --surface-2:#18212D;
+  --ink:#E8EDF4;
+  --muted:#8A97A8;
+  --faint:#5A6675;
+  --line:#1E2733;
+  --amber:#F5A524;
+  --sky:#38BDF8;
+  --violet:#A78BFA;
+  --slate:#94A3B8;
+  --good:#34D399;
+
+  --sans:"Helvetica Neue",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Arial,sans-serif;
+  --mono:"SF Mono",Menlo,ui-monospace,"Roboto Mono",monospace;
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);overflow:hidden;
+}
+
+/* --- the stage: a fixed 1280x720 canvas scaled to fit any viewport --------- */
+#viewport{position:fixed;inset:0;display:grid;place-items:center;background:var(--ground);}
+#stage{
+  position:relative;width:1280px;height:720px;flex:none;
+  transform-origin:center center;background:var(--ground);
+}
+
+.slide{
+  position:absolute;inset:0;padding:58px 72px 72px;
+  display:none;flex-direction:column;
+}
+.slide.on{display:flex;}
+.slide.vc > *:nth-child(3){margin-top:auto;}
+.slide.vc > *:last-child{margin-bottom:auto;}
+.slide.on > *{animation:rise .38s cubic-bezier(.22,.7,.3,1) both;}
+.slide.on > *:nth-child(2){animation-delay:.05s;}
+.slide.on > *:nth-child(3){animation-delay:.10s;}
+.slide.on > *:nth-child(4){animation-delay:.15s;}
+@keyframes rise{from{opacity:0;transform:translateY(11px);}to{opacity:1;transform:none;}}
+
+/* --- type scale ----------------------------------------------------------- */
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.19em;text-transform:uppercase;
+  color:var(--faint);display:flex;align-items:center;gap:12px;margin:0 0 26px;
+}
+.eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--amber);flex:none;}
+h1{
+  font-size:66px;line-height:1.02;letter-spacing:-.026em;font-weight:700;
+  margin:0;text-wrap:balance;color:var(--ink);
+}
+h2{
+  font-size:41px;line-height:1.1;letter-spacing:-.02em;font-weight:700;
+  margin:0 0 20px;text-wrap:balance;color:var(--ink);
+}
+.lede{font-size:21px;line-height:1.5;color:var(--muted);max-width:62ch;margin:0;}
+p{font-size:19px;line-height:1.55;color:var(--muted);margin:0 0 14px;max-width:62ch;}
+strong{color:var(--ink);font-weight:600;}
+.amber{color:var(--amber);}
+.sky{color:var(--sky);}
+
+/* --- structural furniture -------------------------------------------------- */
+#rail{position:absolute;left:72px;right:72px;bottom:30px;display:flex;gap:5px;align-items:center;}
+.act{height:2px;background:var(--line);border-radius:2px;position:relative;overflow:hidden;}
+.act > i{position:absolute;inset:0 100% 0 0;background:var(--amber);transition:right .4s ease;}
+#meta{
+  position:absolute;right:72px;bottom:44px;font-family:var(--mono);font-size:11.5px;
+  color:var(--faint);letter-spacing:.06em;font-variant-numeric:tabular-nums;
+}
+#budget{
+  position:absolute;left:72px;bottom:44px;font-family:var(--mono);font-size:11.5px;
+  color:var(--faint);letter-spacing:.06em;
+}
+
+/* --- title slide ----------------------------------------------------------- */
+#trace{position:absolute;inset:0;width:100%;height:100%;opacity:.5;}
+.title-wrap{position:relative;z-index:1;margin-top:auto;margin-bottom:auto;}
+.title-rule{width:64px;height:3px;background:var(--amber);margin:0 0 34px;}
+.byline{
+  display:flex;gap:26px;margin-top:44px;font-family:var(--mono);font-size:13px;
+  color:var(--muted);letter-spacing:.04em;flex-wrap:wrap;
+}
+.byline span{display:flex;align-items:center;gap:8px;}
+.byline b{color:var(--ink);font-weight:500;}
+
+/* --- generic layout helpers ------------------------------------------------ */
+.cols{display:grid;gap:44px;flex:1;min-height:0;align-content:center;align-items:start;}
+.c2{grid-template-columns:1fr 1fr;}
+.c25{grid-template-columns:1.15fr .85fr;}
+.c52{grid-template-columns:1fr 1.25fr;}
+.stack{display:flex;flex-direction:column;gap:16px;min-height:0;}
+.grow{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;}
+figure{margin:0;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;}
+figure img{width:100%;height:auto;max-height:100%;object-fit:contain;display:block;border-radius:3px;}
+figcaption{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:12px;letter-spacing:.04em;}
+
+/* --- cards / panels -------------------------------------------------------- */
+.panel{
+  background:var(--surface);border:1px solid var(--line);border-radius:5px;
+  padding:20px 22px;display:flex;flex-direction:column;gap:7px;
+}
+.panel h3{
+  margin:0;font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.005em;
+}
+.panel p{font-size:15.5px;line-height:1.5;margin:0;color:var(--muted);}
+.tag{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--faint);
+}
+
+/* --- data list (spec figures) ---------------------------------------------- */
+dl.spec{display:grid;grid-template-columns:auto 1fr;gap:11px 20px;margin:0;align-items:baseline;}
+dl.spec dt{
+  font-family:var(--mono);font-size:12px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--faint);white-space:nowrap;
+}
+dl.spec dd{margin:0;font-size:17px;color:var(--ink);line-height:1.35;}
+dl.spec dd em{font-style:normal;color:var(--muted);font-size:15px;}
+
+/* --- big numbers ----------------------------------------------------------- */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.stat{
+  background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:20px 20px 18px;
+  display:flex;flex-direction:column;gap:5px;
+}
+.stat .n{
+  font-size:42px;font-weight:700;letter-spacing:-.03em;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--amber);
+}
+.stat .n.sky{color:var(--sky);}
+.stat .n.good{color:var(--good);}
+.stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);}
+.stat .s{font-size:14px;color:var(--muted);line-height:1.4;}
+
+/* --- audio buttons --------------------------------------------------------- */
+.clips{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.clip{
+  appearance:none;background:var(--surface);color:var(--ink);cursor:pointer;
+  border:1px solid var(--line);border-left:3px solid var(--c,var(--amber));
+  border-radius:5px;padding:16px 16px 14px;text-align:left;font-family:var(--sans);
+  display:flex;flex-direction:column;gap:7px;transition:background .16s ease,transform .16s ease;
+}
+.clip:hover{background:var(--surface-2);}
+.clip:focus-visible{outline:2px solid var(--amber);outline-offset:3px;}
+.clip.playing{background:var(--surface-2);transform:translateY(-2px);}
+.clip .key{
+  font-family:var(--mono);font-size:11px;color:var(--c,var(--amber));letter-spacing:.1em;
+  display:flex;align-items:center;gap:7px;
+}
+.clip .key b{
+  border:1px solid var(--line);border-radius:3px;padding:1px 6px;color:var(--muted);
+  font-weight:400;background:var(--ground);
+}
+.clip .nm{font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
+.clip .sub{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.04em;}
+.clip .bar{height:2px;background:var(--line);border-radius:2px;overflow:hidden;}
+.clip .bar > i{display:block;height:100%;width:0;background:var(--c,var(--amber));}
+.clip.playing .bar > i{animation:sweep .8s linear;}
+@keyframes sweep{from{width:0;}to{width:100%;}}
+
+/* --- pipeline / architecture ----------------------------------------------- */
+.flow{display:flex;align-items:stretch;gap:0;}
+.node{
+  flex:1;background:var(--surface);border:1px solid var(--line);border-radius:5px;
+  padding:16px 16px 14px;display:flex;flex-direction:column;gap:6px;
+}
+.node .t{font-size:15.5px;font-weight:600;color:var(--ink);}
+.node .d{font-size:13px;color:var(--muted);line-height:1.45;}
+.node .w{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;}
+.arrow{
+  flex:none;width:44px;display:grid;place-items:center;color:var(--faint);
+  font-family:var(--mono);font-size:15px;
+}
+.wire{
+  display:grid;grid-template-columns:auto 1fr;gap:9px 16px;margin:0;align-items:baseline;
+}
+.wire dt{font-family:var(--mono);font-size:11.5px;color:var(--sky);letter-spacing:.06em;white-space:nowrap;}
+.wire dd{margin:0;font-size:15px;color:var(--muted);line-height:1.45;}
+
+/* --- notes / callouts ------------------------------------------------------- */
+.callout{
+  border-left:3px solid var(--amber);background:var(--surface);border-radius:0 5px 5px 0;
+  padding:16px 20px;font-size:18px;line-height:1.5;color:var(--ink);
+}
+.callout .lbl{
+  display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--amber);margin-bottom:7px;
+}
+.todo{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ground);background:var(--amber);border-radius:3px;padding:2px 7px;
+  display:inline-block;vertical-align:middle;
+}
+ul.ticks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;}
+ul.ticks li{
+  font-size:17px;line-height:1.45;color:var(--muted);padding-left:22px;position:relative;
+}
+ul.ticks li::before{
+  content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:1px;
+  background:var(--line);
+}
+ul.ticks li.warn::before{background:var(--amber);}
+ul.ticks li.ok::before{background:var(--good);}
+ul.ticks li b{color:var(--ink);font-weight:600;}
+
+/* --- demo slide ------------------------------------------------------------- */
+.demo-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.step{
+  background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:18px 18px 16px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.step .i{
+  font-family:var(--mono);font-size:11px;color:var(--amber);letter-spacing:.14em;
+}
+.step .t{font-size:16.5px;font-weight:600;color:var(--ink);line-height:1.3;}
+.step .d{font-size:14px;color:var(--muted);line-height:1.45;}
+
+/* --- help ------------------------------------------------------------------- */
+#help{
+  position:absolute;inset:0;background:rgba(11,15,20,.94);z-index:20;
+  display:none;place-items:center;
+}
+#help.on{display:grid;}
+#help .box{
+  background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:30px 34px;
+  display:grid;grid-template-columns:auto 1fr;gap:12px 26px;align-items:baseline;
+}
+#help kbd{
+  font-family:var(--mono);font-size:12px;background:var(--ground);border:1px solid var(--line);
+  border-radius:3px;padding:3px 8px;color:var(--ink);
+}
+#help span{font-size:15px;color:var(--muted);}
+#help h4{grid-column:1/-1;margin:0 0 6px;font-size:13px;font-family:var(--mono);
+  letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
+
+@media (prefers-reduced-motion:reduce){
+  .slide.on > *{animation:none;}
+  .clip.playing .bar > i{animation:none;width:100%;}
+  #trace{display:none;}
+}
+</style>
+
+<div id="viewport">
+<div id="stage">
+
+<!-- 1 ............................................................. title -->
+<section class="slide" data-act="0" data-time="0:10">
+  <canvas id="trace"></canvas>
+  <div class="title-wrap">
+    <div class="title-rule"></div>
+    <h1>Feeling the game</h1>
+    <p class="lede" style="margin-top:22px;font-size:23px;">
+      Acoustic racket-strike detection for synchronised haptic feedback
+    </p>
+    <div class="byline">
+      <span><b>MSc Research Project</b></span>
+      <span>Feel-the-Sports</span>
+      <span class="mono">2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- 2 ........................................................... problem -->
+<section class="slide vc" data-act="1" data-time="0:45">
+  <div class="eyebrow"><i class="dot"></i>The problem</div>
+  <h2>Tennis is carried by its sound</h2>
+  <div class="cols c52">
+    <div class="stack grow">
+      <p>The crack of the strings tells you the timing, the power, and whether
+      the ball was struck cleanly &mdash; often before the picture does. Strip
+      that channel away and a rally flattens into movement.</p>
+      <p>For deaf and hard-of-hearing viewers, it is simply absent.</p>
+    </div>
+    <div class="stack">
+      <div class="callout">
+        <span class="lbl">Research question</span>
+        Can the impact moments of a match be recovered from broadcast audio
+        accurately enough to drive <strong>vibration on a phone</strong>, in
+        sync, in real time?
+      </div>
+      <div class="panel">
+        <span class="tag">The bar to clear</span>
+        <p>A vibration that fires when nothing happened breaks the illusion far
+        harder than one that never fires at all. <strong>Precision over
+        recall</strong> &mdash; this constraint decides every choice that follows.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 ...................................................... related work -->
+<section class="slide vc" data-act="1" data-time="0:35">
+  <div class="eyebrow"><i class="dot"></i>The problem</div>
+  <h2>Where this sits</h2>
+  <div class="cols" style="grid-template-columns:repeat(3,1fr);align-items:start;">
+    <div class="panel">
+      <span class="tag">Strand 01</span>
+      <h3>Haptics for spectating</h3>
+      <p>Vibration as a channel for sports and media accessibility; what
+      intensity and timing viewers can actually resolve.</p>
+      <p><span class="todo">add citations</span></p>
+    </div>
+    <div class="panel">
+      <span class="tag">Strand 02</span>
+      <h3>Audio event detection</h3>
+      <p>CNNs on log-mel representations for short environmental and impact
+      sounds; lightweight models for on-device inference.</p>
+      <p><span class="todo">add citations</span></p>
+    </div>
+    <div class="panel">
+      <span class="tag">Strand 03</span>
+      <h3>Sports audio analysis</h3>
+      <p>Onset detection and stroke recognition in racket sports; broadcast
+      audio as a noisy, uncontrolled source.</p>
+      <p><span class="todo">add citations</span></p>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:8px;">
+    <span class="lbl">The gap</span>
+    Detection and haptic rendering are studied separately. This project runs the
+    chain end to end &mdash; and the end-to-end constraint changes what counts as
+    a good detector.
+  </div>
+</section>
+
+<!-- 4 .................................................... listening test -->
+<section class="slide" data-act="2" data-time="1:20">
+  <div class="eyebrow"><i class="dot"></i>The sound</div>
+  <h2>Four sounds. Listen.</h2>
+  <div class="clips" style="margin-bottom:26px;">
+    <button class="clip" data-clip="racket_hit" style="--c:var(--amber);">
+      <span class="key"><b>1</b> PLAY</span>
+      <span class="nm">Racket hit</span>
+      <span class="sub">hard court</span>
+      <span class="bar"><i></i></span>
+    </button>
+    <button class="clip" data-clip="ball_bounce" style="--c:var(--sky);">
+      <span class="key"><b>2</b> PLAY</span>
+      <span class="nm">Ball bounce</span>
+      <span class="sub">hard court</span>
+      <span class="bar"><i></i></span>
+    </button>
+    <button class="clip" data-clip="shoe_squeak" style="--c:var(--violet);">
+      <span class="key"><b>3</b> PLAY</span>
+      <span class="nm">Shoe squeak</span>
+      <span class="sub">hard court</span>
+      <span class="bar"><i></i></span>
+    </button>
+    <button class="clip" data-clip="ambient_noise" style="--c:var(--slate);">
+      <span class="key"><b>4</b> PLAY</span>
+      <span class="nm">Crowd / background</span>
+      <span class="sub">clay court</span>
+      <span class="bar"><i></i></span>
+    </button>
+  </div>
+  <figure>
+    <img src="__ASSET:docs/figures/fig_a_envelopes.png__" alt="Onset-strength envelopes for four different sound classes, all showing near-identical spikes">
+    <figcaption>Real annotated events, matched for peak prominence &nbsp;·&nbsp; clips RMS-normalised, 0.8 s of context around a 150 ms model input</figcaption>
+  </figure>
+</section>
+
+<!-- 5 ........................................ detection != classification -->
+<section class="slide vc" data-act="2" data-time="0:35">
+  <div class="eyebrow"><i class="dot"></i>The sound</div>
+  <h2>Your ear separates them instantly.<br>The detector cannot.</h2>
+  <div class="cols c2" style="align-items:center;">
+    <div class="stack">
+      <p>A band-passed spectral-flux detector with adaptive peak picking finds
+      <strong>transients</strong> &mdash; sharp rises in energy. It is very good
+      at that: it proposes <span class="amber">97%</span> of every strike a
+      human later confirmed.</p>
+      <p>But a shoe squeak, a bounce, a seat banging and a forehand are all
+      transients. Detection is not classification.</p>
+    </div>
+    <div class="stats" style="grid-template-columns:1fr 1fr;">
+      <div class="stat">
+        <span class="n good">97%</span>
+        <span class="k">Detector recall</span>
+        <span class="s">of confirmed strikes are proposed as candidates</span>
+      </div>
+      <div class="stat">
+        <span class="n">46%</span>
+        <span class="k">Are actually hits</span>
+        <span class="s">551 of 1,194 adjudicated events &mdash; the rest are nuisance</span>
+      </div>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:26px;">
+    <span class="lbl">Consequence</span>
+    Fewer than half the transients survive human review as racket hits. Buzzing
+    on all of them is not an option &mdash; so the discrimination has to come
+    from the impact sound itself.
+  </div>
+</section>
+
+<!-- 6 .......................................................... mel view -->
+<section class="slide" data-act="2" data-time="0:45">
+  <div class="eyebrow"><i class="dot"></i>The sound</div>
+  <h2>The same four, in log-mel</h2>
+  <figure>
+    <img src="__ASSET:docs/figures/fig_b_mel.png__" alt="Log-mel spectrograms of the same four events, visibly different from one another">
+    <figcaption>Same events, same order, same colours as the previous slide</figcaption>
+  </figure>
+  <div class="cols" style="grid-template-columns:repeat(4,1fr);flex:none;gap:14px;margin-top:20px;">
+    <p style="font-size:14.5px;margin:0;"><strong class="amber">Broadband attack</strong>, fast decay, energy across the whole band.</p>
+    <p style="font-size:14.5px;margin:0;"><strong class="sky">Low-frequency thud</strong>, no frame resonance above it.</p>
+    <p style="font-size:14.5px;margin:0;"><strong style="color:var(--violet);">Horizontal friction bands</strong> that sustain, not a transient at all.</p>
+    <p style="font-size:14.5px;margin:0;"><strong style="color:var(--slate);">Diffuse and unstructured</strong> &mdash; energy everywhere, edges nowhere.</p>
+  </div>
+</section>
+
+<!-- 7 ..................................................... data + model -->
+<section class="slide vc" data-act="3" data-time="0:50">
+  <div class="eyebrow"><i class="dot"></i>The model</div>
+  <h2>Teaching it the difference</h2>
+  <div class="cols c2">
+    <div class="stack">
+      <span class="tag">Corpus</span>
+      <dl class="spec">
+        <dt>Events</dt><dd>1,194 hand-adjudicated <em>&mdash; 551 racket hits</em></dd>
+        <dt>Matches</dt><dd>7 broadcasts <em>&mdash; hard, clay, grass</em></dd>
+        <dt>Classes</dt><dd>5 <em>&mdash; hit, bounce, squeak, speech, ambient</em></dd>
+        <dt>Tooling</dt><dd>Purpose-built annotator <em>&mdash; the detector proposes, a human adjudicates</em></dd>
+      </dl>
+      <p style="margin-top:6px;font-size:16.5px;">Annotation effort scales with the
+      number of <strong>events</strong>, not the length of the recording.</p>
+    </div>
+    <div class="stack">
+      <span class="tag">Representation &amp; network</span>
+      <dl class="spec">
+        <dt>Crop</dt><dd>150 ms <em>&mdash; [&minus;30 ms, +120 ms] around onset</em></dd>
+        <dt>Audio</dt><dd>16 kHz mono <em>&mdash; 2,400 samples</em></dd>
+        <dt>Feature</dt><dd>Log-mel 64 &times; 19 <em>&mdash; n_fft 400, hop 133</em></dd>
+        <dt>Network</dt><dd>3-layer CNN <em>&mdash; 32 &rarr; 64 &rarr; 128, global pool, 5-way</em></dd>
+        <dt>Split</dt><dd>By match <em>&mdash; train / val / test never share a broadcast</em></dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- 8 ........................................................... results -->
+<section class="slide vc" data-act="3" data-time="0:45">
+  <div class="eyebrow"><i class="dot"></i>The model</div>
+  <h2>Does it work?</h2>
+  <div class="stats" style="margin-bottom:24px;">
+    <div class="stat">
+      <span class="n">0.87</span>
+      <span class="k">F1 · racket hit</span>
+      <span class="s">on a match the model never saw in training or tuning</span>
+    </div>
+    <div class="stat">
+      <span class="n good">0.0</span>
+      <span class="k">False buzzes / min</span>
+      <span class="s">median across matches, detector-gated at P &ge; 0.70</span>
+    </div>
+    <div class="stat">
+      <span class="n sky">0.68</span>
+      <span class="k">Strike recall</span>
+      <span class="s">roughly one hit in three still produces no vibration</span>
+    </div>
+  </div>
+  <div class="cols c2" style="flex:none;">
+    <div class="callout">
+      <span class="lbl">The architectural finding</span>
+      Running the CNN over <em style="font-style:normal;color:var(--muted);">every</em>
+      10 ms window costs <strong>2.4 false buzzes per minute</strong>. Keeping the
+      onset detector as a gate and asking the model only about candidates drops
+      that to <strong>zero</strong>, at the same recall &mdash; and 180&times; less compute.
+    </div>
+    <div class="callout" style="border-left-color:var(--sky);">
+      <span class="lbl" style="color:var(--sky);">On honest evaluation</span>
+      Selecting the training epoch on the held-out match inflated macro-F1 by
+      <strong>+0.10</strong>. A three-way split removed it. The corrected,
+      lower numbers are the ones reported here.
+    </div>
+  </div>
+</section>
+
+<!-- 9 ......................................................... intensity -->
+<section class="slide vc" data-act="4" data-time="0:40">
+  <div class="eyebrow"><i class="dot"></i>The feeling</div>
+  <h2>From spike to sensation</h2>
+  <div class="flow" style="flex:none;margin-bottom:26px;">
+    <div class="node">
+      <span class="w">Detected</span>
+      <span class="t">Impact instant</span>
+      <span class="d">Timestamp of the onset, to the millisecond.</span>
+    </div>
+    <div class="arrow">&rarr;</div>
+    <div class="node">
+      <span class="w">Measured</span>
+      <span class="t">Peak loudness</span>
+      <span class="d">dB at the impact, taken from the band-passed signal.</span>
+    </div>
+    <div class="arrow">&rarr;</div>
+    <div class="node">
+      <span class="w">Mapped</span>
+      <span class="t">Intensity 0&ndash;1</span>
+      <span class="d">Scaled against the loudness range of that broadcast.</span>
+    </div>
+    <div class="arrow">&rarr;</div>
+    <div class="node" style="border-color:#3A2E12;background:#1B1608;">
+      <span class="w" style="color:var(--amber);">Rendered</span>
+      <span class="t">Vibration</span>
+      <span class="d">Amplitude and duration on the phone's actuator.</span>
+    </div>
+  </div>
+  <div class="cols c2" style="flex:none;">
+    <div class="panel">
+      <span class="tag">Why per-broadcast</span>
+      <p>Broadcast mixes differ by tens of decibels. A fixed absolute mapping
+      would render one match numb and another saturated.</p>
+    </div>
+    <div class="panel" style="border-left:3px solid var(--amber);">
+      <span class="tag">The honest cost</span>
+      <p>Intensity is therefore <strong>relative</strong>. A soft hit in a quiet
+      match can feel like a hard hit in a loud one. Cross-match calibration is
+      unsolved.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10 .................................................... architecture -->
+<section class="slide vc" data-act="4" data-time="0:50">
+  <div class="eyebrow"><i class="dot"></i>The feeling</div>
+  <h2>Keeping a phone in sync with a laptop</h2>
+  <div class="cols c25">
+    <div class="stack">
+      <div class="callout">
+        <span class="lbl">The design decision</span>
+        The phone is never told &ldquo;vibrate now&rdquo;. It receives the
+        <strong>whole timeline in advance</strong>, synchronises its clock, and
+        schedules every pulse locally.
+      </div>
+      <p style="font-size:16.5px;">Pushing one message per event would inherit
+      every millisecond of Wi-Fi jitter &mdash; and impact timing is exactly what
+      the system exists to convey. Scheduling locally makes the network
+      responsible only for <strong>drift</strong>, not for timing.</p>
+    </div>
+    <div class="stack">
+      <span class="tag">Wire protocol</span>
+      <dl class="wire">
+        <dt>mDNS</dt><dd>Phone discovers the laptop &mdash; <span style="font-family:var(--mono);font-size:13px;">_haptics._tcp.local.</span></dd>
+        <dt>TCP</dt><dd>Handshake, then the full event timeline in one message</dd>
+        <dt>TCP</dt><dd>Clock synchronisation, 8 round-trip samples</dd>
+        <dt>TCP</dt><dd>Transport control &mdash; play, pause, seek, rate</dd>
+        <dt>UDP</dt><dd>Sync pulses at 5&ndash;10 Hz, correcting drift only</dd>
+      </dl>
+      <div class="panel" style="margin-top:6px;">
+        <span class="tag">Measured</span>
+        <p>Event timing held to <strong>single-digit milliseconds</strong>
+        end to end.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 ............................................................. demo -->
+<section class="slide vc" data-act="4" data-time="1:05">
+  <div class="eyebrow"><i class="dot"></i>The feeling</div>
+  <h2>Feel it</h2>
+  <p class="lede" style="margin-bottom:30px;">The same rally twice, played normally
+  &mdash; once <strong>without</strong> vibration, once <strong>with</strong>.
+  Exactly the comparison the study participants made.</p>
+  <div class="demo-steps" style="margin-bottom:26px;">
+    <div class="step">
+      <span class="i">STEP 01</span>
+      <span class="t">A volunteer holds the phone</span>
+      <span class="d">Sound on, as anyone would actually watch it.</span>
+    </div>
+    <div class="step">
+      <span class="i">STEP 02</span>
+      <span class="t">Clip A, then clip B</span>
+      <span class="d">Identical footage. Only the vibration changes.</span>
+    </div>
+    <div class="step">
+      <span class="i">STEP 03</span>
+      <span class="t">Tell the room what changed</span>
+      <span class="d">The difference is the whole point &mdash; and it is subjective.</span>
+    </div>
+  </div>
+  <div class="callout">
+    <span class="lbl">What this does and does not show</span>
+    An A/B with the sound on demonstrates the <strong>experience</strong>, not the
+    accuracy &mdash; a listener cannot tell a correct buzz from a lucky one. The
+    accuracy is on the previous slides; this is what those numbers feel like.
+  </div>
+</section>
+
+<!-- 12 .................................................... user study -->
+<section class="slide" data-act="4" data-time="0:50">
+  <div class="eyebrow"><i class="dot"></i>The feeling</div>
+  <h2>What 11 people said</h2>
+  <figure>
+    <img src="__ASSET:docs/figures/fig_c_user_study.png__" alt="Likert responses from 11 participants: system-quality items cluster at strongly agree, experience items spread across the whole scale">
+    <figcaption>Within-subject A/B, counterbalanced &nbsp;·&nbsp; 5-point Likert &nbsp;·&nbsp; n = 11</figcaption>
+  </figure>
+  <div class="cols" style="grid-template-columns:1fr 1fr;flex:none;gap:24px;margin-top:14px;">
+    <div class="callout" style="border-left-color:var(--good);">
+      <span class="lbl" style="color:var(--good);">The detector is not the problem</span>
+      Noticeable, fits, synchronised: <strong>4.73 / 5</strong>, spread 0.52.
+      Nobody disputed that the pulses land in the right place.
+    </div>
+    <div class="callout">
+      <span class="lbl">Wanting it is a separate question</span>
+      Enjoyed, engaging, would install: <strong>3.39 / 5</strong>, spread
+      <strong>1.37</strong>. Six would install it, four would not.
+    </div>
+  </div>
+</section>
+
+<!-- 12 ................................................. limits and next -->
+<section class="slide vc" data-act="5" data-time="0:20">
+  <div class="eyebrow"><i class="dot"></i>Where it stands</div>
+  <h2>What is not solved</h2>
+  <div class="cols c2">
+    <div class="stack">
+      <span class="tag">Limitations</span>
+      <ul class="ticks">
+        <li class="warn">Roughly <b>one strike in three</b> produces no vibration.</li>
+        <li class="warn">Ball bounces on clay are <b>physically undetectable</b> by onset strength &mdash; prominence 0.169 against 0.168 for ambient noise.</li>
+        <li class="warn">Intensity is <b>relative to each broadcast</b>, not absolute.</li>
+        <li class="warn">For some viewers the vibration <b>captured attention rather than supporting it</b> &mdash; one participant stopped watching the match and waited for the next buzz.</li>
+        <li>The corpus is <b>highlight packages</b>, which carry far less commentary than a live broadcast.</li>
+      </ul>
+    </div>
+    <div class="stack">
+      <span class="tag">Next</span>
+      <ul class="ticks">
+        <li class="ok">Targeted annotation of the under-represented classes to lift recall.</li>
+        <li class="ok">Export to ONNX and move inference <b>on-device</b>.</li>
+        <li class="ok">Intensity that separates a gentle rally from a smash &mdash; the most repeated request in the free-text answers.</li>
+        <li class="ok">A larger study: n = 11 shows the split, but cannot explain who falls on which side.</li>
+      </ul>
+      <div class="callout" style="margin-top:12px;">
+        <span class="lbl">The principle that held throughout</span>
+        A false buzz is worse than a missed one.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- furniture -->
+<div id="rail"></div>
+<div id="meta"></div>
+<div id="budget"></div>
+
+<div id="help">
+  <div class="box">
+    <h4>Keyboard</h4>
+    <kbd>&rarr;</kbd><span>Next slide</span>
+    <kbd>&larr;</kbd><span>Previous slide</span>
+    <kbd>1</kbd><span>&hellip;<kbd>4</kbd> play a sound clip (listening slide)</span>
+    <kbd>F</kbd><span>Fullscreen</span>
+    <kbd>?</kbd><span>Close this</span>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const stage  = document.getElementById("stage");
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const rail   = document.getElementById("rail");
+  const meta   = document.getElementById("meta");
+  const budget = document.getElementById("budget");
+  const help   = document.getElementById("help");
+  const W = 1280, H = 720;
+
+  /* --- scale the fixed stage to the viewport ------------------------------- */
+  function fit(){
+    const s = Math.min(innerWidth / W, innerHeight / H);
+    stage.style.transform = "scale(" + s + ")";
+  }
+  addEventListener("resize", fit); fit();
+
+  /* --- the rail is segmented by act, not by slide ------------------------- */
+  const ACTS = ["", "The problem", "The sound", "The model", "The feeling", "Where it stands"];
+  const counts = {};
+  slides.forEach(s => { const a = +s.dataset.act; counts[a] = (counts[a] || 0) + 1; });
+  const segs = [];
+  Object.keys(counts).map(Number).sort((a,b)=>a-b).forEach(a => {
+    const d = document.createElement("div");
+    d.className = "act";
+    d.style.flex = counts[a];
+    d.innerHTML = "<i></i>";
+    d.title = ACTS[a] || "Title";
+    rail.appendChild(d);
+    segs[a] = d.firstChild;
+  });
+
+  /* --- audio, embedded as data URIs so the deck is one portable file ------- */
+  const CLIPS = __CLIPS__;
+  const players = {};
+  Object.keys(CLIPS).forEach(k => {
+    const a = new Audio(CLIPS[k]);
+    a.preload = "auto";
+    players[k] = a;
+  });
+  let playingBtn = null;
+  function play(name){
+    const btn = document.querySelector('.clip[data-clip="' + name + '"]');
+    const a = players[name];
+    if (!a) return;
+    Object.values(players).forEach(p => { p.pause(); p.currentTime = 0; });
+    if (playingBtn) playingBtn.classList.remove("playing");
+    a.currentTime = 0;
+    a.play().catch(function(){ /* autoplay policy — a click will always work */ });
+    if (btn){
+      btn.classList.remove("playing");
+      void btn.offsetWidth;               // restart the sweep animation
+      btn.classList.add("playing");
+      playingBtn = btn;
+      a.onended = function(){ btn.classList.remove("playing"); };
+    }
+  }
+  document.querySelectorAll(".clip").forEach(b => {
+    b.addEventListener("click", () => play(b.dataset.clip));
+  });
+
+  /* --- navigation ---------------------------------------------------------- */
+  let i = 0;
+  function show(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle("on", k === i));
+    const act = +slides[i].dataset.act;
+    Object.keys(counts).map(Number).forEach(a => {
+      const seen = slides.filter((s, k) => k <= i && +s.dataset.act === a).length;
+      if (segs[a]) segs[a].style.right = (100 - 100 * seen / counts[a]) + "%";
+    });
+    meta.textContent = String(i + 1).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+    budget.textContent = slides[i].dataset.time ? slides[i].dataset.time : "";
+  }
+
+  addEventListener("keydown", function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key;
+    if (k === "?" || k === "/"){ help.classList.toggle("on"); e.preventDefault(); return; }
+    if (help.classList.contains("on")){ help.classList.remove("on"); return; }
+    if (k === "ArrowRight" || k === "ArrowDown" || k === " " || k === "PageDown"){ show(i + 1); e.preventDefault(); }
+    else if (k === "ArrowLeft" || k === "ArrowUp" || k === "PageUp"){ show(i - 1); e.preventDefault(); }
+    else if (k === "Home"){ show(0); e.preventDefault(); }
+    else if (k === "End"){ show(slides.length - 1); e.preventDefault(); }
+    else if (k === "f" || k === "F"){
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen().catch(function(){});
+      e.preventDefault();
+    }
+    else if (k >= "1" && k <= "4"){
+      const names = ["racket_hit", "ball_bounce", "shoe_squeak", "ambient_noise"];
+      play(names[+k - 1]);
+      e.preventDefault();
+    }
+  });
+
+  /* --- title-slide trace: the subject's own instrument, drawn slowly ------- */
+  const cv = document.getElementById("trace");
+  if (cv && !matchMedia("(prefers-reduced-motion: reduce)").matches){
+    const ctx = cv.getContext("2d");
+    cv.width = W * 2; cv.height = H * 2; ctx.scale(2, 2);
+    const N = 320, buf = new Array(N).fill(0);
+    let t = 0, next = 18;
+    (function frame(){
+      t++;
+      buf.shift();
+      let v = Math.random() * 0.05;
+      if (t > next){ v = 0.45 + Math.random() * 0.5; next = t + 26 + Math.random() * 90; }
+      buf.push(v);
+      for (let j = N - 2; j >= 0; j--) buf[j] = Math.max(buf[j], buf[j + 1] * 0.72);
+      ctx.clearRect(0, 0, W, H);
+      const base = H * 0.80, amp = H * 0.34, step = W / (N - 1);
+      ctx.beginPath();
+      ctx.moveTo(0, base);
+      for (let j = 0; j < N; j++) ctx.lineTo(j * step, base - buf[j] * amp);
+      ctx.lineTo(W, base);
+      const g = ctx.createLinearGradient(0, base - amp, 0, base);
+      g.addColorStop(0, "rgba(245,165,36,0.16)");
+      g.addColorStop(1, "rgba(245,165,36,0.00)");
+      ctx.fillStyle = g; ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, base - buf[0] * amp);
+      for (let j = 1; j < N; j++) ctx.lineTo(j * step, base - buf[j] * amp);
+      ctx.strokeStyle = "rgba(245,165,36,0.34)";
+      ctx.lineWidth = 1.4; ctx.stroke();
+      requestAnimationFrame(frame);
+    })();
+  }
+
+  show(0);
+})();
+</script>
