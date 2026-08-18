@@ -17,13 +17,16 @@ and this collates every block from every scan into three documents:
     Pre-StudyQuestionnaire.pdf
     Post-StudyQuestionnaire.pdf
 
-ONE BLOCK DOES NOT FOLLOW THE PATTERN. In scan_cx68_2026-08-15-14-53-19.pdf the
-first participant's packet was scanned post-study first, so pages 3-4 are the
-POST form and 5-6 the PRE form -- the reverse of every other block. Applying the
-positional rule blindly would file both of that participant's questionnaires
-under the wrong headings, so the block is listed in SWAPPED below and its two
-pairs are exchanged. Verify any new scan before adding it, and extend the list
-rather than editing the rule.
+SOME BLOCKS DO NOT FOLLOW THE PATTERN. In two scans so far the packet was fed
+in post-study first, so pages 3-4 hold the POST form and 5-6 the PRE form --
+the reverse of the rule. Applying the positional rule blindly would file both
+of that participant's questionnaires under the wrong headings, so those blocks
+are listed in SWAPPED below and their two pairs are exchanged.
+
+Both cases were the FIRST block of their scan, which is a hint about where to
+look but not a rule -- two other scans have a correctly ordered first block.
+Check page 3 of every new scan: if it says "Post-study", add the block here.
+Extend the list; do not edit the rule.
 
 Output goes back into the source directory, which is gitignored: the consent
 forms carry names and signatures.
@@ -51,6 +54,7 @@ OUTPUTS = {
 # (scan basename, 0-based block index) whose questionnaire pairs are reversed.
 SWAPPED = {
     ("scan_cx68_2026-08-15-14-53-19.pdf", 0),
+    ("scan_cx68_2026-08-18-17-17-30.pdf", 0),
 }
 
 
