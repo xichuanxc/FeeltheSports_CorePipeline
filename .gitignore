@@ -61,3 +61,7 @@ archive/
 
 # Vision — exploratory YOLO research, large model files
 vision/
+
+# Checksum of the last built deck, used by build_slides.py to notice a
+# hand-edit of docs/slides.html before overwriting it.
+docs/.slides.build.json
