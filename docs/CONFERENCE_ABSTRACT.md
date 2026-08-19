@@ -23,8 +23,31 @@ Smartphone Haptic Feedback
 
 ---
 
-## Abstract (211 words)
+## Abstract (146 words), submit this
 
+Watching a match on a screen gives the picture and the sound, but not the feel
+of the game. Systems that add it almost all need special hardware.
+
+This project finds every racket strike in ordinary broadcast tennis audio and
+vibrates a smartphone the viewer already owns. Two programs support it: a
+labelling tool, where a detector proposes candidate sounds and a person judges
+each one, and a playback program that sends the phone the whole event timeline
+in advance and keeps the clocks in step.
+
+A three-layer convolutional network classifies a 150 ms log-mel excerpt of each
+candidate. Trained on 1,194 hand-labelled events from seven matches, it scores
+an F1 of 0.86 on a match kept out of training, and gating it behind the detector
+removes almost all spurious vibrations.
+
+Twelve participants found the timing convincing, though whether they wanted it
+was far less settled.
+
+---
+
+## Longer version (242 words)
+
+*Kept in case a later submission allows more room. Same content, plus the
+architecture detail and the streaming measurement.*
 Watching a match on a screen gives the picture and the sound, but not the feel
 of the game. Systems that give spectators a sense of physical impact already
 exist, though nearly all of them need hardware built specially for the job.
@@ -48,24 +71,6 @@ computation.
 A study with twelve participants found the timing convincing, at 4.67 out of 5
 for synchronisation. Whether people wanted it at all was far less settled, and
 that is the harder question now.
-
----
-
-## Short abstract (117 words)
-
-*If the submission form caps at roughly 150 words.*
-
-Watching a match on a screen gives the picture and the sound, but not the feel
-of the game. Systems that add that feeling almost all need special hardware.
-
-This project finds every racket strike in ordinary broadcast tennis audio and
-uses it to vibrate a smartphone the viewer already owns. An onset detector
-proposes candidates, and a three-layer convolutional network classifies a 150 ms
-log-mel excerpt of each. Trained on 1,194 hand-labelled events from seven
-matches, it scores an F1 of 0.86 for strikes on a match kept out of training.
-Putting the detector in front of the model removes spurious vibrations almost
-entirely, for a modest loss of recall. Twelve participants found the timing convincing, though whether
-they wanted it was far less settled.
 
 ---
 
