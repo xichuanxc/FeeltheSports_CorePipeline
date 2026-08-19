@@ -49,17 +49,17 @@ OUT_AUD = "docs/audio"
 # Deck palette. Figures are drawn on the slide background so they sit flush
 # rather than floating in a white box.
 BG = "#0B0F14"
-INK = "#E8EDF4"
-MUTED = "#8A97A8"
-GRID = "#1E2733"
+INK = "#F2F6FA"
+MUTED = "#C2CDDB"
+GRID = "#33455A"
 
 CLASSES = ["racket_hit", "ball_bounce", "shoe_squeak", "ambient_noise"]
 TITLES = ["Racket hit", "Ball bounce", "Shoe squeak", "Crowd / background"]
 COLOURS = {
-    "racket_hit": "#F5A524",
-    "ball_bounce": "#38BDF8",
-    "shoe_squeak": "#A78BFA",
-    "ambient_noise": "#94A3B8",
+    "racket_hit": "#FFB43D",
+    "ball_bounce": "#5CC9FF",
+    "shoe_squeak": "#BBA4FF",
+    "ambient_noise": "#AEBDD0",
 }
 
 CLIP_PRE_S = 0.25          # audio clip window around the event

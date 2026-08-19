@@ -95,8 +95,8 @@ LABELS = {
 SYSTEM = ["q5_noticeable", "q6_fit", "q7_synchronised"]
 EXPERIENCE = ["q3_enjoyed", "q10_engagement", "q11_install"]
 
-BG, INK, MUTED, FAINT, LINE = "#0B0F14", "#E8EDF4", "#8A97A8", "#5A6675", "#1E2733"
-AMBER, SKY, GOOD = "#F5A524", "#38BDF8", "#34D399"
+BG, INK, MUTED, FAINT, LINE = "#0B0F14", "#F2F6FA", "#C2CDDB", "#93A1B2", "#33455A"
+AMBER, SKY, GOOD = "#FFB43D", "#5CC9FF", "#4ADEA8"
 
 
 def load(path):
