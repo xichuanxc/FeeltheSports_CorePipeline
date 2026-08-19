@@ -127,7 +127,7 @@ different events. P01 wanted vibration for only one player's strokes.
 
 **Detection errors were perceptible.** P02: *"I noticed a slight mismatch in the
 timing"* and *"I think one time it missed a shot"* — consistent with the
-measured strike recall of 0.68.
+measured strike recall of 0.78.
 
 **Practical.** The handset was *"too big to hold"* (P06); one participant asked
 how incoming notifications would be prevented from being mistaken for feedback

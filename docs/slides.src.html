@@ -476,7 +476,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <h2>Does it work?</h2>
   <div class="stats" style="margin-bottom:24px;">
     <div class="stat">
-      <span class="n">0.87</span>
+      <span class="n">0.86</span>
       <span class="k">F1 · racket hit</span>
       <span class="s">on a match the model never saw while training</span>
     </div>
@@ -486,18 +486,18 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <span class="s">median across matches, with the detector filtering first</span>
     </div>
     <div class="stat">
-      <span class="n sky">0.68</span>
+      <span class="n sky">0.78</span>
       <span class="k">Strike recall</span>
-      <span class="s">roughly one hit in three still produces no vibration</span>
+      <span class="s">about one hit in five still produces no vibration</span>
     </div>
   </div>
   <div class="cols c2" style="flex:none;">
     <div class="callout">
       <span class="lbl">The architectural finding</span>
       <ul class="b">
-        <li>Testing <em style="font-style:normal;">every</em> 10 ms of audio: <strong>2.4 false buzzes a minute</strong>.</li>
-        <li>Let the detector pick the moments first, and ask the model only about those: <strong>zero</strong>, at the same recall.</li>
-        <li>And <strong>180&times;</strong> less computing.</li>
+        <li>Testing <em style="font-style:normal;">every</em> 10 ms of audio: <strong>1.7 false buzzes a minute</strong>.</li>
+        <li>Let the detector pick the moments first, and ask the model only about those: <strong>zero</strong>, for a modest loss of recall.</li>
+        <li>And <strong>155&times;</strong> less computing.</li>
       </ul>
     </div>
     <div class="callout" style="border-left-color:var(--sky);">
