@@ -15,7 +15,7 @@ Committee. Participants gave written consent and are identified only by code.*
 Within-subject A/B comparison. Each participant watched **two tennis clips** —
 one with synchronised haptic feedback delivered to a handheld smartphone, one
 without — with **presentation order counterbalanced** (6 participants received
-the haptic condition first, 5 received it second). Both clips played with
+the haptic condition first, 6 received it second). Both clips played with
 **sound at normal level**.
 
 The two clips were different footage rather than the same clip repeated, which
@@ -27,15 +27,15 @@ Participants completed a pre-study questionnaire (demographics, viewing habits,
 haptic familiarity) and a post-study questionnaire: a nine-item 5-point Likert
 battery plus three free-text questions.
 
-**N = 11** (P01–P06, P08–P11, P13).
+**N = 12** (P01–P06, P08–P11, P13, P14).
 
 | | |
 |---|---|
-| Age | 35–44 (6), 25–34 (3), 18–24 (1), 55+ (1) |
-| Gender | 7 male, 4 female |
-| Watches tennis | a few times a year (7), never (4) |
-| Plays tennis | never (8), occasionally (3) |
-| Haptics familiarity | very (4), moderately (3), slightly (3), not at all (1) |
+| Age | 35–44 (6), 25–34 (3), 18–24 (1), 45–54 (1), 55+ (1) |
+| Gender | 8 male, 4 female |
+| Watches tennis | a few times a year (8), never (4) |
+| Plays tennis | never (9), occasionally (3) |
+| Haptics familiarity | very (4), slightly (4), moderately (3), not at all (1) |
 
 No participant reported a condition affecting vibration sensitivity. The sample
 is drawn from a convenience population and contains **no regular tennis
@@ -50,11 +50,11 @@ finding.
 
 | Item | Mean | Median | Range |
 |---|---|---|---|
-| Vibrations clearly noticeable | 4.73 | 5 | 3–5 |
-| Fitted what I saw and heard | 4.73 | 5 | 4–5 |
-| **Synchronised with the hits** | **4.73** | **5** | **4–5** |
+| Vibrations clearly noticeable | 4.67 | 5 | 3–5 |
+| Fitted what I saw and heard | 4.67 | 5 | 4–5 |
+| **Synchronised with the hits** | **4.67** | **5** | **4–5** |
 
-Pooled mean **4.73**, standard deviation **0.52**. No participant scored any of
+Pooled mean **4.67**, standard deviation **0.53**. No participant scored any of
 these three items below 3, and only one scored below 4 on any of them.
 
 This is the direct subjective validation of the acoustic pipeline. The measured
@@ -66,12 +66,12 @@ the ~100 ms tolerance generally reported for audio-tactile simultaneity.
 
 | Item | Mean | Median | Range |
 |---|---|---|---|
-| Enjoyed it | 3.09 | 4 | 1–5 |
-| More engaging than without | 3.91 | 4 | 1–5 |
-| Would install it | 3.18 | 4 | 1–5 |
+| Enjoyed it | 3.08 | 3.5 | 1–5 |
+| More engaging than without | 3.92 | 4 | 1–5 |
+| Would install it | 3.08 | 3.5 | 1–5 |
 
-Pooled mean **3.39**, standard deviation **1.37** — **2.6× the spread** of the
-system-quality items. Adoption intent split **6 yes / 1 unsure / 4 no**, and
+Pooled mean **3.36**, standard deviation **1.33** — **2.5× the spread** of the
+system-quality items. Adoption intent split **6 yes / 1 unsure / 5 no**, and
 the per-participant experience score ranges from 5.00 to 1.33.
 
 The variance is *between participants*, not between items: those who liked it
@@ -81,9 +81,10 @@ performing correctly is therefore not sufficient to predict acceptance.
 ### Order
 
 Participants who received the haptic condition first rated it higher on every
-experience item (engagement +0.57, would-install +0.70). With n = 6 against
-n = 5 this cannot be tested and is reported only so the imbalance is visible;
-it suggests a possible contrast effect worth controlling in a larger study.
+experience item (engagement +0.50, would-install +0.50). The split is now even
+at 6 against 6, but 12 participants still cannot support a test; it is reported
+so the direction is visible, and suggests a contrast effect worth controlling
+in a larger study.
 
 ## Free-text themes
 
@@ -101,19 +102,28 @@ feedback on the hitting force could be provided"*. This is the direct
 experiential cost of the per-broadcast relative intensity mapping, and the
 clearest actionable finding in the study.
 
-**Attentional capture.** One participant (P11) reported the failure mode
-inverted: *"I just wait the next vibration, and less focus on what the match
-displayed"* … *"my feeling just focus on my hand and I forget the content I
-watched"* … *"I can not deal with these two part of my body feeling at the same
-time without training."* P04 reported a milder version. This is not a detection
-error — the same participant rated synchronisation 5/5 — but a
-cross-modal attention cost that accuracy improvements cannot address.
+**Attentional capture, and the condition it depends on.** P11 reported the
+failure mode inverted: *"I just wait the next vibration, and less focus on what
+the match displayed"* … *"my feeling just focus on my hand and I forget the
+content I watched"* … *"I can not deal with these two part of my body feeling at
+the same time without training."* P04 reported a milder version.
 
-**Information content.** Two participants noted that the channel carries only
+P14 supplied the most precise account of the mechanism, and made it conditional:
+*"when I'm not focused [the vibration] helps me focused, but when I'm focused
+[it] distract[s] me from watching"*, summarising the whole experience as *"half
+and half"*. On this reading the haptic channel is not simply distracting or
+simply engaging; it competes for attention when attention is already committed
+to the screen, and recruits it when it is not. Both participants rated
+synchronisation 4/5 or better, so this is not a detection error but a cross-modal
+attention cost that no accuracy improvement addresses. Three of twelve
+participants now agree with "the vibration feedback distracted me".
+
+**Information content.** Three participants noted that the channel carries only
 timing: *"the vibration feedback just reflected the hitting voice and didn't
 contain other information in the game"*; *"it'll be better if it report the
-result by different vibration"*. P01 wanted vibration for only one player's
-strokes.
+result by different vibration"*; and P14, that it *"has a limitation to express
+action because it moves for only ball touch"*, suggesting different patterns for
+different events. P01 wanted vibration for only one player's strokes.
 
 **Detection errors were perceptible.** P02: *"I noticed a slight mismatch in the
 timing"* and *"I think one time it missed a shot"* — consistent with the
@@ -142,11 +152,11 @@ how incoming notifications would be prevented from being mistaken for feedback
   A repeat should either counterbalance clip against condition or record the
   clip-to-condition assignment per participant, which costs one extra field.
 
-- **n = 11**, convenience sample, no regular tennis viewers. Sufficient to
+- **n = 12**, convenience sample, no regular tennis viewers. Sufficient to
   establish that the experience response is divided; insufficient to explain
   who falls on which side.
-- Order was counterbalanced but unbalanced (6/5), and the sample is too small
-  to test the apparent order effect.
+- Order is evenly counterbalanced (6/6), but the sample is far too small to
+  test the apparent order effect.
 - Single session, single device, short clips — nothing here speaks to whether
   the effect survives an hour of viewing, or novelty decay.
 - **Transcription caveat.** P02 and P09 are recorded as *strongly disagree* on
