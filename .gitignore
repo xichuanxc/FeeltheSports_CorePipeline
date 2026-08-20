@@ -28,6 +28,9 @@ data/*
 # Player corrections are hand-made too: re-running analyzer.py restores the
 # detected events but not the manual additions and removals layered on top.
 !data/*.haptic.annotated.json
+# The corpus inventory. Hand-written reference about what each video is for and
+# how far it has been annotated; nothing in it can be regenerated from code.
+!data/VIDEO_TABLE.md
 
 # Compiled training tensors — regenerable from the tracked CSVs by
 # `python3 build_dataset.py`, so by the rule in docs/DATA_LAYOUT.md they stay
