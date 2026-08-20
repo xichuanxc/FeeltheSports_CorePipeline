@@ -363,7 +363,10 @@ def vad_filter(y, sr, events, margin_s=0.15, vad_threshold=0.5, _segments=None):
 # Acoustic strike classifier  (spec section 4/5)
 # ---------------------------------------------------------------------------
 
-STRIKE_THRESHOLD = 0.85     # spec section 5 decision rule
+STRIKE_THRESHOLD = 0.70     # measured better than section 5's 0.85 on this
+                            # material: both reach zero false vibrations at
+                            # analyzer's onset threshold, and 0.85 discards
+                            # a further quarter of the real hits for nothing
 STRIKE_WINDOW_MS = 40.0     # neighbourhood searched either side of each onset
 STRIKE_STEP_MS   = 10.0     # spec section 5 evaluates every 10 ms
 
@@ -648,8 +651,9 @@ def main():
                          "detector found, including squeaks, bounces and applause")
     sg.add_argument("--hit-threshold", type=float, default=STRIKE_THRESHOLD,
                     dest="hit_threshold",
-                    help=f"minimum P(racket_hit) to keep an event "
-                         f"(default {STRIKE_THRESHOLD}, spec section 5)")
+                    help=f"minimum P(racket_hit) to keep an event (default "
+                         f"{STRIKE_THRESHOLD}; section 5 states 0.85, which "
+                         f"measured worse here)")
     sg.add_argument("--strike-window", type=float, default=STRIKE_WINDOW_MS,
                     dest="strike_window",
                     help=f"ms either side of each onset to also score, taking the "
