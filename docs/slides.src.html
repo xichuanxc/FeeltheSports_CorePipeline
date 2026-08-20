@@ -481,23 +481,23 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <span class="s">median of five held-out matches, range 0.79 to 0.94</span>
     </div>
     <div class="stat">
-      <span class="n good">0.0</span>
+      <span class="n good">0.3</span>
       <span class="k">False buzzes / min</span>
-      <span class="s">median on unseen matches, with the detector filtering first</span>
+      <span class="s">median on unseen matches, detector-gated with a 40 ms search</span>
     </div>
     <div class="stat">
-      <span class="n sky">0.54</span>
+      <span class="n sky">0.61</span>
       <span class="k">Strike recall</span>
-      <span class="s">about one hit in two still produces no vibration</span>
+      <span class="s">about two hits in five still produce no vibration</span>
     </div>
   </div>
   <div class="cols c2" style="flex:none;">
     <div class="callout">
       <span class="lbl">The architectural finding</span>
       <ul class="b">
-        <li>Testing <em style="font-style:normal;">every</em> 10 ms of audio: <strong>2.2 false buzzes a minute</strong>, at 0.69 recall.</li>
-        <li>Let the detector pick the moments first, and ask the model only about those: <strong>zero</strong>, at 0.54 recall.</li>
-        <li>And <strong>155&times;</strong> less computing.</li>
+        <li>Score <em style="font-style:normal;">every</em> 10 ms of audio: <strong>1.4</strong> false buzzes a minute at 0.56 recall.</li>
+        <li>Score only the detector's spikes: <strong>zero</strong> false buzzes, but recall falls to 0.22.</li>
+        <li>Score each spike <em style="font-style:normal;">and 40 ms either side</em>: <strong>0.3</strong> at <strong>0.61</strong> &mdash; better on both counts than scoring everything, for <strong>15&times;</strong> less computing.</li>
       </ul>
     </div>
     <div class="callout" style="border-left-color:var(--sky);">

@@ -109,6 +109,17 @@ def main():
     ap.add_argument("--thresholds", default="0.50,0.70,0.85,0.95")
     ap.add_argument("--gate", action="store_true",
                     help="also report the candidate-gated path for comparison")
+    ap.add_argument("--gate-window", type=float, default=0.0, dest="gate_window",
+                    help="ms either side of each candidate to also score, taking "
+                         "the highest probability found. 0 scores only the "
+                         "candidate instant. This is what the streaming path gets "
+                         "for free from its overlapping windows")
+    ap.add_argument("--gate-thresholds", default=str(DEFAULT_THRESHOLD),
+                    dest="gate_thresholds",
+                    help="onset thresholds to sweep for the gated path. Lowering "
+                         "it proposes more spikes, so more true hits get a chance "
+                         "to be scored, at the cost of more windows to reject "
+                         f"(default {DEFAULT_THRESHOLD})")
     args = ap.parse_args()
 
     if not os.path.exists(args.video):
@@ -157,22 +168,48 @@ def main():
               f"p90 {np.percentile(e,90):+.0f} ms")
 
     if args.gate and len(hits):
-        # the same model, but asked only about candidates the detector proposed
+        # The same model, asked only about instants the detector proposed.
+        # Sweeping the onset threshold matters: it sets how many chances the
+        # model gets per match, and the streaming path's advantage is precisely
+        # that it gets one every 10 ms.
         from analyzer import load_audio
         y22, sr22 = load_audio(args.video, sr=A_SR)
         env, _ = compute_envelope(y22, sr22)
-        cand = pick_candidates(env, sr22, DEFAULT_THRESHOLD)
-        idx = np.clip(np.searchsorted(times, cand), 0, len(times) - 1)
-        print(f"\n  candidate-gated path ({len(cand)} candidates instead of "
-              f"{len(probs)} windows):")
-        print(f"{'thresh':>7s} {'fires':>7s} {'prec':>6s} {'recall':>7s} "
-              f"{'FALSE PER MIN':>14s}")
-        print("  " + "-" * 46)
-        for th in ths:
-            f = fire(times[idx], probs[idx], th)
-            s = score(f, hits, duration)
-            print(f"{th:7.2f} {len(f):7d} {s['precision']:6.2f} "
-                  f"{s['recall']:7.2f} {s['fp_per_min']:14.1f}")
+        gts = [float(x) for x in args.gate_thresholds.split(",")]
+        print(f"\n  candidate-gated path, against {len(probs)} streamed windows:")
+        print(f"{'onset':>7s} {'cands':>7s} {'/min':>7s} {'model':>7s} "
+              f"{'fires':>6s} {'prec':>6s} {'recall':>7s} {'FALSE PER MIN':>14s}")
+        print("  " + "-" * 64)
+        for gt in gts:
+            cand = pick_candidates(env, sr22, gt)
+            if len(cand) == 0:
+                continue
+            idx = np.clip(np.searchsorted(times, cand), 0, len(times) - 1)
+            if args.gate_window > 0:
+                # The detector marks one instant, but the model's confidence
+                # varies across the windows overlapping an event. Take the best
+                # in a short neighbourhood, which is the only advantage the
+                # streaming path actually has.
+                k = max(1, int(round(args.gate_window / args.hop_ms)))
+                lo = np.clip(idx - k, 0, len(times) - 1)
+                hi = np.clip(idx + k, 0, len(times) - 1)
+                best = np.array([lo[j] + int(np.argmax(probs[lo[j]:hi[j] + 1]))
+                                 for j in range(len(idx))])
+                idx = best
+            # how many labelled hits the detector even proposed at this setting
+            reach = sum(1 for h in hits
+                        if np.min(np.abs(cand - h)) <= MATCH_TOL_S)
+            for th in ths:
+                f = fire(times[idx], probs[idx], th)
+                sc = score(f, hits, duration)
+                lead = (f"{gt:7.2f} {len(cand):7d} {len(cand)/(duration/60):7.1f} "
+                        f"{th:7.2f}") if th == ths[0] else \
+                       (f"{'':7s} {'':7s} {'':7s} {th:7.2f}")
+                print(f"{lead} {len(f):6d} {sc['precision']:6.2f} "
+                      f"{sc['recall']:7.2f} {sc['fp_per_min']:14.1f}")
+            print(f"{'':7s} detector reached {reach}/{len(hits)} of the labelled "
+                  f"hits at this onset threshold "
+                  f"({100*reach/len(hits):.0f}% ceiling on gated recall)")
     return 0
 
 
