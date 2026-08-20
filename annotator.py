@@ -84,9 +84,14 @@ THRESHOLD_MAX     = 0.50
 SNAP_WINDOW_S = 0.030    # spec 6.4: snap to local energy max within +/- 30 ms
 MATCH_TOL_S   = 0.030    # a saved label within this distance "owns" a candidate
 
-# spec section 3: crop window is [T - 30 ms, T + 120 ms] = 150 ms
-SLICE_PRE_S  = 0.030
-SLICE_POST_S = 0.120
+# spec section 3 crop and mel settings live in features.py, so the deployment
+# path can compute the model input without importing Qt. Re-exported here
+# because build_dataset, stream_sim and detection_stats import them from this
+# module.
+from features import (                                        # noqa: E402
+    SLICE_PRE_S, SLICE_POST_S, MEL_SR, MEL_SAMPLES, MEL_N_FFT, MEL_HOP,
+    MEL_N_MELS, MEL_DB_FLOOR, slice_samples, extract_slice, mel_slice,
+)
 # Silence padded either side of the audited slice. The leading gap lets the ear
 # reset before the onset — the attack is the main cue being judged — and the
 # trailing gap keeps repeats from running together.
@@ -107,12 +112,6 @@ LOOP_FADE_S  = 0.005
 # librosa's default centring the real count is 19. It makes no difference to
 # the architecture: section 4 pools with AdaptiveAvgPool2D(1,1) before the
 # linear layer, so the time axis length never reaches a fixed-size weight.
-MEL_SR      = 16000
-MEL_SAMPLES = 2400       # exactly 150 ms at 16 kHz
-MEL_N_FFT   = 400
-MEL_HOP     = 133
-MEL_N_MELS  = 64
-MEL_DB_FLOOR = -80.0     # dB below peak mapped to the bottom of the colour ramp
 
 HOVER_TOL_PX = 12        # how near a spike the pointer must be to preview it
 
@@ -219,51 +218,6 @@ def pick_candidates(env, sr, threshold):
         delta=float(threshold), wait=gap,
     )
     return librosa.frames_to_time(peaks, sr=sr, hop_length=A_HOP)
-
-
-def slice_samples(sr):
-    """Exact sample count of the spec section 3 crop window at `sr`."""
-    return int(round((SLICE_PRE_S + SLICE_POST_S) * sr))
-
-
-def extract_slice(y, sr, t):
-    """The [T-30ms, T+120ms] crop, always exactly slice_samples(sr) long.
-
-    Deriving the length from the window rather than from two independently
-    rounded endpoints keeps it constant regardless of where t falls between
-    samples; edges are zero-padded rather than truncated so slices near the
-    start or end of a file stay the same shape.
-    """
-    n  = slice_samples(sr)
-    i0 = int(round((t - SLICE_PRE_S) * sr))
-    out = np.zeros(n, dtype=np.float32)
-    src0, src1 = max(0, i0), min(len(y), i0 + n)
-    if src1 > src0:
-        out[src0 - i0: src1 - i0] = y[src0:src1]
-    return out
-
-
-def mel_slice(y, sr, t):
-    """Log-mel spectrogram of the 150 ms crop at t, exactly as spec section 3
-    defines the model input: resampled to 16 kHz, peak normalised, then STFT
-    to 64 mel bins. Returns dB relative to the slice peak, shape (64, frames).
-    """
-    seg = extract_slice(y, sr, t)
-    if sr != MEL_SR:
-        seg = librosa.resample(seg, orig_sr=sr, target_sr=MEL_SR)
-    # Resampling lands a sample either side of 2400; pin it so every slice is
-    # the same length the model will be fed.
-    if len(seg) < MEL_SAMPLES:
-        seg = np.pad(seg, (0, MEL_SAMPLES - len(seg)))
-    seg = seg[:MEL_SAMPLES].astype(np.float32)
-
-    peak = float(np.max(np.abs(seg)))
-    if peak > 0:
-        seg = seg / peak
-    mel = librosa.feature.melspectrogram(
-        y=seg, sr=MEL_SR, n_fft=MEL_N_FFT, hop_length=MEL_HOP,
-        n_mels=MEL_N_MELS)
-    return librosa.power_to_db(mel, ref=np.max)
 
 
 _VIRIDIS = np.array([
