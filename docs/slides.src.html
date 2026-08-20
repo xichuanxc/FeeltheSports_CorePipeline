@@ -476,36 +476,36 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <h2>Does it work?</h2>
   <div class="stats" style="margin-bottom:24px;">
     <div class="stat">
-      <span class="n">0.86</span>
+      <span class="n">0.90</span>
       <span class="k">F1 · racket hit</span>
-      <span class="s">on a match the model never saw while training</span>
+      <span class="s">median of five held-out matches, range 0.79 to 0.94</span>
     </div>
     <div class="stat">
       <span class="n good">0.0</span>
       <span class="k">False buzzes / min</span>
-      <span class="s">median across matches, with the detector filtering first</span>
+      <span class="s">median on unseen matches, with the detector filtering first</span>
     </div>
     <div class="stat">
-      <span class="n sky">0.78</span>
+      <span class="n sky">0.54</span>
       <span class="k">Strike recall</span>
-      <span class="s">about one hit in five still produces no vibration</span>
+      <span class="s">about one hit in two still produces no vibration</span>
     </div>
   </div>
   <div class="cols c2" style="flex:none;">
     <div class="callout">
       <span class="lbl">The architectural finding</span>
       <ul class="b">
-        <li>Testing <em style="font-style:normal;">every</em> 10 ms of audio: <strong>1.7 false buzzes a minute</strong>.</li>
-        <li>Let the detector pick the moments first, and ask the model only about those: <strong>zero</strong>, for a modest loss of recall.</li>
+        <li>Testing <em style="font-style:normal;">every</em> 10 ms of audio: <strong>2.2 false buzzes a minute</strong>, at 0.69 recall.</li>
+        <li>Let the detector pick the moments first, and ask the model only about those: <strong>zero</strong>, at 0.54 recall.</li>
         <li>And <strong>155&times;</strong> less computing.</li>
       </ul>
     </div>
     <div class="callout" style="border-left-color:var(--sky);">
-      <span class="lbl" style="color:var(--sky);">On honest evaluation</span>
+      <span class="lbl" style="color:var(--sky);">Two ways this flattered itself</span>
       <ul class="b">
-        <li>Stopping training by looking at the test match made the score <strong>0.10 too high</strong>.</li>
-        <li>Splitting the data three ways fixed it.</li>
-        <li>The lower, corrected numbers are the ones shown here.</li>
+        <li>Choosing when to stop training by looking at the test match: score <strong>0.10 too high</strong>.</li>
+        <li>Measuring the buzzes on matches the model had trained on: recall <strong>0.78 instead of 0.54</strong>.</li>
+        <li>Every figure here is leave-one-match-out.</li>
       </ul>
     </div>
   </div>

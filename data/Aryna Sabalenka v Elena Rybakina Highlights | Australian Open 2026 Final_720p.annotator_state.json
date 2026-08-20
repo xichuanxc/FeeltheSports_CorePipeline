@@ -1,6 +1,9 @@
 {
   "media": "Aryna Sabalenka v Elena Rybakina Highlights | Australian Open 2026 Final_720p.mp4",
-  "threshold": 0.12,
+  "threshold": 0.1,
   "rejected": [],
-  "last_time": 47.9027664399093
+  "manual_candidates": [
+    77.533
+  ],
+  "last_time": 180.6164172335601
 }
