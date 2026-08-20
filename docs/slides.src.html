@@ -483,28 +483,28 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <div class="stat">
       <span class="n good">0.3</span>
       <span class="k">False buzzes / min</span>
-      <span class="s">median on unseen matches, detector-gated with a 40 ms search</span>
+      <span class="s">median over five unseen matches, at the shipped settings</span>
     </div>
     <div class="stat">
-      <span class="n sky">0.61</span>
+      <span class="n sky">0.67</span>
       <span class="k">Strike recall</span>
-      <span class="s">about two hits in five still produce no vibration</span>
+      <span class="s">a third of hits produce none, and the detector is the limit</span>
     </div>
   </div>
   <div class="cols c2" style="flex:none;">
     <div class="callout">
       <span class="lbl">The architectural finding</span>
       <ul class="b">
-        <li>Score <em style="font-style:normal;">every</em> 10 ms of audio: <strong>1.4</strong> false buzzes a minute at 0.56 recall.</li>
-        <li>Score only the detector's spikes: <strong>zero</strong> false buzzes, but recall falls to 0.22.</li>
-        <li>Score each spike <em style="font-style:normal;">and 40 ms either side</em>: <strong>0.3</strong> at <strong>0.61</strong> &mdash; better on both counts than scoring everything, for <strong>15&times;</strong> less computing.</li>
+        <li>Onsets alone: <strong>2.0 false buzzes a minute</strong>, precision 0.84.</li>
+        <li>Ask the model about each one: <strong>0.3</strong>, precision <strong>0.96</strong> &mdash; 85% of the false buzzes gone for 0.04 of recall.</li>
+        <li>Scoring <em style="font-style:normal;">every</em> 10 ms window instead is worse on both counts and <strong>15&times;</strong> the computing.</li>
       </ul>
     </div>
     <div class="callout" style="border-left-color:var(--sky);">
       <span class="lbl" style="color:var(--sky);">Two ways this flattered itself</span>
       <ul class="b">
         <li>Choosing when to stop training by looking at the test match: score <strong>0.10 too high</strong>.</li>
-        <li>Measuring the buzzes on matches the model had trained on: recall <strong>0.78 instead of 0.54</strong>.</li>
+        <li>Measuring the buzzes on matches the model had trained on: recall about <strong>0.2 too high</strong>.</li>
         <li>Every figure here is leave-one-match-out.</li>
       </ul>
     </div>
