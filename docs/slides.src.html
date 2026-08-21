@@ -38,7 +38,7 @@ body{
 }
 
 .slide{
-  position:absolute;inset:0;padding:58px 72px 72px;
+  position:absolute;inset:0;padding:56px 72px 88px;
   display:none;flex-direction:column;
 }
 .slide.on{display:flex;}
@@ -52,20 +52,20 @@ body{
 
 /* --- type scale ----------------------------------------------------------- */
 .eyebrow{
-  font-family:var(--mono);font-size:12px;letter-spacing:.19em;text-transform:uppercase;
+  font-family:var(--mono);font-size:13.5px;letter-spacing:.19em;text-transform:uppercase;
   color:var(--faint);display:flex;align-items:center;gap:12px;margin:0 0 26px;
 }
 .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--amber);flex:none;}
 h1{
-  font-size:66px;line-height:1.02;letter-spacing:-.026em;font-weight:700;
+  font-size:70px;line-height:1.02;letter-spacing:-.026em;font-weight:700;
   margin:0;text-wrap:balance;color:var(--ink);
 }
 h2{
-  font-size:41px;line-height:1.1;letter-spacing:-.02em;font-weight:700;
+  font-size:45px;line-height:1.1;letter-spacing:-.02em;font-weight:700;
   margin:0 0 20px;text-wrap:balance;color:var(--ink);
 }
-.lede{font-size:21px;line-height:1.5;color:var(--muted);max-width:62ch;margin:0;}
-p{font-size:19px;line-height:1.55;color:var(--muted);margin:0 0 14px;max-width:62ch;}
+.lede{font-size:24px;line-height:1.5;color:var(--muted);max-width:62ch;margin:0;}
+p{font-size:22px;line-height:1.55;color:var(--muted);margin:0 0 14px;max-width:62ch;}
 strong{color:var(--ink);font-weight:600;}
 .amber{color:var(--amber);}
 .sky{color:var(--sky);}
@@ -75,11 +75,11 @@ strong{color:var(--ink);font-weight:600;}
 .act{height:2px;background:var(--line);border-radius:2px;position:relative;overflow:hidden;}
 .act > i{position:absolute;inset:0 100% 0 0;background:var(--amber);transition:right .4s ease;}
 #meta{
-  position:absolute;right:72px;bottom:44px;font-family:var(--mono);font-size:11.5px;
+  position:absolute;right:72px;bottom:44px;font-family:var(--mono);font-size:13px;
   color:var(--faint);letter-spacing:.06em;font-variant-numeric:tabular-nums;
 }
 #budget{
-  position:absolute;left:72px;bottom:44px;font-family:var(--mono);font-size:11.5px;
+  position:absolute;left:72px;bottom:44px;font-family:var(--mono);font-size:13px;
   color:var(--faint);letter-spacing:.06em;
 }
 
@@ -88,7 +88,7 @@ strong{color:var(--ink);font-weight:600;}
 .title-wrap{position:relative;z-index:1;margin-top:auto;margin-bottom:auto;}
 .title-rule{width:64px;height:3px;background:var(--amber);margin:0 0 34px;}
 .byline{
-  display:flex;gap:26px;margin-top:44px;font-family:var(--mono);font-size:13px;
+  display:flex;gap:26px;margin-top:44px;font-family:var(--mono);font-size:15px;
   color:var(--muted);letter-spacing:.04em;flex-wrap:wrap;
 }
 .byline span{display:flex;align-items:center;gap:8px;}
@@ -104,7 +104,7 @@ strong{color:var(--ink);font-weight:600;}
 figure{margin:0;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;}
 figure img{width:100%;height:auto;max-height:100%;object-fit:contain;display:block;border-radius:3px;}
 figure svg{width:100%;height:auto;max-height:100%;display:block;}
-figcaption{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:12px;letter-spacing:.04em;}
+figcaption{font-family:var(--mono);font-size:13.5px;color:var(--faint);margin-top:12px;letter-spacing:.04em;}
 
 /* --- cards / panels -------------------------------------------------------- */
 .panel{
@@ -112,23 +112,23 @@ figcaption{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-to
   padding:20px 22px;display:flex;flex-direction:column;gap:7px;
 }
 .panel h3{
-  margin:0;font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.005em;
+  margin:0;font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-.005em;
 }
-.panel p{font-size:15.5px;line-height:1.5;margin:0;color:var(--muted);}
-.panel p em{font-style:normal;color:var(--faint);font-size:13px;}
+.panel p{font-size:18px;line-height:1.5;margin:0;color:var(--muted);}
+.panel p em{font-style:normal;color:var(--faint);font-size:15px;}
 .tag{
-  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--faint);
 }
 
 /* --- data list (spec figures) ---------------------------------------------- */
 dl.spec{display:grid;grid-template-columns:auto 1fr;gap:11px 20px;margin:0;align-items:baseline;}
 dl.spec dt{
-  font-family:var(--mono);font-size:12px;letter-spacing:.13em;text-transform:uppercase;
+  font-family:var(--mono);font-size:14px;letter-spacing:.13em;text-transform:uppercase;
   color:var(--faint);white-space:nowrap;
 }
-dl.spec dd{margin:0;font-size:17px;color:var(--ink);line-height:1.35;}
-dl.spec dd em{font-style:normal;color:var(--muted);font-size:15px;}
+dl.spec dd{margin:0;font-size:19px;color:var(--ink);line-height:1.35;}
+dl.spec dd em{font-style:normal;color:var(--muted);font-size:19px;}
 
 /* --- big numbers ----------------------------------------------------------- */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
@@ -137,13 +137,13 @@ dl.spec dd em{font-style:normal;color:var(--muted);font-size:15px;}
   display:flex;flex-direction:column;gap:5px;
 }
 .stat .n{
-  font-size:42px;font-weight:700;letter-spacing:-.03em;line-height:1;
+  font-size:46px;font-weight:700;letter-spacing:-.03em;line-height:1;
   font-variant-numeric:tabular-nums;color:var(--amber);
 }
 .stat .n.sky{color:var(--sky);}
 .stat .n.good{color:var(--good);}
-.stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);}
-.stat .s{font-size:14px;color:var(--muted);line-height:1.4;}
+.stat .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);}
+.stat .s{font-size:18.5px;color:var(--muted);line-height:1.4;}
 
 /* --- audio buttons --------------------------------------------------------- */
 .clips{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
@@ -157,15 +157,15 @@ dl.spec dd em{font-style:normal;color:var(--muted);font-size:15px;}
 .clip:focus-visible{outline:2px solid var(--amber);outline-offset:3px;}
 .clip.playing{background:var(--surface-2);transform:translateY(-2px);}
 .clip .key{
-  font-family:var(--mono);font-size:11px;color:var(--c,var(--amber));letter-spacing:.1em;
+  font-family:var(--mono);font-size:12.5px;color:var(--c,var(--amber));letter-spacing:.1em;
   display:flex;align-items:center;gap:7px;
 }
 .clip .key b{
   border:1px solid var(--line);border-radius:3px;padding:1px 6px;color:var(--muted);
   font-weight:400;background:var(--ground);
 }
-.clip .nm{font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
-.clip .sub{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.04em;}
+.clip .nm{font-size:19px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
+.clip .sub{font-family:var(--mono);font-size:12.5px;color:var(--faint);letter-spacing:.04em;}
 .clip .bar{height:2px;background:var(--line);border-radius:2px;overflow:hidden;}
 .clip .bar > i{display:block;height:100%;width:0;background:var(--c,var(--amber));}
 .clip.playing .bar > i{animation:sweep .8s linear;}
@@ -177,9 +177,9 @@ dl.spec dd em{font-style:normal;color:var(--muted);font-size:15px;}
   flex:1;background:var(--surface);border:1px solid var(--line);border-radius:5px;
   padding:16px 16px 14px;display:flex;flex-direction:column;gap:6px;
 }
-.node .t{font-size:15.5px;font-weight:600;color:var(--ink);}
-.node .d{font-size:13px;color:var(--muted);line-height:1.45;}
-.node .w{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;}
+.node .t{font-size:17.5px;font-weight:600;color:var(--ink);}
+.node .d{font-size:15px;color:var(--muted);line-height:1.45;}
+.node .w{font-family:var(--mono);font-size:12.5px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;}
 .arrow{
   flex:none;width:44px;display:grid;place-items:center;color:var(--faint);
   font-family:var(--mono);font-size:15px;
@@ -187,16 +187,16 @@ dl.spec dd em{font-style:normal;color:var(--muted);font-size:15px;}
 .wire{
   display:grid;grid-template-columns:auto 1fr;gap:9px 16px;margin:0;align-items:baseline;
 }
-.wire dt{font-family:var(--mono);font-size:11.5px;color:var(--sky);letter-spacing:.06em;white-space:nowrap;}
-.wire dd{margin:0;font-size:15px;color:var(--muted);line-height:1.45;}
+.wire dt{font-family:var(--mono);font-size:13px;color:var(--sky);letter-spacing:.06em;white-space:nowrap;}
+.wire dd{margin:0;font-size:19px;color:var(--muted);line-height:1.45;}
 
 /* --- notes / callouts ------------------------------------------------------- */
 .callout{
   border-left:3px solid var(--amber);background:var(--surface);border-radius:0 5px 5px 0;
-  padding:16px 20px;font-size:18px;line-height:1.5;color:var(--ink);
+  padding:16px 20px;font-size:20.5px;line-height:1.5;color:var(--ink);
 }
 .callout .lbl{
-  display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  display:block;font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--amber);margin-bottom:7px;
 }
 .todo{
@@ -205,17 +205,17 @@ dl.spec dd em{font-style:normal;color:var(--muted);font-size:15px;}
   display:inline-block;vertical-align:middle;
 }
 ul.b{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px;
-  font-size:19px;line-height:1.42;color:var(--muted);max-width:62ch;}
+  font-size:22px;line-height:1.42;color:var(--muted);max-width:62ch;}
 ul.b li{position:relative;padding-left:22px;}
 ul.b li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:2px;
   border-radius:1px;background:currentColor;opacity:.55;}
-.panel ul.b{font-size:15.5px;gap:8px;max-width:none;}
+.panel ul.b{font-size:18px;gap:8px;max-width:none;}
 .panel ul.b li{padding-left:18px;}
 .panel ul.b li::before{width:7px;top:.6em;}
-.callout ul.b{font-size:18px;color:var(--ink);gap:9px;max-width:none;}
+.callout ul.b{font-size:20.5px;color:var(--ink);gap:9px;max-width:none;}
 ul.ticks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;}
 ul.ticks li{
-  font-size:17px;line-height:1.45;color:var(--muted);padding-left:22px;position:relative;
+  font-size:19.5px;line-height:1.45;color:var(--muted);padding-left:22px;position:relative;
 }
 ul.ticks li::before{
   content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:1px;
@@ -234,7 +234,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 .step .i{
   font-family:var(--mono);font-size:11px;color:var(--amber);letter-spacing:.14em;
 }
-.step .t{font-size:16.5px;font-weight:600;color:var(--ink);line-height:1.3;}
+.step .t{font-size:18.5px;font-weight:600;color:var(--ink);line-height:1.3;}
 .step .d{font-size:14px;color:var(--muted);line-height:1.45;}
 
 /* --- help ------------------------------------------------------------------- */
@@ -271,7 +271,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <div class="title-wrap">
     <div class="title-rule"></div>
     <h1>Feeling the Tennis Game</h1>
-    <p class="lede" style="margin-top:22px;font-size:23px;">
+    <p class="lede" style="margin-top:22px;font-size:26px;">
       Acoustic racket-strike detection for synchronised haptic feedback
     </p>
     <div class="byline">
@@ -411,7 +411,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <div class="stat">
         <span class="n">46%</span>
         <span class="k">Are actually hits</span>
-        <span class="s">551 of 1,194 checked events &mdash; the rest are unwanted</span>
+        <span class="s">583 of 1,270 checked events &mdash; the rest are unwanted</span>
       </div>
     </div>
   </div>
@@ -434,10 +434,10 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <figcaption>Same events, same order, same colours as the previous slide</figcaption>
   </figure>
   <div class="cols" style="grid-template-columns:repeat(4,1fr);flex:none;gap:14px;margin-top:20px;">
-    <p style="font-size:14.5px;margin:0;"><strong class="amber">A sharp burst</strong> across all pitches, dying away fast.</p>
-    <p style="font-size:14.5px;margin:0;"><strong class="sky">A low thud</strong>, with nothing ringing above it.</p>
-    <p style="font-size:14.5px;margin:0;"><strong style="color:var(--violet);">Steady bands</strong> that hold on &mdash; a scrape, not a hit.</p>
-    <p style="font-size:14.5px;margin:0;"><strong style="color:var(--slate);">Spread out and shapeless</strong> &mdash; energy everywhere, no clear edges.</p>
+    <p style="font-size:16.5px;margin:0;"><strong class="amber">A sharp burst</strong> across all pitches, dying away fast.</p>
+    <p style="font-size:16.5px;margin:0;"><strong class="sky">A low thud</strong>, with nothing ringing above it.</p>
+    <p style="font-size:16.5px;margin:0;"><strong style="color:var(--violet);">Steady bands</strong> that hold on &mdash; a scrape, not a hit.</p>
+    <p style="font-size:16.5px;margin:0;"><strong style="color:var(--slate);">Spread out and shapeless</strong> &mdash; energy everywhere, no clear edges.</p>
   </div>
 </section>
 
@@ -449,12 +449,12 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <div class="stack">
       <span class="tag">Corpus</span>
       <dl class="spec">
-        <dt>Events</dt><dd>1,194 hand-adjudicated <em>&mdash; 551 racket hits</em></dd>
+        <dt>Events</dt><dd>1,270 hand-adjudicated <em>&mdash; 583 racket hits</em></dd>
         <dt>Matches</dt><dd>7 broadcasts <em>&mdash; hard, clay, grass</em></dd>
         <dt>Classes</dt><dd>5 <em>&mdash; hit, bounce, squeak, speech, ambient</em></dd>
         <dt>Tooling</dt><dd>Purpose-built labelling app <em>&mdash; the detector suggests, a human decides</em></dd>
       </dl>
-      <p style="margin-top:6px;font-size:16.5px;">Labelling time depends on how many
+      <p style="margin-top:6px;font-size:18.5px;">Labelling time depends on how many
       <strong>events</strong> there are, not how long the video is.</p>
     </div>
     <div class="stack">
@@ -518,15 +518,15 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <div class="cols c2" style="flex:none;align-content:start;gap:36px;">
     <div class="stack" style="gap:10px;">
       <span class="tag">Labelling &mdash; the detector proposes, a person judges</span>
-      <img src="__ASSET:docs/figures/annotator.png__" style="width:100%;max-height:410px;object-fit:contain;border-radius:3px;" alt="The annotation tool: a paused match with the onset envelope below, candidate markers, per-class progress bars, and the model's own guess for the current candidate">
-      <ul class="b" style="font-size:16px;">
+      <img src="__ASSET:docs/figures/annotator.png__" style="width:100%;max-height:372px;object-fit:contain;border-radius:3px;" alt="The annotation tool: a paused match with the onset envelope below, candidate markers, per-class progress bars, and the model's own guess for the current candidate">
+      <ul class="b" style="font-size:17.5px;">
         <li><strong>117 candidates, 99% reviewed</strong> &mdash; the model&rsquo;s own guess sits beside each one.</li>
       </ul>
     </div>
     <div class="stack" style="gap:10px;">
       <span class="tag">Playback &mdash; drives the phone, one client connected</span>
-      <img src="__ASSET:docs/figures/player.png__" style="width:100%;max-height:410px;object-fit:contain;border-radius:3px;" alt="The haptic player: a clay-court rally with an event readout showing intensity, the connected phone count, and the event strip below">
-      <ul class="b" style="font-size:16px;">
+      <img src="__ASSET:docs/figures/player.png__" style="width:100%;max-height:372px;object-fit:contain;border-radius:3px;" alt="The haptic player: a clay-court rally with an event readout showing intensity, the connected phone count, and the event strip below">
+      <ul class="b" style="font-size:17.5px;">
         <li>Every event carries its <strong>loudness</strong>, which becomes the strength of the buzz.</li>
       </ul>
     </div>
@@ -603,37 +603,37 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <rect x="112" y="12" width="156" height="32" rx="4"
             fill="var(--surface)" stroke="var(--line)"></rect>
       <text x="190" y="33" text-anchor="middle" fill="var(--ink)"
-            font-size="14" font-weight="600">Laptop</text>
+            font-size="15.5" font-weight="600">Laptop</text>
       <rect x="712" y="12" width="156" height="32" rx="4"
             fill="var(--surface)" stroke="var(--line)"></rect>
       <text x="790" y="33" text-anchor="middle" fill="var(--ink)"
-            font-size="14" font-weight="600">Phone</text>
+            font-size="15.5" font-weight="600">Phone</text>
       <line x1="190" y1="44" x2="190" y2="342" stroke="var(--line)"></line>
       <line x1="790" y1="44" x2="790" y2="342" stroke="var(--line)"></line>
 
       <!-- setup -->
-      <text x="0" y="82" fill="var(--faint)" font-size="11"
+      <text x="0" y="82" fill="var(--faint)" font-size="13"
             letter-spacing="1.6">SETUP</text>
-      <text x="0" y="96" fill="var(--faint)" font-size="11"
+      <text x="0" y="96" fill="var(--faint)" font-size="13"
             letter-spacing="1.6">ONCE</text>
 
       <text x="490" y="76" text-anchor="middle" fill="var(--muted)"
-            font-size="12.5">find the laptop &nbsp;·&nbsp; mDNS</text>
+            font-size="14.5">find the laptop &nbsp;·&nbsp; mDNS</text>
       <line x1="784" y1="86" x2="196" y2="86" stroke="var(--muted)"
             marker-end="url(#ar)"></line>
 
       <text x="490" y="116" text-anchor="middle" fill="var(--muted)"
-            font-size="12.5">hello &nbsp;·&nbsp; TCP</text>
+            font-size="14.5">hello &nbsp;·&nbsp; TCP</text>
       <line x1="784" y1="126" x2="196" y2="126" stroke="var(--muted)"
             marker-end="url(#ar)"></line>
 
       <text x="490" y="158" text-anchor="middle" fill="var(--amber)"
-            font-size="13.5" font-weight="600">every event of the match, in one message</text>
+            font-size="15" font-weight="600">every event of the match, in one message</text>
       <line x1="196" y1="170" x2="784" y2="170" stroke="var(--amber)"
             stroke-width="2.4" marker-end="url(#ara)"></line>
 
       <text x="490" y="198" text-anchor="middle" fill="var(--muted)"
-            font-size="12.5">match the clocks &nbsp;·&nbsp; 8 round trips</text>
+            font-size="14.5">match the clocks &nbsp;·&nbsp; 8 round trips</text>
       <line x1="196" y1="208" x2="784" y2="208" stroke="var(--muted)"
             marker-start="url(#ar)" marker-end="url(#ar)"></line>
 
@@ -641,18 +641,18 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
             stroke-dasharray="3 5"></line>
 
       <!-- playback -->
-      <text x="0" y="262" fill="var(--faint)" font-size="11"
+      <text x="0" y="262" fill="var(--faint)" font-size="13"
             letter-spacing="1.6">PLAY</text>
-      <text x="0" y="276" fill="var(--faint)" font-size="11"
+      <text x="0" y="276" fill="var(--faint)" font-size="13"
             letter-spacing="1.6">ONWARD</text>
 
       <text x="490" y="262" text-anchor="middle" fill="var(--muted)"
-            font-size="12.5">play &nbsp;·&nbsp; pause &nbsp;·&nbsp; seek</text>
+            font-size="14.5">play &nbsp;·&nbsp; pause &nbsp;·&nbsp; seek</text>
       <line x1="196" y1="272" x2="784" y2="272" stroke="var(--muted)"
             marker-end="url(#ar)"></line>
 
       <text x="490" y="306" text-anchor="middle" fill="var(--muted)"
-            font-size="12.5">keep-in-step pulse &nbsp;·&nbsp; UDP &nbsp;·&nbsp; 5&ndash;10 a second</text>
+            font-size="14.5">keep-in-step pulse &nbsp;·&nbsp; UDP &nbsp;·&nbsp; 5&ndash;10 a second</text>
       <line x1="196" y1="316" x2="784" y2="316" stroke="var(--muted)"
             stroke-dasharray="5 4" marker-end="url(#ar)"></line>
 
@@ -663,9 +663,9 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <line x1="790" y1="278" x2="836" y2="278" stroke="var(--amber)" stroke-width="2.2"></line>
       <line x1="790" y1="308" x2="836" y2="308" stroke="var(--amber)" stroke-width="2.2"></line>
       <line x1="790" y1="338" x2="836" y2="338" stroke="var(--amber)" stroke-width="2.2"></line>
-      <text x="848" y="284" fill="var(--amber)" font-size="13" font-weight="600">each buzz fires from</text>
-      <text x="848" y="302" fill="var(--amber)" font-size="13" font-weight="600">the phone&rsquo;s own clock</text>
-      <text x="848" y="322" fill="var(--muted)" font-size="12">nothing is sent per hit</text>
+      <text x="848" y="284" fill="var(--amber)" font-size="14.5" font-weight="600">each buzz fires from</text>
+      <text x="848" y="302" fill="var(--amber)" font-size="14.5" font-weight="600">the phone&rsquo;s own clock</text>
+      <text x="848" y="322" fill="var(--muted)" font-size="14">nothing is sent per hit</text>
     </svg>
     <figcaption>The timeline crosses the network once. After that the phone runs
     on its own clock &mdash; the pulses only stop it drifting.</figcaption>
@@ -693,10 +693,10 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <h2>How the study ran</h2>
   <div class="cols c25" style="flex:none;align-content:start;">
     <figure>
-      <img src="__ASSET:docs/figures/study_scene.jpg__" style="max-height:420px;object-fit:contain;" alt="A participant sitting on a sofa in a lab furnished like a living room, holding the phone, watching a tennis match on a television, questionnaires on the side table">
+      <img src="__ASSET:docs/figures/study_scene.jpg__" style="max-height:392px;object-fit:contain;" alt="A participant sitting on a sofa in a lab furnished like a living room, holding the phone, watching a tennis match on a television, questionnaires on the side table">
       <figcaption>A room furnished as a living room, the phone held rather than worn</figcaption>
     </figure>
-    <ul class="b" style="font-size:17px;">
+    <ul class="b" style="font-size:19px;">
       <li>Two clips: one <strong>with</strong> vibration, one <strong>without</strong>.</li>
       <li>Order balanced across participants.</li>
       <li><strong>Sound on</strong> in both, as anyone would actually watch.</li>

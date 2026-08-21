@@ -190,7 +190,7 @@ def style_axis(ax):
     ax.set_facecolor(BG)
     for s in ax.spines.values():
         s.set_visible(False)
-    ax.tick_params(colors=MUTED, labelsize=8, length=0)
+    ax.tick_params(colors=MUTED, labelsize=10, length=0)
     ax.grid(False)
 
 
@@ -198,7 +198,7 @@ def figure_a(picked, path):
     """What the detector sees: a peak height, and nothing that separates them."""
     fig = plt.figure(figsize=(15, 4.4), facecolor=BG)
     gs = gridspec.GridSpec(1, 4, wspace=0.16, left=0.045, right=0.985,
-                           top=0.685, bottom=0.15)
+                           top=0.645, bottom=0.15)
     # One shared vertical scale, so the four panels stay honestly comparable
     # while still filling the frame.
     top_y = 1.32 * max(e["peak"] for e in picked.values())
@@ -223,22 +223,22 @@ def figure_a(picked, path):
         ax.set_yticks([])
         ax.set_xticks([-200, 0, 200])
         ax.set_xticklabels(["−200", "0", "+200"])
-        ax.set_xlabel("ms", color=MUTED, fontsize=8.5, labelpad=1)
-        ax.set_title(TITLES[k], color=INK, fontsize=14, pad=26,
+        ax.set_xlabel("ms", color=MUTED, fontsize=10.5, labelpad=1)
+        ax.set_title(TITLES[k], color=INK, fontsize=16, pad=28,
                      fontweight="semibold", loc="left")
         ax.text(0.0, 1.012, f"prominence {e['prom']:.2f}", transform=ax.transAxes,
-                color=MUTED, fontsize=9, family="monospace", va="bottom")
+                color=MUTED, fontsize=11, family="monospace", va="bottom")
         if k == 0:
             ax.text(0.5 * (SLICE_POST_S - SLICE_PRE_S) * 1000, top_y * 0.90,
-                    "150 ms given to the model", color=MUTED, fontsize=8.5,
+                    "150 ms given to the model", color=MUTED, fontsize=10.5,
                     ha="center", va="top", style="italic")
-    fig.text(0.045, 0.90, "What the onset detector sees",
-             color=INK, fontsize=19, fontweight="bold")
-    fig.text(0.045, 0.815,
+    fig.text(0.045, 0.925, "What the onset detector sees",
+             color=INK, fontsize=21, fontweight="bold")
+    fig.text(0.045, 0.845,
              f"Typical examples of each class. The envelope reduces an event to "
              f"one number, and {100*OVERLAP.get('share', 0):.0f}% of non-hit "
              f"transients are as strong as an ordinary racket hit.",
-             color=MUTED, fontsize=11)
+             color=MUTED, fontsize=13)
     fig.savefig(path, dpi=190, facecolor=BG)
     plt.close(fig)
     print(f"  wrote {path}")
@@ -248,7 +248,7 @@ def figure_b(picked, path):
     """What the classifier sees: the same four, in log-mel."""
     fig = plt.figure(figsize=(15, 4.4), facecolor=BG)
     gs = gridspec.GridSpec(1, 4, wspace=0.16, left=0.045, right=0.985,
-                           top=0.685, bottom=0.15)
+                           top=0.645, bottom=0.15)
     for k, c in enumerate(CLASSES):
         e = picked.get(c)
         ax = fig.add_subplot(gs[0, k])
@@ -263,18 +263,18 @@ def figure_b(picked, path):
         ax.set_xticks([0, 100])
         ax.set_xticklabels(["0", "+100"])
         ax.set_yticks([])
-        ax.set_xlabel("ms", color=MUTED, fontsize=8.5, labelpad=1)
-        ax.set_title(TITLES[k], color=INK, fontsize=14, pad=26,
+        ax.set_xlabel("ms", color=MUTED, fontsize=10.5, labelpad=1)
+        ax.set_title(TITLES[k], color=INK, fontsize=16, pad=28,
                      fontweight="semibold", loc="left")
         ax.text(0.0, 1.012, f"{MEL_N_MELS} mel × {M.shape[1]} frames",
                 transform=ax.transAxes, color=MUTED, fontsize=9,
                 family="monospace", va="bottom")
-    fig.text(0.045, 0.90, "What the classifier sees",
-             color=INK, fontsize=19, fontweight="bold")
-    fig.text(0.045, 0.815,
+    fig.text(0.045, 0.925, "What the classifier sees",
+             color=INK, fontsize=21, fontweight="bold")
+    fig.text(0.045, 0.845,
              f"Log-mel spectrogram of the same 150 ms at {MEL_SR//1000} kHz. "
              "The distinction the envelope discards is here.",
-             color=MUTED, fontsize=11)
+             color=MUTED, fontsize=13)
     fig.savefig(path, dpi=190, facecolor=BG)
     plt.close(fig)
     print(f"  wrote {path}")

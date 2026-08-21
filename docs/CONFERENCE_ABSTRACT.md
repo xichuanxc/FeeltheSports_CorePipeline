@@ -74,7 +74,16 @@ that is the harder question now.
 
 ---
 
-## Notes before submitting
+## Notes
+
+**The text above records what was submitted on 19 August and is left unchanged.**
+The corpus has grown since: Sabalenka v Rybakina was completed on 20 August,
+taking it to 1,270 events and 583 racket hits. Re-measurement on 21 August also
+replaced the single held-out F1 with leave-one-video-out across five matches,
+median 0.90 with a range of 0.79 to 0.94 for the classifier, and 0.78 end to
+end once the onset detector's misses are counted. The submitted 0.86 sits
+inside that range and was accurate for the split it described.
+
 
 - **All figures were re-measured on 19 August** against the rebuilt dataset.
   Across the five fully adjudicated matches the medians are: classifying every

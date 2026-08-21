@@ -390,16 +390,16 @@ def make_figure(rows):
                    edgecolors="none", zorder=2)
         ax.scatter([v.mean()], [y], s=150, color=c, zorder=3,
                    edgecolors=BG, linewidths=1.6)
-        ax.text(5.28, y, f"{v.mean():.2f}", color=c, fontsize=12,
+        ax.text(5.28, y, f"{v.mean():.2f}", color=c, fontsize=14,
                 va="center", family="monospace", fontweight="bold")
-        ax.text(0.92, y, LABELS[k], color=INK, fontsize=12.5,
+        ax.text(0.92, y, LABELS[k], color=INK, fontsize=14.5,
                 va="center", ha="right")
 
     ax.set_xlim(0.55, 5.55); ax.set_ylim(-0.8, len(keys) - 0.2)
     ax.set_yticks([])
     ax.set_xticks([1, 2, 3, 4, 5])
     ax.set_xticklabels(["strongly\ndisagree", "disagree", "neutral",
-                        "agree", "strongly\nagree"], fontsize=9.5)
+                        "agree", "strongly\nagree"], fontsize=11.5)
     ax.tick_params(colors=MUTED, length=0)
     for s in ax.spines.values():
         s.set_visible(False)
@@ -407,7 +407,7 @@ def make_figure(rows):
         ax.axvline(x, color=LINE, lw=0.8, zorder=0)
 
     fig.text(0.238, 0.955, "Each dot is one participant; the large marker "
-             "is the mean.", color=MUTED, fontsize=11)
+             "is the mean.", color=MUTED, fontsize=13)
     fig.subplots_adjust(left=0.232, right=0.952, top=0.905, bottom=0.145)
     os.makedirs(os.path.dirname(FIG), exist_ok=True)
     fig.savefig(FIG, dpi=190, facecolor=BG)
