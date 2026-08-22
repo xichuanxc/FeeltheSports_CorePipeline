@@ -68,3 +68,10 @@ vision/
 # Checksum of the last built deck, used by build_slides.py to notice a
 # hand-edit of docs/slides.html before overwriting it.
 docs/.slides.build.json
+
+# Vision prototype: published pose weights and YOLO checkpoints, fetched
+# by vision_prototype/fetch_models.sh rather than tracked.
+vision_prototype/models/
+vision_prototype/logs/
+*.task
+yolov8*.pt
