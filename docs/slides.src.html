@@ -265,7 +265,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 <div id="viewport">
 <div id="stage">
 
-<!-- 1 ............................................................. title -->
+<!-- 1 ........................................................ title -->
 <section class="slide" data-act="0" data-time="0:10">
   <canvas id="trace"></canvas>
   <div class="title-wrap">
@@ -283,10 +283,10 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 2 ........................................................... problem -->
+<!-- 2 ...................................................... problem -->
 <section class="slide vc" data-act="1" data-time="0:45">
   <div class="eyebrow"><i class="dot"></i>The problem</div>
-  <h2>Tennis is carried by its sound</h2>
+  <h2>Tennis hits are carried by their sound</h2>
   <div class="cols c52">
     <div class="stack grow">
       <ul class="b">
@@ -299,8 +299,9 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <div class="stack">
       <div class="callout">
         <span class="lbl">Research question</span>
-        Can we find the moment of every hit in TV audio, well enough to make a
+        Can we find the moment of every hit in tennis audio, and make a
         <strong>phone vibrate</strong> in time with it?
+        <br><br>And would that make watching feel more immersive?
       </div>
       <div class="panel">
         <span class="tag">The bar to clear</span>
@@ -313,7 +314,35 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 3 ...................................................... related work -->
+<!-- 3 ........................................................ reach -->
+<section class="slide vc" data-act="1" data-time="0:50">
+  <div class="eyebrow"><i class="dot"></i>The problem</div>
+  <h2>Restoring it usually costs hardware</h2>
+  <div class="cols c2">
+    <ul class="b">
+      <li>Every system that gives spectators a physical channel needs equipment
+      built for it: custom vibration rigs, thermal modules, body suits.</li>
+      <li>Even the earlier <em>Feel the Sports</em> work needed a wrist device.</li>
+      <li>So the people who could have it are the people who already bought
+      something.</li>
+    </ul>
+    <div class="stack">
+      <div class="callout">
+        <span class="lbl">The device almost everyone already has</span>
+        <strong>70%</strong> of people worldwide own a smartphone. Wearable
+        ownership is a fraction of that.
+      </div>
+      <div class="panel">
+        <span class="tag">And deliberately a cheap one</span>
+        <p>The study ran on a <span class="todo">low-end phone: model?</span>
+        rather than a flagship. &ldquo;A device you already own&rdquo; only means
+        something if it is not a device you would have to buy first.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 ................................................. related work -->
 <section class="slide vc" data-act="1" data-time="0:35">
   <div class="eyebrow"><i class="dot"></i>The problem</div>
   <h2>Where this sits</h2>
@@ -353,7 +382,36 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 4 .................................................... listening test -->
+<!-- 5 .................................................. in one line -->
+<section class="slide vc" data-act="2" data-time="0:40">
+  <div class="eyebrow"><i class="dot"></i>The sound</div>
+  <h2>What it does</h2>
+  <div class="callout" style="font-size:23px;">
+    A laptop listens to ordinary broadcast tennis, finds the moment of every
+    racket strike, and makes a phone in your hand buzz in time with them.
+  </div>
+  <div class="stats" style="margin-top:26px;">
+    <div class="stat">
+      <span class="n">0.90</span>
+      <span class="k">F1 &middot; racket hit</span>
+      <span class="s">on matches the model never saw</span>
+    </div>
+    <div class="stat">
+      <span class="n good">0.3</span>
+      <span class="k">False buzzes / min</span>
+      <span class="s">about one wrong vibration every three minutes</span>
+    </div>
+    <div class="stat">
+      <span class="n sky">4.67</span>
+      <span class="k">of 5 &middot; in time</span>
+      <span class="s">what twelve viewers said about the timing</span>
+    </div>
+  </div>
+  <p style="margin-top:22px;font-size:18.5px;">The rest is how, and what it
+  still gets wrong.</p>
+</section>
+
+<!-- 6 ............................................... listening test -->
 <section class="slide" data-act="2" data-time="1:20">
   <div class="eyebrow"><i class="dot"></i>The sound</div>
   <h2>Four sounds. Listen.</h2>
@@ -389,7 +447,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </figure>
 </section>
 
-<!-- 5 ........................................ detection != classification -->
+<!-- 7 .................................. detection != classification -->
 <section class="slide vc" data-act="2" data-time="0:35">
   <div class="eyebrow"><i class="dot"></i>The sound</div>
   <h2>Your ear separates them instantly.<br>The detector cannot.</h2>
@@ -425,7 +483,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 6 .......................................................... mel view -->
+<!-- 8 ..................................................... mel view -->
 <section class="slide" data-act="2" data-time="0:45">
   <div class="eyebrow"><i class="dot"></i>The sound</div>
   <h2>The same four, in log-mel</h2>
@@ -441,7 +499,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 7 ..................................................... data + model -->
+<!-- 9 ................................................. data + model -->
 <section class="slide vc" data-act="3" data-time="0:50">
   <div class="eyebrow"><i class="dot"></i>The model</div>
   <h2>Teaching it the difference</h2>
@@ -470,7 +528,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 8 ........................................................... results -->
+<!-- 10 ..................................................... results -->
 <section class="slide vc" data-act="3" data-time="0:45">
   <div class="eyebrow"><i class="dot"></i>The model</div>
   <h2>Does it work?</h2>
@@ -511,7 +569,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 9 ..................................................... the programs -->
+<!-- 11 ................................................ the programs -->
 <section class="slide" data-act="4" data-time="0:40">
   <div class="eyebrow"><i class="dot"></i>The feeling</div>
   <h2>Two programs hold it together</h2>
@@ -533,7 +591,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 9 ......................................................... intensity -->
+<!-- 12 ................................................... intensity -->
 <section class="slide vc" data-act="4" data-time="0:40">
   <div class="eyebrow"><i class="dot"></i>The feeling</div>
   <h2>From a spike to a feeling</h2>
@@ -581,7 +639,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 10 .................................................... architecture -->
+<!-- 13 ................................................ architecture -->
 <section class="slide" data-act="4" data-time="0:50">
   <div class="eyebrow"><i class="dot"></i>The feeling</div>
   <h2>Keeping a phone in time with a laptop</h2>
@@ -687,7 +745,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 12 ................................................... study scene -->
+<!-- 14 ................................................. study scene -->
 <section class="slide" data-act="4" data-time="0:45">
   <div class="eyebrow"><i class="dot"></i>The feeling</div>
   <h2>How the study ran</h2>
@@ -706,7 +764,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 12 ................................................. limits and next -->
+<!-- 15 ............................................. limits and next -->
 <section class="slide vc" data-act="5" data-time="0:20">
   <div class="eyebrow"><i class="dot"></i>Where it stands</div>
   <h2>What is not solved</h2>
@@ -734,7 +792,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 13 .................................................... user study -->
+<!-- 16 .................................................. user study -->
 <section class="slide" data-act="5" data-time="0:50">
   <div class="eyebrow"><i class="dot"></i>Where it stands</div>
   <h2>What 12 people said</h2>
@@ -752,6 +810,30 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <span class="lbl">Wanting it is a separate question</span>
       Enjoyed, engaging, would install: <strong>3.36 / 5</strong>, spread
       <strong>1.33</strong>. Six would install it, five would not.
+    </div>
+  </div>
+</section>
+
+<!-- 17 ...................................................... where it lands -->
+<section class="slide vc" data-act="5" data-time="0:45">
+  <div class="eyebrow"><i class="dot"></i>Where it stands</div>
+  <h2>Back to the person on the sofa</h2>
+  <div class="cols c52">
+    <ul class="b">
+      <li>The detection question is <strong>answered</strong>. Broadcast audio
+      is enough, on a device people already own.</li>
+      <li>The timing question is <strong>answered</strong>. Nobody who tried it
+      doubted the buzzes land in the right place.</li>
+      <li>Whether people <strong>want</strong> it is not answered, and that is
+      now the harder half.</li>
+    </ul>
+    <div class="callout">
+      <span class="lbl">And the group this was for</span>
+      Twelve people tried it. <strong>None of them were deaf or hard of
+      hearing.</strong> The viewers who lose the sound of the game entirely are
+      the ones with most to gain, and they have not been asked yet.
+      <br><br>
+      That is where the rest of this project goes.
     </div>
   </div>
 </section>
