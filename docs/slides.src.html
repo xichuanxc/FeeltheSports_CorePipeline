@@ -412,7 +412,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <span class="tag">Plays the match, drives the phone</span>
       <ul class="b" style="font-size:20px;">
         <li>Reads a timeline of events for the video.</li>
-        <li>Every event carries its <strong>loudness</strong>, which becomes the strength of the buzz.</li>
+        <li>Every event carries its <strong>loudness</strong>, scaled within that video, which becomes the strength of the buzz.</li>
         <li>Holds the connection to the phone.</li>
       </ul>
       <div class="callout" style="margin-top:14px;">
@@ -571,161 +571,37 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <figcaption>Every spike the detector fired on, coloured by what it turned out to be</figcaption>
   </figure>
 </section>
-<section class="slide" data-act="3" data-time="0:50">
-  <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
-  <h2>Teaching it the difference</h2>
-  <figure>
-    <svg viewBox="0 0 1148 250" role="img" class="arch"
-         aria-label="Flow chart of how the model is trained. Broadcast audio goes to onset detection, which finds every sudden rise in energy. A person labels those candidates into five classes. The model learns from a short slice around each onset. It is then tested on a match it never saw. A dashed loop runs back from the trained model to the labelling step: the model proposes the label and a person confirms it, which is the job it does today.">
-      <defs>
-        <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5"
-                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path>
-        </marker>
-        <marker id="faa" viewBox="0 0 10 10" refX="9" refY="5"
-                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="var(--amber)"></path>
-        </marker>
-      </defs>
-      <rect x="20" y="56" width="196" height="78" rx="5"
-            fill="var(--surface)" stroke="var(--line)"></rect>
-      <text x="118" y="88" text-anchor="middle" fill="var(--ink)"
-            font-size="16" font-weight="600">Broadcast audio</text>
-      <text x="118" y="111" text-anchor="middle" fill="var(--faint)"
-            font-size="13.5">one match, sound as aired</text>
-      <rect x="248" y="56" width="196" height="78" rx="5"
-            fill="var(--surface)" stroke="var(--line)"></rect>
-      <text x="346" y="88" text-anchor="middle" fill="var(--ink)"
-            font-size="16" font-weight="600">Onset detection</text>
-      <text x="346" y="111" text-anchor="middle" fill="var(--faint)"
-            font-size="13.5">every sudden rise</text>
-      <rect x="476" y="56" width="196" height="78" rx="5"
-            fill="var(--surface)" stroke="var(--line)"></rect>
-      <text x="574" y="88" text-anchor="middle" fill="var(--ink)"
-            font-size="16" font-weight="600">A person labels</text>
-      <text x="574" y="111" text-anchor="middle" fill="var(--faint)"
-            font-size="13.5">into five classes</text>
-      <rect x="704" y="56" width="196" height="78" rx="5"
-            fill="var(--surface)" stroke="var(--line)"></rect>
-      <text x="802" y="88" text-anchor="middle" fill="var(--ink)"
-            font-size="16" font-weight="600">The model learns</text>
-      <text x="802" y="111" text-anchor="middle" fill="var(--faint)"
-            font-size="13.5">150 ms around each onset</text>
-      <rect x="932" y="56" width="196" height="78" rx="5"
-            fill="#1B1608" stroke="var(--amber)"></rect>
-      <text x="1030" y="88" text-anchor="middle" fill="var(--amber)"
-            font-size="16" font-weight="600">A match it never saw</text>
-      <text x="1030" y="111" text-anchor="middle" fill="var(--faint)"
-            font-size="13.5">the only honest test</text>
-      <line x1="220" y1="95" x2="244" y2="95"
-            stroke="var(--muted)" marker-end="url(#fa)"></line>
-      <line x1="448" y1="95" x2="472" y2="95"
-            stroke="var(--muted)" marker-end="url(#fa)"></line>
-      <line x1="676" y1="95" x2="700" y2="95"
-            stroke="var(--muted)" marker-end="url(#fa)"></line>
-      <line x1="904" y1="95" x2="928" y2="95"
-            stroke="var(--muted)" marker-end="url(#fa)"></line>
-      <path d="M802,134 L802,186 L574,186 L574,138"
-            fill="none" stroke="var(--amber)" stroke-width="2"
-            stroke-dasharray="6 4" marker-end="url(#faa)"></path>
-      <text x="688" y="210" text-anchor="middle" fill="var(--amber)"
-            font-size="15" font-weight="600">it then proposes the label, and a person confirms</text>
-      <text x="688" y="230" text-anchor="middle" fill="var(--muted)"
-            font-size="14">which is the job it actually does today</text>
-    </svg>
-    <figcaption>Training and testing never share a match &nbsp;&middot;&nbsp; five classes &nbsp;&middot;&nbsp; 1,270 hand-adjudicated events across 7 broadcasts</figcaption>
-  </figure>
-  <div class="callout" style="margin-top:22px;">
-    <span class="lbl">What it is for, today</span>
-    Good enough to <strong>filter candidates</strong> so labelling goes faster,
-    not yet good enough to be trusted on its own. Running it on a live stream
-    is the aim, and is not there yet.
-  </div>
-</section>
 <section class="slide vc" data-act="3" data-time="0:45">
   <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
-  <h2>What the model adds</h2>
-  <div class="stats" style="grid-template-columns:1fr 1fr;margin-bottom:22px;">
-    <div class="stat">
-      <span class="n">0.84</span>
-      <span class="k">Accuracy &middot; five classes</span>
-      <span class="s">on a match never trained on &middot; sd 0.04 over 28 runs</span>
-    </div>
-    <div class="stat">
-      <span class="n sky">0.88</span>
-      <span class="k">F1 &middot; racket hit</span>
-      <span class="s">the class the buzzes are made of &middot; sd 0.06</span>
-    </div>
-  </div>
-  <div class="cols c2" style="flex:none;gap:24px;">
-    <div class="callout">
-      <span class="lbl">The two stages do different jobs</span>
-      <ul class="b">
-        <li>Peak detection finds <strong>98%</strong> of events, and says nothing about what they are.</li>
-        <li>The model says what &mdash; trained on exactly the events peak detection surfaced.</li>
-        <li>So labelling stops being a decision and becomes a <strong>confirmation</strong>, five times in six.</li>
-      </ul>
-    </div>
-    <div class="callout" style="border-left-color:var(--sky);">
-      <span class="lbl" style="color:var(--sky);">Three ways this flattered itself</span>
-      <ul class="b">
-        <li>Stopping training on the test match: <strong>+0.10</strong>.</li>
-        <li>Measuring on matches it trained on: <strong>+0.2</strong> recall.</li>
-        <li>Reporting one run: folds move <strong>0.10</strong> between runs.</li>
-      </ul>
-    </div>
-  </div>
-  <p style="margin-top:14px;font-size:17.5px;color:var(--faint);">Used to
-  <em style="font-style:normal;">filter</em> playback instead, precision goes
-  <strong style="color:var(--muted);">44% to 96%</strong> for 20 points of
-  recall &mdash; a different question.</p>
-</section>
-<section class="slide vc" data-act="4" data-time="0:40">
-  <div class="eyebrow"><i class="dot"></i>Making it felt</div>
-  <h2>From a spike to a feeling</h2>
-  <div class="flow" style="flex:none;margin-bottom:26px;">
-    <div class="node">
-      <span class="w">Detected</span>
-      <span class="t">Impact instant</span>
-      <span class="d">To the millisecond.</span>
-    </div>
-    <div class="arrow">&rarr;</div>
-    <div class="node">
-      <span class="w">Measured</span>
-      <span class="t">Peak loudness</span>
-      <span class="d">How loud the hit was.</span>
-    </div>
-    <div class="arrow">&rarr;</div>
-    <div class="node">
-      <span class="w">Mapped</span>
-      <span class="t">Intensity 0&ndash;1</span>
-      <span class="d">Scaled within that video.</span>
-    </div>
-    <div class="arrow">&rarr;</div>
-    <div class="node" style="border-color:#3A2E12;background:#1B1608;">
-      <span class="w" style="color:var(--amber);">Rendered</span>
-      <span class="t">Vibration</span>
-      <span class="d">Strength and length of the buzz.</span>
-    </div>
-  </div>
-  <div class="cols c2" style="flex:none;">
+  <h2>Find them, then name them</h2>
+  <div class="cols c2" style="flex:none;gap:28px;">
     <div class="panel">
-      <span class="tag">Why per-broadcast</span>
-      <ul class="b">
-        <li>Videos differ hugely in loudness.</li>
-        <li>A fixed setting leaves one match dead, the next buzzing constantly.</li>
+      <span class="tag">Conventional &middot; where</span>
+      <h3>Spectral-flux peak detection</h3>
+      <ul class="b" style="font-size:19px;">
+        <li>Band-pass, then pick the sudden rises.</li>
+        <li>Finds <strong>98%</strong> of events.</li>
+        <li>Says nothing about what any of them is.</li>
       </ul>
     </div>
     <div class="panel" style="border-left:3px solid var(--amber);">
-      <span class="tag">The honest cost</span>
-      <ul class="b">
-        <li>So strength is <strong>relative</strong>, not absolute.</li>
-        <li>A soft hit in a quiet match can feel like a hard hit in a loud one.</li>
+      <span class="tag">Learned &middot; what</span>
+      <h3>Log-mel slice into a small CNN</h3>
+      <ul class="b" style="font-size:19px;">
+        <li>150 ms around each candidate, five classes.</li>
+        <li><strong>0.84</strong> accuracy on a match never trained on.</li>
+        <li>Trained on exactly what peak detection surfaced.</li>
       </ul>
     </div>
   </div>
+  <div class="callout" style="margin-top:22px;">
+    <span class="lbl">Why both</span>
+    Peak detection is what makes a dataset exist at all. The model then hands
+    the labelling back a suggestion that is right <strong>five times in six</strong>,
+    so a person confirms instead of deciding.
+  </div>
 </section>
-<section class="slide" data-act="5" data-time="0:45">
+<section class="slide" data-act="4" data-time="0:45">
   <div class="eyebrow"><i class="dot"></i>The answer</div>
   <h2>How the study ran</h2>
   <div class="cols c25" style="flex:none;align-content:start;">
@@ -743,7 +619,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </ul>
   </div>
 </section>
-<section class="slide vc" data-act="5" data-time="1:30">
+<section class="slide vc" data-act="4" data-time="1:30">
   <div class="title-rule" style="margin:0 0 24px;"></div>
   <h2 style="font-size:52px;">What twelve people said</h2>
   <div class="stats" style="grid-template-columns:1fr 1fr;margin-bottom:22px;">
@@ -778,7 +654,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     The detector works. Finding who the feeling suits is the open half.
   </div>
 </section>
-<section class="slide" data-act="5" data-time="0:10">
+<section class="slide" data-act="4" data-time="0:10">
   <div class="title-wrap">
     <div class="title-rule"></div>
     <h1 style="font-size:76px;">Questions</h1>
@@ -850,7 +726,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   addEventListener("resize", fit); fit();
 
   /* --- the rail is segmented by act, not by slide ------------------------- */
-  const ACTS = ["", "The question", "What was built", "Finding the hits", "Making it felt", "The answer"];
+  const ACTS = ["", "The question", "What was built", "Finding the hits", "The answer"];
   const counts = {};
   slides.forEach(s => { const a = +s.dataset.act; counts[a] = (counts[a] || 0) + 1; });
   const segs = [];
