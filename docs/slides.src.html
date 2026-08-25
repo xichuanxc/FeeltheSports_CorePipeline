@@ -596,31 +596,26 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 </section>
 <section class="slide vc" data-act="3" data-time="0:45">
   <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
-  <h2>Does it work?</h2>
-  <div class="stats" style="margin-bottom:24px;">
+  <h2>What the model adds</h2>
+  <div class="stats" style="grid-template-columns:1fr 1fr;margin-bottom:22px;">
     <div class="stat">
-      <span class="n">0.88</span>
+      <span class="n">0.84</span>
+      <span class="k">Accuracy &middot; five classes</span>
+      <span class="s">on a match never trained on &middot; sd 0.04 over 28 runs</span>
+    </div>
+    <div class="stat">
+      <span class="n sky">0.88</span>
       <span class="k">F1 &middot; racket hit</span>
-      <span class="s">seven held-out matches, four runs each &middot; sd 0.06</span>
-    </div>
-    <div class="stat">
-      <span class="n good">0.5</span>
-      <span class="k">False buzzes / min</span>
-      <span class="s">four unseen matches &times; four runs, shipped settings</span>
-    </div>
-    <div class="stat">
-      <span class="n sky">0.71</span>
-      <span class="k">Strike recall</span>
-      <span class="s">sd 0.16 &middot; the detector itself caps it at 0.84</span>
+      <span class="s">the class the buzzes are made of &middot; sd 0.06</span>
     </div>
   </div>
-  <div class="cols c2" style="flex:none;">
+  <div class="cols c2" style="flex:none;gap:24px;">
     <div class="callout">
-      <span class="lbl">The architectural finding</span>
+      <span class="lbl">The two stages do different jobs</span>
       <ul class="b">
-        <li>Onsets alone: <strong>3.3</strong> false a minute.</li>
-        <li>Model checks each onset: <strong>0.5</strong> &mdash; 86% gone, for 0.13 of recall.</li>
-        <li>Scoring <em style="font-style:normal;">every</em> 10 ms: worse on both, <strong>15&times;</strong> the compute.</li>
+        <li>Peak detection finds <strong>98%</strong> of events, and says nothing about what they are.</li>
+        <li>The model says what &mdash; trained on exactly the events peak detection surfaced.</li>
+        <li>So labelling stops being a decision and becomes a <strong>confirmation</strong>, five times in six.</li>
       </ul>
     </div>
     <div class="callout" style="border-left-color:var(--sky);">
@@ -628,10 +623,14 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <ul class="b">
         <li>Stopping training on the test match: <strong>+0.10</strong>.</li>
         <li>Measuring on matches it trained on: <strong>+0.2</strong> recall.</li>
-        <li>Reporting one run: single folds move <strong>0.10</strong> between runs.</li>
+        <li>Reporting one run: folds move <strong>0.10</strong> between runs.</li>
       </ul>
     </div>
   </div>
+  <p style="margin-top:14px;font-size:17.5px;color:var(--faint);">Used to
+  <em style="font-style:normal;">filter</em> playback instead, precision goes
+  <strong style="color:var(--muted);">44% to 96%</strong> for 20 points of
+  recall &mdash; a different question.</p>
 </section>
 <section class="slide vc" data-act="4" data-time="0:40">
   <div class="eyebrow"><i class="dot"></i>Making it felt</div>
