@@ -260,6 +260,13 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   .clip.playing .bar > i{animation:none;width:100%;}
   #trace{display:none;}
 }
+.cite{
+  margin-top:auto;padding-top:10px;
+  font-size:13.5px;line-height:1.5;
+  color:var(--faint);font-style:italic;
+  border-top:1px solid var(--line);
+}
+.panel:has(.cite){display:flex;flex-direction:column;}
 </style>
 
 <div id="viewport">
@@ -283,33 +290,24 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 
-<!-- 2 .................................................... problem -->
-<section class="slide vc" data-act="1" data-time="0:45">
+<!-- 2 ...................................................... problem -->
+<section class="slide vc" data-act="1" data-time="1:00">
   <div class="eyebrow"><i class="dot"></i>The problem</div>
-  <h2>Tennis hits are carried by their sound</h2>
+  <h2>On a screen you can only see and hear</h2>
   <div class="cols c52">
     <div class="stack grow">
-      <ul class="b">
-        <li>The strings carry the timing, the power, and whether the ball was hit cleanly.</li>
-        <li>You usually hear it before you see it.</li>
-        <li>Take it away and a rally becomes just movement.</li>
-        <li>For deaf and hard-of-hearing viewers, it is simply gone.</li>
+      <ul class="b" style="font-size:24px;">
+        <li>In person, you feel the physical energy of the game.</li>
+        <li>Hard hits and fast rallies most of all.</li>
+        <li>Through a screen, that channel is gone.</li>
+        <li>Giving it back is what <em>Feel the Sports</em> is for.</li>
       </ul>
     </div>
-    <div class="stack">
-      <div class="callout">
-        <span class="lbl">Research question</span>
-        Can we find the moment of every hit in tennis audio, and make a
-        <strong>phone vibrate</strong> in time with it?
-        <br><br>And would that make watching feel more immersive?
-      </div>
-      <div class="panel">
-        <span class="tag">The bar to clear</span>
-        <ul class="b">
-          <li>A buzz when nothing happened spoils the effect far more than a missing buzz.</li>
-          <li><strong>Precision over recall</strong> &mdash; this one rule decides everything that follows.</li>
-        </ul>
-      </div>
+    <div class="callout" style="align-self:center;">
+      <span class="lbl">Research question</span>
+      Can we detect every racket strike in tennis audio, and drive a phone to
+      <strong>vibrate in time</strong> with it?
+      <br><br>And does that raise a viewer&rsquo;s sense of <strong>immersion</strong>?
     </div>
   </div>
 </section>
@@ -319,24 +317,21 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <div class="eyebrow"><i class="dot"></i>The problem</div>
   <h2>Restoring it usually costs hardware</h2>
   <div class="cols c2">
-    <ul class="b">
-      <li>Every system that gives spectators a physical channel needs equipment
-      built for it: custom vibration rigs, thermal modules, body suits.</li>
-      <li>Even the earlier <em>Feel the Sports</em> work needed a wrist device.</li>
-      <li>So the people who could have it are the people who already bought
-      something.</li>
+    <ul class="b" style="font-size:24px;">
+      <li>Vibration rigs, thermal modules, body suits.</li>
+      <li>The earlier <em>Feel the Sports</em> work: a wrist device.</li>
+      <li>You only get the feeling if you already bought something.</li>
     </ul>
     <div class="stack">
       <div class="callout">
         <span class="lbl">The device almost everyone already has</span>
-        <strong>70%</strong> of people worldwide own a smartphone. Wearable
-        ownership is a fraction of that.
+        <strong>70%</strong> of people worldwide own a smartphone.
+        Wearables are nowhere near that.
       </div>
       <div class="panel">
         <span class="tag">And deliberately a cheap one</span>
-        <p>The study ran on a <span class="todo">low-end phone: model?</span>
-        rather than a flagship. &ldquo;A device you already own&rdquo; only means
-        something if it is not a device you would have to buy first.</p>
+        <p>Tested on a <span class="todo">budget phone: model?</span>, not a
+        flagship. &ldquo;Already own&rdquo; has to mean already own.</p>
       </div>
     </div>
   </div>
@@ -346,39 +341,45 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 <section class="slide vc" data-act="1" data-time="0:35">
   <div class="eyebrow"><i class="dot"></i>The problem</div>
   <h2>Where this sits</h2>
-  <div class="cols" style="grid-template-columns:repeat(3,1fr);align-items:start;">
+  <div class="cols" style="grid-template-columns:repeat(3,1fr);align-items:stretch;">
     <div class="panel">
       <span class="tag">Strand 01</span>
       <h3>Haptics for spectators</h3>
       <ul class="b">
-        <li>All triggered by events; they differ in what they sense &mdash; sound, vision, or the body. <em>Iekura 2015 &middot; Handa 2019 &middot; Peng 2022</em></li>
-        <li>Nearly all need <strong>custom hardware</strong>. <em>Mizushina 2015 &middot; Takahashi 2021 &middot; de Graaf 2022</em></li>
-        <li>Earlier <em>Feel the Sports</em> work drove a wrist device from motion sensors. <em>Poutoa 2025 &middot; Nichols et al. 2026</em></li>
+        <li>Extra hardware on <strong>both</strong> sides.</li>
+        <li>Sensing: IMUs, biosensors, ball tracking on court.</li>
+        <li>Actuating: vibration rigs, thermal modules, a wrist device.</li>
       </ul>
+      <p class="cite">Iekura 2015 &middot; Handa 2019 &middot; Peng 2022 &middot;
+      Mizushina 2015 &middot; Takahashi 2021 &middot; de Graaf 2022 &middot;
+      Poutoa 2025 &middot; Nichols et al. 2026</p>
     </div>
     <div class="panel">
       <span class="tag">Strand 02</span>
-      <h3>Acoustic detection in tennis</h3>
+      <h3>Haptics on a consumer phone</h3>
       <ul class="b">
-        <li>Loudness peaks in filtered audio. <em>Caprioli et al. 2024</em></li>
-        <li>MFCC + CNN, <strong>F1 92.4%</strong>. <em>Baughman et al. 2019</em></li>
-        <li>XGBoost, <strong>0.98</strong> for hits &mdash; but bounces need several models combined, and real court noise drops it to <strong>~85%</strong>. <em>Caprioli et al. 2025</em></li>
+        <li>It has been done, and it works.</li>
+        <li>But for correcting <strong>children&rsquo;s kinesthetic learning</strong>.</li>
+        <li>Nobody has pointed it at watching sport.</li>
       </ul>
+      <p class="cite">G&oacute;mez-Monroy et al. 2026</p>
     </div>
     <div class="panel">
       <span class="tag">Strand 03</span>
-      <h3>What is missing</h3>
+      <h3>Detecting tennis events</h3>
       <ul class="b">
-        <li>Those systems study <strong>how players perform</strong>, not how people watch, and record on court.</li>
-        <li>None deals with <strong>TV audio</strong> &mdash; crowd and commentary over every rally.</li>
-        <li>The closest work using an ordinary phone is outside sport. <em>G&oacute;mez-Monroy et al. 2026</em></li>
+        <li>Filtered loudness peaks; MFCC + CNN, <strong>F1 92.4%</strong>.</li>
+        <li>XGBoost <strong>0.98</strong>, but <strong>~85%</strong> in real court noise.</li>
+        <li>None of it drives haptics. <strong>No open dataset.</strong></li>
       </ul>
+      <p class="cite">Caprioli et al. 2024 &middot; Baughman et al. 2019 &middot;
+      Caprioli et al. 2025</p>
     </div>
   </div>
-  <div class="callout" style="margin-top:8px;">
+  <div class="callout" style="margin-top:18px;">
     <span class="lbl">The gap</span>
-    Nobody has connected tennis sound detection to vibration on a device the
-    viewer <strong>already owns</strong> &mdash; and 70% of people now carry one.
+    Tennis sound has never driven vibration on a phone the viewer
+    <strong>already owns</strong>. And there was no dataset to start from.
   </div>
 </section>
 
@@ -399,16 +400,14 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <div class="stat">
       <span class="n good">0.3</span>
       <span class="k">False buzzes / min</span>
-      <span class="s">about one wrong vibration every three minutes</span>
+      <span class="s">one wrong buzz every three minutes</span>
     </div>
     <div class="stat">
       <span class="n sky">4.67</span>
       <span class="k">of 5 &middot; in time</span>
-      <span class="s">what twelve viewers said about the timing</span>
+      <span class="s">as rated by twelve viewers</span>
     </div>
   </div>
-  <p style="margin-top:22px;font-size:18.5px;">The rest is how, and what it
-  still gets wrong.</p>
 </section>
 
 <!-- 6 ............................................. listening test -->
@@ -450,14 +449,13 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 <!-- 7 ................................ detection != classification -->
 <section class="slide vc" data-act="2" data-time="0:35">
   <div class="eyebrow"><i class="dot"></i>The sound</div>
-  <h2>Your ear separates them instantly.<br>The detector cannot.</h2>
+  <h2>You just told them apart.<br>The detector cannot.</h2>
   <div class="cols c2" style="align-items:center;">
     <div class="stack">
-      <ul class="b">
-        <li>The detector looks for <strong>sudden rises in energy</strong>.</li>
-        <li>It is very good at that: it finds <span class="amber">97%</span> of every hit a human later confirmed.</li>
-        <li>But a shoe squeak, a bounce, a seat banging and a forehand are all sudden rises.</li>
-        <li>Finding a sound is not the same as knowing what it is.</li>
+      <ul class="b" style="font-size:24px;">
+        <li>It looks for <strong>sudden rises in energy</strong>.</li>
+        <li>A squeak, a bounce, a seat banging: all sudden rises.</li>
+        <li>Finding a sound is not knowing what it is.</li>
       </ul>
     </div>
     <div class="stats" style="grid-template-columns:1fr 1fr;">
@@ -475,11 +473,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
   <div class="callout" style="margin-top:26px;">
     <span class="lbl">Consequence</span>
-    <ul class="b">
-      <li>Fewer than half of what it finds is a racket hit.</li>
-      <li>Buzzing on all of them is not an option.</li>
-      <li>Telling them apart has to come from the sound of the hit itself.</li>
-    </ul>
+    Buzzing on everything it finds is not an option. What each sound
+    <strong>is</strong> has to come from the sound itself.
   </div>
 </section>
 
@@ -510,10 +505,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
         <dt>Events</dt><dd>1,270 hand-adjudicated <em>&mdash; 583 racket hits</em></dd>
         <dt>Matches</dt><dd>7 broadcasts <em>&mdash; hard, clay, grass</em></dd>
         <dt>Classes</dt><dd>5 <em>&mdash; hit, bounce, squeak, speech, ambient</em></dd>
-        <dt>Tooling</dt><dd>Purpose-built labelling app <em>&mdash; the detector suggests, a human decides</em></dd>
+        <dt>Labelling</dt><dd>Purpose-built app <em>&mdash; detector suggests, human decides</em></dd>
       </dl>
-      <p style="margin-top:6px;font-size:18.5px;">Labelling time depends on how many
-      <strong>events</strong> there are, not how long the video is.</p>
     </div>
     <div class="stack">
       <span class="tag">What the model sees</span>
@@ -536,33 +529,33 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <div class="stat">
       <span class="n">0.90</span>
       <span class="k">F1 · racket hit</span>
-      <span class="s">median of five held-out matches, range 0.79 to 0.94</span>
+      <span class="s">median of five held-out matches, 0.79 to 0.94</span>
     </div>
     <div class="stat">
       <span class="n good">0.3</span>
       <span class="k">False buzzes / min</span>
-      <span class="s">median over five unseen matches, at the shipped settings</span>
+      <span class="s">five unseen matches, at the shipped settings</span>
     </div>
     <div class="stat">
       <span class="n sky">0.67</span>
       <span class="k">Strike recall</span>
-      <span class="s">a third of hits produce none, and the detector is the limit</span>
+      <span class="s">a third of hits produce no buzz at all</span>
     </div>
   </div>
   <div class="cols c2" style="flex:none;">
     <div class="callout">
       <span class="lbl">The architectural finding</span>
       <ul class="b">
-        <li>Onsets alone: <strong>2.0 false buzzes a minute</strong>, precision 0.84.</li>
-        <li>Ask the model about each one: <strong>0.3</strong>, precision <strong>0.96</strong> &mdash; 85% of the false buzzes gone for 0.04 of recall.</li>
-        <li>Scoring <em style="font-style:normal;">every</em> 10 ms window instead is worse on both counts and <strong>15&times;</strong> the computing.</li>
+        <li>Onsets alone: <strong>2.0</strong> false a minute.</li>
+        <li>Model checks each onset: <strong>0.3</strong> &mdash; 85% gone, for 0.04 of recall.</li>
+        <li>Scoring <em style="font-style:normal;">every</em> 10 ms: worse on both, <strong>15&times;</strong> the compute.</li>
       </ul>
     </div>
     <div class="callout" style="border-left-color:var(--sky);">
       <span class="lbl" style="color:var(--sky);">Two ways this flattered itself</span>
       <ul class="b">
-        <li>Choosing when to stop training by looking at the test match: score <strong>0.10 too high</strong>.</li>
-        <li>Measuring the buzzes on matches the model had trained on: recall about <strong>0.2 too high</strong>.</li>
+        <li>Stopping training on the test match: <strong>+0.10</strong>.</li>
+        <li>Measuring on matches it trained on: <strong>+0.2</strong> recall.</li>
         <li>Every figure here is leave-one-match-out.</li>
       </ul>
     </div>
@@ -599,7 +592,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <div class="node">
       <span class="w">Detected</span>
       <span class="t">Impact instant</span>
-      <span class="d">The moment of the hit, to the millisecond.</span>
+      <span class="d">To the millisecond.</span>
     </div>
     <div class="arrow">&rarr;</div>
     <div class="node">
@@ -611,13 +604,13 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <div class="node">
       <span class="w">Mapped</span>
       <span class="t">Intensity 0&ndash;1</span>
-      <span class="d">Placed on a 0&ndash;1 scale for that video.</span>
+      <span class="d">Scaled within that video.</span>
     </div>
     <div class="arrow">&rarr;</div>
     <div class="node" style="border-color:#3A2E12;background:#1B1608;">
       <span class="w" style="color:var(--amber);">Rendered</span>
       <span class="t">Vibration</span>
-      <span class="d">Strength and length of the phone&rsquo;s buzz.</span>
+      <span class="d">Strength and length of the buzz.</span>
     </div>
   </div>
   <div class="cols c2" style="flex:none;">
@@ -625,7 +618,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <span class="tag">Why per-broadcast</span>
       <ul class="b">
         <li>Videos differ hugely in loudness.</li>
-        <li>One fixed setting would leave one match feeling dead and another buzzing constantly.</li>
+        <li>A fixed setting leaves one match dead, the next buzzing constantly.</li>
       </ul>
     </div>
     <div class="panel" style="border-left:3px solid var(--amber);">
@@ -633,7 +626,6 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <ul class="b">
         <li>So strength is <strong>relative</strong>, not absolute.</li>
         <li>A soft hit in a quiet match can feel like a hard hit in a loud one.</li>
-        <li>Matching across matches is still unsolved.</li>
       </ul>
     </div>
   </div>
@@ -765,104 +757,39 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 </section>
 
 <!-- 15 ................................................ user study -->
-<section class="slide" data-act="5" data-time="0:50">
-  <div class="eyebrow"><i class="dot"></i>Where it stands</div>
-  <h2>What 12 people said</h2>
-  <figure>
-    <img src="__ASSET:docs/figures/fig_c_user_study.png__" alt="Likert responses from 12 participants: system-quality items cluster at strongly agree, experience items spread across the whole scale">
-    <figcaption>Same people in both conditions, order balanced &nbsp;·&nbsp; two clips, one with buzzes &nbsp;·&nbsp; n = 12</figcaption>
-  </figure>
-  <div class="cols" style="grid-template-columns:1fr 1fr;flex:none;gap:24px;margin-top:14px;">
-    <div class="callout" style="border-left-color:var(--good);">
-      <span class="lbl" style="color:var(--good);">The detector is not the problem</span>
-      Noticed, fits, in time: <strong>4.67 / 5</strong>, spread 0.53. Nobody
-      doubted that the buzzes land in the right place.
+<section class="slide vc" data-act="5" data-time="1:30">
+  <div class="title-rule" style="margin:0 0 24px;"></div>
+  <h2 style="font-size:52px;">What twelve people said</h2>
+  <div class="stats" style="grid-template-columns:1fr 1fr;margin-bottom:22px;">
+    <div class="stat">
+      <span class="n sky">4.67</span>
+      <span class="k">of 5 &middot; noticed, fits, in time</span>
+      <span class="s">nobody doubted the buzzes land in the right place</span>
     </div>
-    <div class="callout">
-      <span class="lbl">Wanting it is a separate question</span>
-      Enjoyed, engaging, would install: <strong>3.36 / 5</strong>, spread
-      <strong>1.33</strong>. Six would install it, five would not.
+    <div class="stat">
+      <span class="n">3.36</span>
+      <span class="k">of 5 &middot; enjoyed, engaging, would install</span>
+      <span class="s">six would install it, five would not</span>
     </div>
   </div>
-</section>
-
-<!-- 16 ............................................ what they said -->
-<section class="slide vc" data-act="5" data-time="0:50">
-  <div class="eyebrow"><i class="dot"></i>Where it stands</div>
-  <h2>Why they divided</h2>
-  <div class="cols" style="grid-template-columns:repeat(3,1fr);gap:26px;">
-    <div class="panel">
-      <span class="tag">It feels like playing</span>
-      <p style="font-size:17px;">&ldquo;Feels like I&rsquo;m also holding the
-      racket, and I will have the urge to swing my hands along.&rdquo;</p>
-      <p><em>Three people described playing rather than watching.</em></p>
-    </div>
+  <div class="cols c52">
     <div class="panel" style="border-left:3px solid var(--amber);">
-      <span class="tag">It competes for attention</span>
-      <p style="font-size:17px;">&ldquo;When I&rsquo;m not focused it helps me
-      focus. When I&rsquo;m focused it distracts me from watching.&rdquo;</p>
-      <p><em>One answer explaining both halves of the split.</em></p>
+      <span class="tag">The answer that explains the split</span>
+      <p>&ldquo;When I&rsquo;m not focused it helps me focus. When I&rsquo;m
+      focused it distracts me from watching.&rdquo;</p>
     </div>
-    <div class="panel">
-      <span class="tag">Every buzz feels the same</span>
-      <p style="font-size:17px;">&ldquo;The difference between gentle hits and
-      smash is a bit too small.&rdquo;</p>
-      <p><em>Five of twelve asked for strength that follows the stroke.</em></p>
+    <div class="stack">
+      <span class="tag">Still open</span>
+      <ul class="b">
+        <li>Buzz strength is relative to each video.</li>
+        <li>Highlights, not live.</li>
+        <li>A bigger study &mdash; this seminar is a chance to recruit.</li>
+      </ul>
     </div>
   </div>
   <div class="callout" style="margin-top:20px;">
-    <span class="lbl">The one that changes the design</span>
-    Intensity is scaled to each broadcast, so it varies with loudness but not
-    with how hard the ball was struck. That is the most requested change, and
-    the current mapping cannot deliver it.
-  </div>
-</section>
-
-<!-- 17 ........................................... limits and next -->
-<section class="slide vc" data-act="5" data-time="0:20">
-  <div class="eyebrow"><i class="dot"></i>Where it stands</div>
-  <h2>What is not solved</h2>
-  <div class="cols c2">
-    <div class="stack">
-      <span class="tag">Limitations</span>
-      <ul class="ticks">
-        <li class="warn">Sound alone cannot tell <b>which player hit the ball</b>. Separating them would need a vision model.</li>
-        <li class="warn">Buzz strength is <b>relative to each video</b>, not absolute.</li>
-        <li class="warn">The videos are <b>highlights</b>, with far less commentary than a live match.</li>
-      </ul>
-    </div>
-    <div class="stack">
-      <span class="tag">Next</span>
-      <ul class="ticks">
-        <li class="ok">Label more of the rare sounds, to catch more hits.</li>
-        <li class="ok">Measure it <b>running live</b> &mdash; the recordings were pre-processed and reviewed manually.</li>
-        <li class="ok">A bigger study, with more people. This seminar is a chance to recruit them.</li>
-      </ul>
-      <div class="callout" style="margin-top:12px;">
-        <span class="lbl">The principle that held throughout</span>
-        A false buzz is worse than a missed one.
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 18 ............................................ where it lands -->
-<section class="slide vc" data-act="5" data-time="0:45">
-  <div class="title-rule" style="margin:0 0 26px;"></div>
-  <h2 style="font-size:52px;">Back to the person on the sofa</h2>
-  <div class="cols c52" style="margin-top:8px;">
-    <ul class="b">
-      <li>Broadcast audio is enough. It works on a device people already own.</li>
-      <li>Nobody who tried it doubted the buzzes land in the right place.</li>
-      <li>Whether people <strong>want</strong> it is the half that is still open.</li>
-    </ul>
-    <div class="callout">
-      <span class="lbl">And the group this was for</span>
-      Twelve people tried it. <strong>None of them were deaf or hard of
-      hearing.</strong> The viewers who lose the sound of the game entirely have
-      the most to gain, and have not been asked yet.
-      <br><br>That is where the rest of this project goes.
-    </div>
+    <span class="lbl">Where the rest of this project goes</span>
+    The detector works. Finding who the feeling suits is the open half.
   </div>
 </section>
 
