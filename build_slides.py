@@ -119,6 +119,16 @@ def main():
         return 1
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    # The Artifact wrapper owns <head>, so the page cannot declare its own
+    # charset. A literal non-ASCII byte then renders as mojibake wherever the
+    # viewer guesses Latin-1 -- which is what a local file:// open does. Keep
+    # the output pure ASCII and use HTML entities instead.
+    stray = sorted({c for c in html if ord(c) > 127})
+    if stray:
+        print("non-ASCII in output, use HTML entities instead: "
+              + " ".join(f"U+{ord(c):04X} {c!r}" for c in stray), file=sys.stderr)
+        return 1
+
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(html)
     with open(STAMP, "w") as f:

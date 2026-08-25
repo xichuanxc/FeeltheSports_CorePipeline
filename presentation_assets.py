@@ -280,6 +280,65 @@ def figure_b(picked, path):
     print(f"  wrote {path}")
 
 
+def figure_ab(picked, path):
+    """Both views, one column per sound, so the argument fits on one slide.
+
+    figure_a and figure_b are the same four events in the same order; split
+    across two slides the audience has to hold the first in memory to read the
+    second. Stacked, the column under each play button carries it directly:
+    the envelope the detector reduces the event to, and the log-mel the model
+    is given instead.
+    """
+    fig = plt.figure(figsize=(15, 5.0), facecolor=BG)
+    gs = gridspec.GridSpec(2, 4, wspace=0.15, hspace=0.40,
+                           left=0.062, right=0.988, top=0.90, bottom=0.10)
+    top_y = 1.32 * max(e["peak"] for e in picked.values())
+    for k, c in enumerate(CLASSES):
+        e = picked.get(c)
+
+        ax = fig.add_subplot(gs[0, k])
+        style_axis(ax)
+        if e is not None:
+            y, sr = load_audio(e["video"], sr=A_SR)
+            env, _ = compute_envelope(y, sr)
+            et = librosa.frames_to_time(np.arange(len(env)), sr=sr, hop_length=A_HOP)
+            m = (et >= e["peak_t"] - VIEW_S) & (et <= e["peak_t"] + VIEW_S)
+            x = (et[m] - e["peak_t"]) * 1000.0
+            ax.axvspan(-SLICE_PRE_S * 1000, SLICE_POST_S * 1000,
+                       color=INK, alpha=0.04, linewidth=0)
+            ax.fill_between(x, 0, env[m], color=COLOURS[c], alpha=0.20, linewidth=0)
+            ax.plot(x, env[m], color=COLOURS[c], linewidth=2.1)
+            ax.set_ylim(0, top_y)
+            ax.set_xlim(-VIEW_S * 1000, VIEW_S * 1000)
+            ax.set_xticks([-200, 0, 200])
+            ax.set_xticklabels(["\u2212200", "0", "+200"])
+        ax.set_yticks([])
+        ax.set_title(TITLES[k], color=INK, fontsize=17, pad=10,
+                     fontweight="semibold", loc="left")
+        if k == 0:
+            ax.set_ylabel("the detector\nreduces it to this", color=MUTED,
+                          fontsize=12, labelpad=12, linespacing=1.5)
+
+        ax = fig.add_subplot(gs[1, k])
+        style_axis(ax)
+        if e is not None:
+            y, sr = load_audio(e["video"], sr=A_SR)
+            M = mel_slice(y, sr, e["peak_t"])
+            ax.imshow(M, origin="lower", aspect="auto", cmap="magma",
+                      extent=[-SLICE_PRE_S * 1000, SLICE_POST_S * 1000,
+                              0, MEL_N_MELS])
+            ax.set_xticks([0, 100])
+            ax.set_xticklabels(["0", "+100"])
+        ax.set_yticks([])
+        ax.set_xlabel("ms", color=MUTED, fontsize=10.5, labelpad=1)
+        if k == 0:
+            ax.set_ylabel("the model is\ngiven this", color=MUTED,
+                          fontsize=12, labelpad=12, linespacing=1.5)
+    fig.savefig(path, dpi=190, facecolor=BG)
+    plt.close(fig)
+    print(f"  wrote {path}")
+
+
 def main():
     plt.rcParams["font.family"] = ["Helvetica Neue", "Helvetica", "DejaVu Sans"]
     os.makedirs(OUT_FIG, exist_ok=True)
@@ -299,6 +358,7 @@ def main():
     print("\ndrawing figures")
     figure_a(picked, os.path.join(OUT_FIG, "fig_a_envelopes.png"))
     figure_b(picked, os.path.join(OUT_FIG, "fig_b_mel.png"))
+    figure_ab(picked, os.path.join(OUT_FIG, "fig_ab_combined.png"))
     return 0
 
 

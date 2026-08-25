@@ -420,30 +420,48 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <figcaption>Every slide from here on is one box of this diagram</figcaption>
   </figure>
 </section>
-<section class="slide" data-act="2" data-time="0:40">
-  <div class="eyebrow"><i class="dot"></i>The big picture</div>
-  <h2>Two programs hold it together</h2>
-  <div class="cols c2" style="flex:none;align-content:start;gap:36px;">
-    <div class="stack" style="gap:10px;">
-      <span class="tag">Labelling &mdash; the detector proposes, a person judges</span>
-      <img src="__ASSET:docs/figures/annotator.png__" style="width:100%;max-height:372px;object-fit:contain;border-radius:3px;" alt="The annotation tool: a paused match with the onset envelope below, candidate markers, per-class progress bars, and the model's own guess for the current candidate">
-      <ul class="b" style="font-size:17.5px;">
-        <li><strong>117 candidates, 99% reviewed</strong> &mdash; the model&rsquo;s own guess sits beside each one.</li>
-      </ul>
-    </div>
-    <div class="stack" style="gap:10px;">
-      <span class="tag">Playback &mdash; drives the phone, one client connected</span>
-      <img src="__ASSET:docs/figures/player.png__" style="width:100%;max-height:372px;object-fit:contain;border-radius:3px;" alt="The haptic player: a clay-court rally with an event readout showing intensity, the connected phone count, and the event strip below">
-      <ul class="b" style="font-size:17.5px;">
+<section class="slide" data-act="2" data-time="0:35">
+  <div class="eyebrow"><i class="dot"></i>Built first</div>
+  <h2>The player</h2>
+  <div class="cols c52" style="flex:none;align-content:start;gap:32px;">
+    <img src="__ASSET:docs/figures/player.png__" style="width:100%;max-height:400px;object-fit:contain;border-radius:3px;" alt="The haptic player: a clay-court rally with an event readout showing intensity, the connected phone count, and the event strip below">
+    <div class="stack">
+      <span class="tag">Plays the match, drives the phone</span>
+      <ul class="b" style="font-size:20px;">
+        <li>Reads a timeline of events for the video.</li>
         <li>Every event carries its <strong>loudness</strong>, which becomes the strength of the buzz.</li>
+        <li>Holds the connection to the phone.</li>
       </ul>
+      <div class="callout" style="margin-top:14px;">
+        <span class="lbl">Which raised the next problem</span>
+        Where does the timeline come from?
+      </div>
     </div>
   </div>
 </section>
-<section class="slide" data-act="3" data-time="1:20">
+<section class="slide" data-act="2" data-time="0:35">
+  <div class="eyebrow"><i class="dot"></i>Built second</div>
+  <h2>The annotation program</h2>
+  <div class="cols c52" style="flex:none;align-content:start;gap:32px;">
+    <img src="__ASSET:docs/figures/annotator.png__" style="width:100%;max-height:400px;object-fit:contain;border-radius:3px;" alt="The annotation tool: a paused match with the onset envelope below, candidate markers, per-class progress bars, and the model's own guess for the current candidate">
+    <div class="stack">
+      <span class="tag">The detector proposes, a person judges</span>
+      <ul class="b" style="font-size:20px;">
+        <li>Marking every strike by hand does not scale.</li>
+        <li>So the audio is searched first, and a person only confirms.</li>
+        <li><strong>117 candidates, 99% reviewed</strong> on this match.</li>
+      </ul>
+      <div class="callout" style="margin-top:14px;">
+        <span class="lbl">Which is what the next two slides are about</span>
+        How good is that search?
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide" data-act="3" data-time="1:30">
   <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
-  <h2>Four sounds. Listen.</h2>
-  <div class="clips" style="margin-bottom:26px;">
+  <h2 style="font-size:36px;margin-bottom:2px;">Four sounds. Listen.</h2>
+<div class="clips" style="margin-bottom:10px;--clip-pad:10px;">
     <button class="clip" data-clip="racket_hit" style="--c:var(--amber);">
       <span class="key"><b>1</b> PLAY</span>
       <span class="nm">Racket hit</span>
@@ -469,9 +487,9 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <span class="bar"><i></i></span>
     </button>
   </div>
-  <figure>
-    <img src="__ASSET:docs/figures/fig_a_envelopes.png__" alt="Onset-strength envelopes for four different sound classes, all showing near-identical spikes">
-    <figcaption>Real labelled events &nbsp;·&nbsp; clips matched for loudness &nbsp;·&nbsp; 0.8 s around the 150 ms the model sees</figcaption>
+    <figure style="flex:1;min-height:0;margin-top:8px;">
+    <img src="__ASSET:docs/figures/fig_ab_combined.png__" style="max-height:100%;object-fit:contain;" alt="Four columns, one per sound. The top row is the onset envelope the detector reduces each event to: four near-identical spikes. The bottom row is the log-mel spectrogram the model is given for the same 150 ms: visibly different from one another.">
+    <figcaption>Same four events, top and bottom &nbsp;&middot;&nbsp; the envelope keeps one number, the spectrogram keeps the shape</figcaption>
   </figure>
 </section>
 <section class="slide vc" data-act="3" data-time="0:35">
@@ -504,20 +522,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <strong>is</strong> has to come from the sound itself.
   </div>
 </section>
-<section class="slide" data-act="3" data-time="0:45">
-  <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
-  <h2>The same four, in log-mel</h2>
-  <figure>
-    <img src="__ASSET:docs/figures/fig_b_mel.png__" alt="Log-mel spectrograms of the same four events, visibly different from one another">
-    <figcaption>Same events, same order, same colours as the previous slide</figcaption>
-  </figure>
-  <div class="cols" style="grid-template-columns:repeat(4,1fr);flex:none;gap:14px;margin-top:20px;">
-    <p style="font-size:16.5px;margin:0;"><strong class="amber">A sharp burst</strong> across all pitches, dying away fast.</p>
-    <p style="font-size:16.5px;margin:0;"><strong class="sky">A low thud</strong>, with nothing ringing above it.</p>
-    <p style="font-size:16.5px;margin:0;"><strong style="color:var(--violet);">Steady bands</strong> that hold on &mdash; a scrape, not a hit.</p>
-    <p style="font-size:16.5px;margin:0;"><strong style="color:var(--slate);">Spread out and shapeless</strong> &mdash; energy everywhere, no clear edges.</p>
-  </div>
-</section>
+
 <section class="slide" data-act="3" data-time="0:50">
   <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
   <h2>Teaching it the difference</h2>
@@ -595,7 +600,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <div class="stats" style="margin-bottom:24px;">
     <div class="stat">
       <span class="n">0.88</span>
-      <span class="k">F1 · racket hit</span>
+      <span class="k">F1 &middot; racket hit</span>
       <span class="s">seven held-out matches, four runs each &middot; sd 0.06</span>
     </div>
     <div class="stat">
@@ -675,7 +680,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 </section>
 <section class="slide" data-act="4" data-time="0:50">
   <div class="eyebrow"><i class="dot"></i>Making it felt</div>
-  <h2>Keeping a phone in time with a laptop</h2>
+  <h2>The phone, and keeping it in time</h2>
   <figure>
     <svg viewBox="0 0 1136 350" role="img" class="arch"
          aria-label="Sequence diagram. During setup the phone discovers the laptop over mDNS, says hello over TCP, receives the whole event timeline in one message, and syncs its clock over eight round trips. During playback the laptop sends transport commands and a UDP sync pulse at 5 to 10 hertz, while the phone's vibrations fire from its own clock with no message sent per hit.">
@@ -709,12 +714,12 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
             letter-spacing="1.6">ONCE</text>
 
       <text x="490" y="76" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">find the laptop &nbsp;·&nbsp; mDNS</text>
+            font-size="14.5">find the laptop &nbsp;&middot;&nbsp; mDNS</text>
       <line x1="784" y1="86" x2="196" y2="86" stroke="var(--muted)"
             marker-end="url(#ar)"></line>
 
       <text x="490" y="116" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">hello &nbsp;·&nbsp; TCP</text>
+            font-size="14.5">hello &nbsp;&middot;&nbsp; TCP</text>
       <line x1="784" y1="126" x2="196" y2="126" stroke="var(--muted)"
             marker-end="url(#ar)"></line>
 
@@ -724,7 +729,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
             stroke-width="2.4" marker-end="url(#ara)"></line>
 
       <text x="490" y="198" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">match the clocks &nbsp;·&nbsp; 8 round trips</text>
+            font-size="14.5">match the clocks &nbsp;&middot;&nbsp; 8 round trips</text>
       <line x1="196" y1="208" x2="784" y2="208" stroke="var(--muted)"
             marker-start="url(#ar)" marker-end="url(#ar)"></line>
 
@@ -738,12 +743,12 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
             letter-spacing="1.6">ONWARD</text>
 
       <text x="490" y="262" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">play &nbsp;·&nbsp; pause &nbsp;·&nbsp; seek</text>
+            font-size="14.5">play &nbsp;&middot;&nbsp; pause &nbsp;&middot;&nbsp; seek</text>
       <line x1="196" y1="272" x2="784" y2="272" stroke="var(--muted)"
             marker-end="url(#ar)"></line>
 
       <text x="490" y="306" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">keep-in-step pulse &nbsp;·&nbsp; UDP &nbsp;·&nbsp; 5&ndash;10 a second</text>
+            font-size="14.5">keep-in-step pulse &nbsp;&middot;&nbsp; UDP &nbsp;&middot;&nbsp; 5&ndash;10 a second</text>
       <line x1="196" y1="316" x2="784" y2="316" stroke="var(--muted)"
             stroke-dasharray="5 4" marker-end="url(#ar)"></line>
 
@@ -761,19 +766,24 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <figcaption>The timeline crosses the network once. After that the phone runs
     on its own clock &mdash; the pulses only stop it drifting.</figcaption>
   </figure>
-  <div class="cols" style="grid-template-columns:1.5fr 1fr;flex:none;gap:24px;margin-top:16px;">
+  <div class="cols" style="grid-template-columns:1.4fr 1fr 0.95fr;flex:none;gap:20px;margin-top:14px;">
     <div class="callout">
       <span class="lbl">Why not just say &ldquo;buzz now&rdquo;?</span>
-      <ul class="b">
+      <ul class="b" style="font-size:18px;">
         <li>The phone is never told &ldquo;buzz now&rdquo;.</li>
-        <li>A message per hit would pick up every wobble in the Wi-Fi &mdash; and the timing is the whole point.</li>
-        <li>Sending it all up front leaves the network responsible only for <strong>slow drift</strong>.</li>
+        <li>A message per hit would pick up every wobble in the Wi-Fi.</li>
+        <li>Sending it up front leaves the network only <strong>slow drift</strong>.</li>
       </ul>
     </div>
     <div class="panel">
+      <span class="tag">On the phone</span>
+      <p>An Android app, written for this. It holds the timeline and fires the
+      vibrator itself.</p>
+    </div>
+    <div class="panel" style="border-left:3px solid var(--good);">
       <span class="tag">Measured</span>
-      <p>Timing holds to <strong>single-digit milliseconds</strong> from laptop
-      to phone.</p>
+      <p>Timing holds to <strong>single-digit milliseconds</strong>, laptop to
+      phone.</p>
     </div>
   </div>
 </section>
@@ -898,7 +908,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     Object.values(players).forEach(p => { p.pause(); p.currentTime = 0; });
     if (playingBtn) playingBtn.classList.remove("playing");
     a.currentTime = 0;
-    a.play().catch(function(){ /* autoplay policy — a click will always work */ });
+    a.play().catch(function(){ /* autoplay policy - a click will always work */ });
     if (btn){
       btn.classList.remove("playing");
       void btn.offsetWidth;               // restart the sweep animation
