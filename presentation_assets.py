@@ -344,12 +344,13 @@ def figure_ab(picked, path):
     print(f"  wrote {path}")
 
 
-# A stretch of real play for the "some of these are strikes" slide. Chosen by
-# search over the fully-adjudicated videos for a window where every detector
-# peak carries a human label, so no marker is left unexplained.
-TIMELINE_VIDEO = "Hailey Baptiste"
-TIMELINE_T0 = 35.0
-TIMELINE_WIN = 12.0
+# A stretch of real play for the "some of these are strikes" slide, chosen by
+# search for a window carrying all five classes. ball_bounce is the
+# constraint: 13 examples in the whole corpus, so windows holding one
+# alongside the other four are rare, and this is the only one.
+TIMELINE_VIDEO = "Carlos Alcaraz"
+TIMELINE_T0 = 159.0
+TIMELINE_WIN = 16.0
 TIMELINE_TOL = 0.12        # human timestamps drift from the peak they describe
 
 
@@ -379,17 +380,26 @@ def figure_c_timeline(path):
         return ll[i] if abs(lt[i] - t) <= TIMELINE_TOL else None
 
     T0, WIN = TIMELINE_T0, TIMELINE_WIN
-    fig = plt.figure(figsize=(15, 3.6), facecolor=BG)
-    ax = fig.add_axes([0.035, 0.22, 0.95, 0.60])
+    fig = plt.figure(figsize=(15, 5.4), facecolor=BG)
+    ax = fig.add_axes([0.135, 0.19, 0.85, 0.72])
     style_axis(ax)
 
     m = (et >= T0) & (et <= T0 + WIN)
-    x, e = et[m] - T0, env[m] / env[m].max()
+    # detect_onsets scales by the whole file's maximum, so the threshold
+    # lines below are only in the right place if this matches it
+    x, e = et[m] - T0, env[m] / env.max()
     w = y[int(T0 * sr):int((T0 + WIN) * sr)]
     wx = np.linspace(0, WIN, len(w))
-    wn = np.abs(w) / np.abs(w).max() * 0.30
+    wn = np.abs(w) / np.abs(w).max() * 0.16 * (env[m].max() / env.max())
     ax.fill_between(wx, -wn, wn, color=MUTED, alpha=0.13, linewidth=0)
     ax.plot(x, e, color=INK, linewidth=1.5, alpha=0.85)
+
+    for thr, lab, col in ((0.12, "labelling  0.12", "#5CC9FF"),
+                          (0.30, "playback  0.30", "#FFB43D")):
+        ax.axhline(thr, color=col, linewidth=1.2, linestyle=(0, (6, 5)), alpha=0.75)
+        ax.text(-0.012, thr, lab, color=col, fontsize=12.5, ha="right",
+                va="center", family="monospace",
+                transform=ax.get_yaxis_transform())
 
     for t in peaks:
         if not (T0 <= t < T0 + WIN):
@@ -402,7 +412,7 @@ def figure_c_timeline(path):
                 markeredgecolor=BG, markeredgewidth=1.6, zorder=5)
 
     ax.set_xlim(0, WIN)
-    ax.set_ylim(-0.12, 1.12)
+    ax.set_ylim(-0.06 * e.max(), 1.10 * e.max())
     ax.set_yticks([])
     ax.set_xticks(range(0, int(WIN) + 1, 2))
     ax.set_xticklabels([f"{i}s" for i in range(0, int(WIN) + 1, 2)])
