@@ -289,10 +289,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </div>
   </div>
 </section>
-
-<!-- 2 ...................................................... problem -->
 <section class="slide vc" data-act="1" data-time="1:00">
-  <div class="eyebrow"><i class="dot"></i>The problem</div>
+  <div class="eyebrow"><i class="dot"></i>The question</div>
   <h2>On a screen you can only see and hear</h2>
   <div class="cols c52">
     <div class="stack grow">
@@ -311,10 +309,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </div>
   </div>
 </section>
-
-<!-- 3 ...................................................... reach -->
 <section class="slide vc" data-act="1" data-time="0:50">
-  <div class="eyebrow"><i class="dot"></i>The problem</div>
+  <div class="eyebrow"><i class="dot"></i>The question</div>
   <h2>Restoring it usually costs hardware</h2>
   <div class="cols c2">
     <ul class="b" style="font-size:24px;">
@@ -336,10 +332,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </div>
   </div>
 </section>
-
-<!-- 4 ............................................... related work -->
 <section class="slide vc" data-act="1" data-time="0:35">
-  <div class="eyebrow"><i class="dot"></i>The problem</div>
+  <div class="eyebrow"><i class="dot"></i>The question</div>
   <h2>Where this sits</h2>
   <div class="cols" style="grid-template-columns:repeat(3,1fr);align-items:stretch;">
     <div class="panel">
@@ -382,37 +376,72 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <strong>already owns</strong>. And there was no dataset to start from.
   </div>
 </section>
-
-<!-- 5 ................................................ in one line -->
-<section class="slide vc" data-act="2" data-time="0:40">
-  <div class="eyebrow"><i class="dot"></i>The sound</div>
-  <h2>What it does</h2>
-  <div class="callout" style="font-size:23px;">
-    A laptop reads the audio of an ordinary tennis broadcast, finds the moment
-    of every racket strike, and makes a phone in your hand buzz in time with them.
-  </div>
-  <div class="stats" style="margin-top:26px;">
-    <div class="stat">
-      <span class="n">0.88</span>
-      <span class="k">F1 &middot; racket hit</span>
-      <span class="s">on matches the model never saw</span>
+<section class="slide" data-act="2" data-time="0:55">
+  <div class="eyebrow"><i class="dot"></i>The big picture</div>
+  <h2>The whole thing, before the parts</h2>
+  <figure>
+    <svg viewBox="0 0 1148 348" role="img" class="arch"
+         aria-label="The project in three stages. A tennis video feeds the haptic feedback system, which feeds a user study. The haptic feedback system is made of three parts: an annotation program where events are fixed by hand, a haptic player that sends the timeline, and a phone that buzzes in time. Feeding the annotation program is onset detection plus a CNN, whose job is to make labelling faster.">
+      <defs>
+        <marker id="bp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path></marker>
+        <marker id="bpa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--amber)"></path></marker>
+        <marker id="bps" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--sky)"></path></marker>
+      </defs>
+      <rect x="40" y="16" width="290" height="64" rx="5" fill="var(--surface)" stroke="var(--line)" stroke-width="1"></rect>
+      <text x="185" y="44" text-anchor="middle" fill="var(--ink)" font-size="19" font-weight="700">Tennis video</text>
+      <text x="185" y="67" text-anchor="middle" fill="var(--faint)" font-size="14">broadcast, sound as aired</text>
+      <rect x="429" y="16" width="290" height="64" rx="5" fill="#1B1608" stroke="var(--amber)" stroke-width="2"></rect>
+      <text x="574" y="44" text-anchor="middle" fill="var(--amber)" font-size="19" font-weight="700">Haptic feedback</text>
+      <text x="574" y="67" text-anchor="middle" fill="var(--faint)" font-size="14">the system built here</text>
+      <rect x="818" y="16" width="290" height="64" rx="5" fill="var(--surface)" stroke="var(--line)" stroke-width="1"></rect>
+      <text x="963" y="44" text-anchor="middle" fill="var(--ink)" font-size="19" font-weight="700">User study</text>
+      <text x="963" y="67" text-anchor="middle" fill="var(--faint)" font-size="14">does it change watching?</text>
+      <line x1="330" y1="48" x2="429" y2="48" stroke="var(--muted)" marker-end="url(#bp)"></line>
+      <line x1="719" y1="48" x2="818" y2="48" stroke="var(--muted)" marker-end="url(#bp)"></line>
+      <line x1="574" y1="80" x2="574" y2="112" stroke="var(--amber)" stroke-width="1.5"></line>
+      <line x1="309" y1="112" x2="849" y2="112" stroke="var(--amber)" stroke-width="1.5"></line>
+      <line x1="309" y1="112" x2="309" y2="146" stroke="var(--amber)" stroke-width="1.5" marker-end="url(#bpa)"></line>
+      <rect x="189" y="150" width="240" height="62" rx="5" fill="var(--surface)" stroke="var(--line)"></rect>
+      <text x="309" y="177" text-anchor="middle" fill="var(--ink)" font-size="16.5" font-weight="600">Annotation program</text>
+      <text x="309" y="198" text-anchor="middle" fill="var(--faint)" font-size="13.5">events fixed by hand</text>
+      <line x1="579" y1="112" x2="579" y2="146" stroke="var(--amber)" stroke-width="1.5" marker-end="url(#bpa)"></line>
+      <rect x="459" y="150" width="240" height="62" rx="5" fill="var(--surface)" stroke="var(--line)"></rect>
+      <text x="579" y="177" text-anchor="middle" fill="var(--ink)" font-size="16.5" font-weight="600">Haptic player</text>
+      <text x="579" y="198" text-anchor="middle" fill="var(--faint)" font-size="13.5">sends the timeline</text>
+      <line x1="849" y1="112" x2="849" y2="146" stroke="var(--amber)" stroke-width="1.5" marker-end="url(#bpa)"></line>
+      <rect x="729" y="150" width="240" height="62" rx="5" fill="var(--surface)" stroke="var(--line)"></rect>
+      <text x="849" y="177" text-anchor="middle" fill="var(--ink)" font-size="16.5" font-weight="600">Phone</text>
+      <text x="849" y="198" text-anchor="middle" fill="var(--faint)" font-size="13.5">buzzes in time</text>
+      <line x1="309" y1="278" x2="309" y2="216" stroke="var(--sky)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#bps)"></line>
+      <rect x="189" y="280" width="240" height="56" rx="5" fill="var(--surface)" stroke="var(--sky)"></rect>
+      <text x="309" y="305" text-anchor="middle" fill="var(--sky)" font-size="15.5" font-weight="600">Onset detection + CNN</text>
+      <text x="309" y="325" text-anchor="middle" fill="var(--faint)" font-size="13.5">so labelling goes faster</text>
+    </svg>
+    <figcaption>Every slide from here on is one box of this diagram</figcaption>
+  </figure>
+</section>
+<section class="slide" data-act="2" data-time="0:40">
+  <div class="eyebrow"><i class="dot"></i>The big picture</div>
+  <h2>Two programs hold it together</h2>
+  <div class="cols c2" style="flex:none;align-content:start;gap:36px;">
+    <div class="stack" style="gap:10px;">
+      <span class="tag">Labelling &mdash; the detector proposes, a person judges</span>
+      <img src="__ASSET:docs/figures/annotator.png__" style="width:100%;max-height:372px;object-fit:contain;border-radius:3px;" alt="The annotation tool: a paused match with the onset envelope below, candidate markers, per-class progress bars, and the model's own guess for the current candidate">
+      <ul class="b" style="font-size:17.5px;">
+        <li><strong>117 candidates, 99% reviewed</strong> &mdash; the model&rsquo;s own guess sits beside each one.</li>
+      </ul>
     </div>
-    <div class="stat">
-      <span class="n good">0.5</span>
-      <span class="k">False buzzes / min</span>
-      <span class="s">one wrong buzz every two minutes</span>
-    </div>
-    <div class="stat">
-      <span class="n sky">4.67</span>
-      <span class="k">of 5 &middot; in time</span>
-      <span class="s">as rated by twelve viewers</span>
+    <div class="stack" style="gap:10px;">
+      <span class="tag">Playback &mdash; drives the phone, one client connected</span>
+      <img src="__ASSET:docs/figures/player.png__" style="width:100%;max-height:372px;object-fit:contain;border-radius:3px;" alt="The haptic player: a clay-court rally with an event readout showing intensity, the connected phone count, and the event strip below">
+      <ul class="b" style="font-size:17.5px;">
+        <li>Every event carries its <strong>loudness</strong>, which becomes the strength of the buzz.</li>
+      </ul>
     </div>
   </div>
 </section>
-
-<!-- 6 ............................................. listening test -->
-<section class="slide" data-act="2" data-time="1:20">
-  <div class="eyebrow"><i class="dot"></i>The sound</div>
+<section class="slide" data-act="3" data-time="1:20">
+  <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
   <h2>Four sounds. Listen.</h2>
   <div class="clips" style="margin-bottom:26px;">
     <button class="clip" data-clip="racket_hit" style="--c:var(--amber);">
@@ -445,10 +474,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <figcaption>Real labelled events &nbsp;·&nbsp; clips matched for loudness &nbsp;·&nbsp; 0.8 s around the 150 ms the model sees</figcaption>
   </figure>
 </section>
-
-<!-- 7 ................................ detection != classification -->
-<section class="slide vc" data-act="2" data-time="0:35">
-  <div class="eyebrow"><i class="dot"></i>The sound</div>
+<section class="slide vc" data-act="3" data-time="0:35">
+  <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
   <h2>You just told them apart.<br>The detector cannot.</h2>
   <div class="cols c2" style="align-items:center;">
     <div class="stack">
@@ -477,10 +504,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <strong>is</strong> has to come from the sound itself.
   </div>
 </section>
-
-<!-- 8 ................................................... mel view -->
-<section class="slide" data-act="2" data-time="0:45">
-  <div class="eyebrow"><i class="dot"></i>The sound</div>
+<section class="slide" data-act="3" data-time="0:45">
+  <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
   <h2>The same four, in log-mel</h2>
   <figure>
     <img src="__ASSET:docs/figures/fig_b_mel.png__" alt="Log-mel spectrograms of the same four events, visibly different from one another">
@@ -493,10 +518,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <p style="font-size:16.5px;margin:0;"><strong style="color:var(--slate);">Spread out and shapeless</strong> &mdash; energy everywhere, no clear edges.</p>
   </div>
 </section>
-
-<!-- 9 ............................................... data + model -->
 <section class="slide" data-act="3" data-time="0:50">
-  <div class="eyebrow"><i class="dot"></i>The model</div>
+  <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
   <h2>Teaching it the difference</h2>
   <figure>
     <svg viewBox="0 0 1148 250" role="img" class="arch"
@@ -566,10 +589,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     is the aim, and is not there yet.
   </div>
 </section>
-
-<!-- 10 ................................................... results -->
 <section class="slide vc" data-act="3" data-time="0:45">
-  <div class="eyebrow"><i class="dot"></i>The model</div>
+  <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
   <h2>Does it work?</h2>
   <div class="stats" style="margin-bottom:24px;">
     <div class="stat">
@@ -607,32 +628,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </div>
   </div>
 </section>
-
-<!-- 11 .............................................. the programs -->
-<section class="slide" data-act="4" data-time="0:40">
-  <div class="eyebrow"><i class="dot"></i>The feeling</div>
-  <h2>Two programs hold it together</h2>
-  <div class="cols c2" style="flex:none;align-content:start;gap:36px;">
-    <div class="stack" style="gap:10px;">
-      <span class="tag">Labelling &mdash; the detector proposes, a person judges</span>
-      <img src="__ASSET:docs/figures/annotator.png__" style="width:100%;max-height:372px;object-fit:contain;border-radius:3px;" alt="The annotation tool: a paused match with the onset envelope below, candidate markers, per-class progress bars, and the model's own guess for the current candidate">
-      <ul class="b" style="font-size:17.5px;">
-        <li><strong>117 candidates, 99% reviewed</strong> &mdash; the model&rsquo;s own guess sits beside each one.</li>
-      </ul>
-    </div>
-    <div class="stack" style="gap:10px;">
-      <span class="tag">Playback &mdash; drives the phone, one client connected</span>
-      <img src="__ASSET:docs/figures/player.png__" style="width:100%;max-height:372px;object-fit:contain;border-radius:3px;" alt="The haptic player: a clay-court rally with an event readout showing intensity, the connected phone count, and the event strip below">
-      <ul class="b" style="font-size:17.5px;">
-        <li>Every event carries its <strong>loudness</strong>, which becomes the strength of the buzz.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- 12 ................................................. intensity -->
 <section class="slide vc" data-act="4" data-time="0:40">
-  <div class="eyebrow"><i class="dot"></i>The feeling</div>
+  <div class="eyebrow"><i class="dot"></i>Making it felt</div>
   <h2>From a spike to a feeling</h2>
   <div class="flow" style="flex:none;margin-bottom:26px;">
     <div class="node">
@@ -676,10 +673,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </div>
   </div>
 </section>
-
-<!-- 13 .............................................. architecture -->
 <section class="slide" data-act="4" data-time="0:50">
-  <div class="eyebrow"><i class="dot"></i>The feeling</div>
+  <div class="eyebrow"><i class="dot"></i>Making it felt</div>
   <h2>Keeping a phone in time with a laptop</h2>
   <figure>
     <svg viewBox="0 0 1136 350" role="img" class="arch"
@@ -782,10 +777,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </div>
   </div>
 </section>
-
-<!-- 14 ............................................... study scene -->
-<section class="slide" data-act="4" data-time="0:45">
-  <div class="eyebrow"><i class="dot"></i>The feeling</div>
+<section class="slide" data-act="5" data-time="0:45">
+  <div class="eyebrow"><i class="dot"></i>The answer</div>
   <h2>How the study ran</h2>
   <div class="cols c25" style="flex:none;align-content:start;">
     <figure>
@@ -801,8 +794,6 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </ul>
   </div>
 </section>
-
-<!-- 15 ................................................ user study -->
 <section class="slide vc" data-act="5" data-time="1:30">
   <div class="title-rule" style="margin:0 0 24px;"></div>
   <h2 style="font-size:52px;">What twelve people said</h2>
@@ -877,7 +868,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   addEventListener("resize", fit); fit();
 
   /* --- the rail is segmented by act, not by slide ------------------------- */
-  const ACTS = ["", "The problem", "The sound", "The model", "The feeling", "Where it stands"];
+  const ACTS = ["", "The question", "The big picture", "Finding the hits", "Making it felt", "The answer"];
   const counts = {};
   slides.forEach(s => { const a = +s.dataset.act; counts[a] = (counts[a] || 0) + 1; });
   const segs = [];
