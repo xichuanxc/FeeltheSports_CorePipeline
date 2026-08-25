@@ -388,12 +388,12 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <div class="eyebrow"><i class="dot"></i>The sound</div>
   <h2>What it does</h2>
   <div class="callout" style="font-size:23px;">
-    A laptop listens to ordinary broadcast tennis, finds the moment of every
-    racket strike, and makes a phone in your hand buzz in time with them.
+    A laptop reads the audio of an ordinary tennis broadcast, finds the moment
+    of every racket strike, and makes a phone in your hand buzz in time with them.
   </div>
   <div class="stats" style="margin-top:26px;">
     <div class="stat">
-      <span class="n">0.90</span>
+      <span class="n">0.88</span>
       <span class="k">F1 &middot; racket hit</span>
       <span class="s">on matches the model never saw</span>
     </div>
@@ -495,29 +495,75 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 </section>
 
 <!-- 9 ............................................... data + model -->
-<section class="slide vc" data-act="3" data-time="0:50">
+<section class="slide" data-act="3" data-time="0:50">
   <div class="eyebrow"><i class="dot"></i>The model</div>
   <h2>Teaching it the difference</h2>
-  <div class="cols c2">
-    <div class="stack">
-      <span class="tag">Corpus</span>
-      <dl class="spec">
-        <dt>Events</dt><dd>1,270 hand-adjudicated <em>&mdash; 583 racket hits</em></dd>
-        <dt>Matches</dt><dd>7 broadcasts <em>&mdash; hard, clay, grass</em></dd>
-        <dt>Classes</dt><dd>5 <em>&mdash; hit, bounce, squeak, speech, ambient</em></dd>
-        <dt>Labelling</dt><dd>Purpose-built app <em>&mdash; detector suggests, human decides</em></dd>
-      </dl>
-    </div>
-    <div class="stack">
-      <span class="tag">What the model sees</span>
-      <dl class="spec">
-        <dt>Crop</dt><dd>150 ms <em>&mdash; [&minus;30 ms, +120 ms] around onset</em></dd>
-        <dt>Audio</dt><dd>16 kHz mono <em>&mdash; 2,400 samples</em></dd>
-        <dt>Feature</dt><dd>Log-mel 64 &times; 19 <em>&mdash; n_fft 400, hop 133</em></dd>
-        <dt>Network</dt><dd>3-layer CNN <em>&mdash; 32 &rarr; 64 &rarr; 128, global pool, 5-way</em></dd>
-        <dt>Split</dt><dd>By match <em>&mdash; training and testing never share a video</em></dd>
-      </dl>
-    </div>
+  <figure>
+    <svg viewBox="0 0 1148 250" role="img" class="arch"
+         aria-label="Flow chart of how the model is trained. Broadcast audio goes to onset detection, which finds every sudden rise in energy. A person labels those candidates into five classes. The model learns from a short slice around each onset. It is then tested on a match it never saw. A dashed loop runs back from the trained model to the labelling step: the model proposes the label and a person confirms it, which is the job it does today.">
+      <defs>
+        <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path>
+        </marker>
+        <marker id="faa" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--amber)"></path>
+        </marker>
+      </defs>
+      <rect x="20" y="56" width="196" height="78" rx="5"
+            fill="var(--surface)" stroke="var(--line)"></rect>
+      <text x="118" y="88" text-anchor="middle" fill="var(--ink)"
+            font-size="16" font-weight="600">Broadcast audio</text>
+      <text x="118" y="111" text-anchor="middle" fill="var(--faint)"
+            font-size="13.5">one match, sound as aired</text>
+      <rect x="248" y="56" width="196" height="78" rx="5"
+            fill="var(--surface)" stroke="var(--line)"></rect>
+      <text x="346" y="88" text-anchor="middle" fill="var(--ink)"
+            font-size="16" font-weight="600">Onset detection</text>
+      <text x="346" y="111" text-anchor="middle" fill="var(--faint)"
+            font-size="13.5">every sudden rise</text>
+      <rect x="476" y="56" width="196" height="78" rx="5"
+            fill="var(--surface)" stroke="var(--line)"></rect>
+      <text x="574" y="88" text-anchor="middle" fill="var(--ink)"
+            font-size="16" font-weight="600">A person labels</text>
+      <text x="574" y="111" text-anchor="middle" fill="var(--faint)"
+            font-size="13.5">into five classes</text>
+      <rect x="704" y="56" width="196" height="78" rx="5"
+            fill="var(--surface)" stroke="var(--line)"></rect>
+      <text x="802" y="88" text-anchor="middle" fill="var(--ink)"
+            font-size="16" font-weight="600">The model learns</text>
+      <text x="802" y="111" text-anchor="middle" fill="var(--faint)"
+            font-size="13.5">150 ms around each onset</text>
+      <rect x="932" y="56" width="196" height="78" rx="5"
+            fill="#1B1608" stroke="var(--amber)"></rect>
+      <text x="1030" y="88" text-anchor="middle" fill="var(--amber)"
+            font-size="16" font-weight="600">A match it never saw</text>
+      <text x="1030" y="111" text-anchor="middle" fill="var(--faint)"
+            font-size="13.5">the only honest test</text>
+      <line x1="220" y1="95" x2="244" y2="95"
+            stroke="var(--muted)" marker-end="url(#fa)"></line>
+      <line x1="448" y1="95" x2="472" y2="95"
+            stroke="var(--muted)" marker-end="url(#fa)"></line>
+      <line x1="676" y1="95" x2="700" y2="95"
+            stroke="var(--muted)" marker-end="url(#fa)"></line>
+      <line x1="904" y1="95" x2="928" y2="95"
+            stroke="var(--muted)" marker-end="url(#fa)"></line>
+      <path d="M802,134 L802,186 L574,186 L574,138"
+            fill="none" stroke="var(--amber)" stroke-width="2"
+            stroke-dasharray="6 4" marker-end="url(#faa)"></path>
+      <text x="688" y="210" text-anchor="middle" fill="var(--amber)"
+            font-size="15" font-weight="600">it then proposes the label, and a person confirms</text>
+      <text x="688" y="230" text-anchor="middle" fill="var(--muted)"
+            font-size="14">which is the job it actually does today</text>
+    </svg>
+    <figcaption>Training and testing never share a match &nbsp;&middot;&nbsp; five classes &nbsp;&middot;&nbsp; 1,270 hand-adjudicated events across 7 broadcasts</figcaption>
+  </figure>
+  <div class="callout" style="margin-top:22px;">
+    <span class="lbl">What it is for, today</span>
+    Good enough to <strong>filter candidates</strong> so labelling goes faster,
+    not yet good enough to be trusted on its own. Running it on a live stream
+    is the aim, and is not there yet.
   </div>
 </section>
 
@@ -527,9 +573,9 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <h2>Does it work?</h2>
   <div class="stats" style="margin-bottom:24px;">
     <div class="stat">
-      <span class="n">0.90</span>
+      <span class="n">0.88</span>
       <span class="k">F1 · racket hit</span>
-      <span class="s">median of five held-out matches, 0.79 to 0.94</span>
+      <span class="s">seven held-out matches, four runs each &middot; sd 0.06</span>
     </div>
     <div class="stat">
       <span class="n good">0.3</span>
@@ -552,11 +598,11 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       </ul>
     </div>
     <div class="callout" style="border-left-color:var(--sky);">
-      <span class="lbl" style="color:var(--sky);">Two ways this flattered itself</span>
+      <span class="lbl" style="color:var(--sky);">Three ways this flattered itself</span>
       <ul class="b">
         <li>Stopping training on the test match: <strong>+0.10</strong>.</li>
         <li>Measuring on matches it trained on: <strong>+0.2</strong> recall.</li>
-        <li>Every figure here is leave-one-match-out.</li>
+        <li>Reporting one run: single folds move <strong>0.10</strong> between runs.</li>
       </ul>
     </div>
   </div>
@@ -782,7 +828,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <span class="tag">Still open</span>
       <ul class="b">
         <li>Buzz strength is relative to each video.</li>
-        <li>Highlights, not live.</li>
+        <li>Highlights, not live &mdash; and not yet running live either.</li>
         <li>A bigger study &mdash; this seminar is a chance to recruit.</li>
       </ul>
     </div>

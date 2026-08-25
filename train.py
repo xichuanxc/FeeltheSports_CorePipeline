@@ -19,6 +19,15 @@ Splitting is by VIDEO, never by sample. Two slices from one rally are near
 duplicates, so a random split puts them on both sides and reports a test score
 that measures memorisation. groups_tennis.npy carries the source video.
 
+Results are not stable to the compute backend. --device auto selects MPS;
+running the same fold on CPU with the same seed and the same tensors moves
+racket_hit F1 by up to 0.10 (median across seven folds: 0.86 on MPS, 0.90 on
+CPU). Metal and CPU differ in floating point, that changes which epoch wins on
+validation, and with 45-147 test hits per fold a handful of flipped decisions
+is worth a point or two each. Report a mean over several seeds, not a single
+run: seven folds x four CPU seeds gives 0.88 with an SD of 0.06, while
+individual runs range from 0.71 to 0.98.
+
 Classes are heavily imbalanced — ambient_noise outnumbers ball_bounce about
 105:1. Plain inverse-frequency weighting would hand each of the 13 bounce
 samples ~105x the pull of an ambient one, which destabilises training rather
