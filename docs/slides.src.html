@@ -141,6 +141,11 @@ dl.spec dd em{font-style:normal;color:var(--muted);font-size:19px;}
   font-variant-numeric:tabular-nums;color:var(--amber);
 }
 .stat .n.sky{color:var(--sky);}
+/* Results held back for the talk: the value is veiled, the label it belongs
+   to stays sharp, so the slide shows what was measured without the number.
+   Delete the class to reveal. */
+.veil{filter:blur(14px);opacity:.7;user-select:none;}
+.stat .s.veil{filter:blur(7px);}
 .stat .n.good{color:var(--good);}
 .stat .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);}
 .stat .s{font-size:18.5px;color:var(--muted);line-height:1.4;}
@@ -413,15 +418,11 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <img src="__ASSET:docs/figures/annotator.png__" style="width:100%;max-height:400px;object-fit:contain;border-radius:3px;" alt="The annotation tool: a paused match with the onset envelope below, candidate markers, per-class progress bars, and the model's own guess for the current candidate">
     <div class="stack">
       <span class="tag">The detector proposes, a person judges</span>
-      <ul class="b" style="font-size:20px;">
-        <li>Marking every strike by hand does not scale.</li>
-        <li>So the audio is searched first, and a person only confirms.</li>
-        <li><strong>117 candidates, 99% reviewed</strong> on this match.</li>
+      <ul class="b" style="font-size:26px;gap:20px;">
+        <li>By hand, this does not scale.</li>
+        <li>So the audio is searched first.</li>
+        <li>A person only confirms.</li>
       </ul>
-      <div class="callout" style="margin-top:14px;">
-        <span class="lbl">Problem</span>
-        How good is that search?
-      </div>
     </div>
   </div>
 </section>
@@ -505,15 +506,12 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     <img src="__ASSET:docs/figures/player.png__" style="width:100%;max-height:400px;object-fit:contain;border-radius:3px;" alt="The haptic player: a clay-court rally with an event readout showing intensity, the connected phone count, and the event strip below">
     <div class="stack">
       <span class="tag">Plays the match, drives the phone</span>
-      <ul class="b" style="font-size:20px;">
-        <li>Reads a timeline of events for the video.</li>
-        <li>Every event carries its <strong>loudness</strong>, scaled within that video, which becomes the strength of the buzz.</li>
+      <ul class="b" style="font-size:26px;gap:20px;">
+        <li>Reads a timeline of events.</li>
+        <li>Loudness becomes buzz strength.</li>
+        <li>Scaled within each video.</li>
         <li>Holds the connection to the phone.</li>
       </ul>
-      <div class="callout" style="margin-top:14px;">
-        <span class="lbl">Problem</span>
-        Where does the timeline come from?
-      </div>
     </div>
   </div>
 </section>
@@ -624,24 +622,29 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 </section>
 <section class="slide vc" data-act="5" data-time="1:30">
   <div class="title-rule" style="margin:0 0 24px;"></div>
-  <h2 style="font-size:52px;">What twelve people said</h2>
-  <div class="stats" style="grid-template-columns:1fr 1fr;margin-bottom:22px;">
+  <h2 style="font-size:52px;">What we measured</h2>
+  <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
     <div class="stat">
-      <span class="n sky">4.67</span>
-      <span class="k">of 5 &middot; noticed, fits, in time</span>
-      <span class="s">nobody doubted the buzzes land in the right place</span>
+      <span class="n veil">0.84</span>
+      <span class="k">Accuracy &middot; five classes</span>
+      <span class="s veil">on a match never trained on</span>
     </div>
     <div class="stat">
-      <span class="n">3.36</span>
+      <span class="n sky veil">4.67</span>
+      <span class="k">of 5 &middot; noticed, fits, in time</span>
+      <span class="s veil">nobody doubted the buzzes land in the right place</span>
+    </div>
+    <div class="stat">
+      <span class="n good veil">3.36</span>
       <span class="k">of 5 &middot; enjoyed, engaging, would install</span>
-      <span class="s">six would install it, five would not</span>
+      <span class="s veil">six would install it, five would not</span>
     </div>
   </div>
   <div class="cols c52">
     <div class="panel" style="border-left:3px solid var(--amber);">
       <span class="tag">The answer that explains the split</span>
-      <p>&ldquo;When I&rsquo;m not focused it helps me focus. When I&rsquo;m
-      focused it distracts me from watching.&rdquo;</p>
+      <p class="veil">&ldquo;When I&rsquo;m not focused it helps me focus. When
+      I&rsquo;m focused it distracts me from watching.&rdquo;</p>
     </div>
     <div class="stack">
       <span class="tag">Still open</span>
@@ -652,38 +655,17 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       </ul>
     </div>
   </div>
-  <div class="callout" style="margin-top:20px;">
-    <span class="lbl">Where the rest of this project goes</span>
-    The detector works. Finding who the feeling suits is the open half.
-  </div>
 </section>
 <section class="slide" data-act="5" data-time="0:10">
   <div class="title-wrap">
     <div class="title-rule"></div>
     <h1 style="font-size:76px;">Questions</h1>
-    <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-top:34px;max-width:1000px;">
-      <div class="stat">
-        <span class="n">0.84</span>
-        <span class="k">Accuracy &middot; five classes</span>
-        <span class="s">on a match never trained on</span>
-      </div>
-      <div class="stat">
-        <span class="n sky">4.67</span>
-        <span class="k">of 5 &middot; in time</span>
-        <span class="s">nobody doubted the timing</span>
-      </div>
-      <div class="stat">
-        <span class="n good">6 / 5</span>
-        <span class="k">Would install it, or not</span>
-        <span class="s">twelve people, split down the middle</span>
-      </div>
-    </div>
-    <div class="callout" style="margin-top:30px;max-width:1000px;">
+    <div class="callout" style="margin-top:34px;max-width:1000px;">
       <span class="lbl">And an ask</span>
       The next study needs more people. If you would sit on a sofa for ten
       minutes and tell me how it felt, please come and find me.
     </div>
-    <div class="byline" style="margin-top:26px;">
+    <div class="byline" style="margin-top:30px;">
       <span><b>Chuan Xi</b></span>
       <span>University of Waikato</span>
       <span class="mono">COMPX520 &middot; 2026</span>
