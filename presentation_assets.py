@@ -53,12 +53,17 @@ INK = "#F2F6FA"
 MUTED = "#C2CDDB"
 GRID = "#33455A"
 
-CLASSES = ["racket_hit", "ball_bounce", "shoe_squeak", "ambient_noise"]
-TITLES = ["Racket hit", "Ball bounce", "Shoe squeak", "Crowd / background"]
+# All five annotated classes. The deck states "five classes" on the training
+# and results slides, so showing four here contradicted it.
+CLASSES = ["racket_hit", "ball_bounce", "shoe_squeak", "grunt_speech",
+           "ambient_noise"]
+TITLES = ["Racket hit", "Ball bounce", "Shoe squeak", "Grunt / speech",
+          "Crowd / background"]
 COLOURS = {
     "racket_hit": "#FFB43D",
     "ball_bounce": "#5CC9FF",
     "shoe_squeak": "#BBA4FF",
+    "grunt_speech": "#4ADEA8",
     "ambient_noise": "#AEBDD0",
 }
 
@@ -197,7 +202,7 @@ def style_axis(ax):
 def figure_a(picked, path):
     """What the detector sees: a peak height, and nothing that separates them."""
     fig = plt.figure(figsize=(15, 4.4), facecolor=BG)
-    gs = gridspec.GridSpec(1, 4, wspace=0.16, left=0.045, right=0.985,
+    gs = gridspec.GridSpec(1, len(CLASSES), wspace=0.16, left=0.045, right=0.985,
                            top=0.645, bottom=0.15)
     # One shared vertical scale, so the four panels stay honestly comparable
     # while still filling the frame.
@@ -247,7 +252,7 @@ def figure_a(picked, path):
 def figure_b(picked, path):
     """What the classifier sees: the same four, in log-mel."""
     fig = plt.figure(figsize=(15, 4.4), facecolor=BG)
-    gs = gridspec.GridSpec(1, 4, wspace=0.16, left=0.045, right=0.985,
+    gs = gridspec.GridSpec(1, len(CLASSES), wspace=0.16, left=0.045, right=0.985,
                            top=0.645, bottom=0.15)
     for k, c in enumerate(CLASSES):
         e = picked.get(c)
@@ -290,7 +295,7 @@ def figure_ab(picked, path):
     is given instead.
     """
     fig = plt.figure(figsize=(15, 5.0), facecolor=BG)
-    gs = gridspec.GridSpec(2, 4, wspace=0.15, hspace=0.40,
+    gs = gridspec.GridSpec(2, len(CLASSES), wspace=0.15, hspace=0.40,
                            left=0.062, right=0.988, top=0.90, bottom=0.10)
     top_y = 1.32 * max(e["peak"] for e in picked.values())
     for k, c in enumerate(CLASSES):
@@ -339,6 +344,84 @@ def figure_ab(picked, path):
     print(f"  wrote {path}")
 
 
+# A stretch of real play for the "some of these are strikes" slide. Chosen by
+# search over the fully-adjudicated videos for a window where every detector
+# peak carries a human label, so no marker is left unexplained.
+TIMELINE_VIDEO = "Hailey Baptiste"
+TIMELINE_T0 = 35.0
+TIMELINE_WIN = 12.0
+TIMELINE_TOL = 0.12        # human timestamps drift from the peak they describe
+
+
+def figure_c_timeline(path):
+    """Twelve seconds of a rally, every detected spike coloured by what it is.
+
+    The four-example figure shows the classes are separable. This shows the
+    problem they cause: the detector fires on all of them, and only some are
+    racket hits.
+    """
+    from matplotlib.lines import Line2D
+    import analyzer
+
+    v = next(x for x in B.discover("data")[0]
+             if x["name"].startswith(TIMELINE_VIDEO))
+    ann = sorted((t, l) for t, l in B.read_annotations(v["csv"]) if l in CLASSES)
+    y, sr = load_audio(v["media"], sr=A_SR)
+    env, _ = compute_envelope(y, sr)
+    et = librosa.frames_to_time(np.arange(len(env)), sr=sr, hop_length=A_HOP)
+    peaks, _, _, _ = analyzer.detect_onsets(y, sr, A_HOP, 0.12, 0.08, 1000.0, 10000.0)
+
+    lt = np.array([t for t, _ in ann])
+    ll = [l for _, l in ann]
+
+    def label_at(t):
+        i = int(np.argmin(np.abs(lt - t)))
+        return ll[i] if abs(lt[i] - t) <= TIMELINE_TOL else None
+
+    T0, WIN = TIMELINE_T0, TIMELINE_WIN
+    fig = plt.figure(figsize=(15, 3.6), facecolor=BG)
+    ax = fig.add_axes([0.035, 0.22, 0.95, 0.60])
+    style_axis(ax)
+
+    m = (et >= T0) & (et <= T0 + WIN)
+    x, e = et[m] - T0, env[m] / env[m].max()
+    w = y[int(T0 * sr):int((T0 + WIN) * sr)]
+    wx = np.linspace(0, WIN, len(w))
+    wn = np.abs(w) / np.abs(w).max() * 0.30
+    ax.fill_between(wx, -wn, wn, color=MUTED, alpha=0.13, linewidth=0)
+    ax.plot(x, e, color=INK, linewidth=1.5, alpha=0.85)
+
+    for t in peaks:
+        if not (T0 <= t < T0 + WIN):
+            continue
+        c = COLOURS.get(label_at(t), "#5A6675")
+        xv = t - T0
+        j = int(np.argmin(np.abs(x - xv)))
+        ax.plot([xv, xv], [0, e[j]], color=c, linewidth=1.4, alpha=0.55)
+        ax.plot([xv], [e[j]], marker="o", markersize=9, color=c,
+                markeredgecolor=BG, markeredgewidth=1.6, zorder=5)
+
+    ax.set_xlim(0, WIN)
+    ax.set_ylim(-0.12, 1.12)
+    ax.set_yticks([])
+    ax.set_xticks(range(0, int(WIN) + 1, 2))
+    ax.set_xticklabels([f"{i}s" for i in range(0, int(WIN) + 1, 2)])
+    ax.tick_params(colors=MUTED, labelsize=11)
+
+    present = {label_at(t) for t in peaks if T0 <= t < T0 + WIN}
+    handles = [Line2D([], [], marker="o", linestyle="", markersize=9,
+                      markerfacecolor=COLOURS[c], markeredgecolor=BG, label=t)
+               for c, t in zip(CLASSES, TITLES) if c in present]
+    leg = ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, -0.14),
+                    ncol=len(handles), frameon=False, fontsize=12.5,
+                    handletextpad=0.4, columnspacing=1.8)
+    for t in leg.get_texts():
+        t.set_color(MUTED)
+    fig.savefig(path, dpi=190, facecolor=BG)
+    plt.close(fig)
+    print(f"  wrote {path}")
+
+
 def main():
     plt.rcParams["font.family"] = ["Helvetica Neue", "Helvetica", "DejaVu Sans"]
     os.makedirs(OUT_FIG, exist_ok=True)
@@ -359,6 +442,7 @@ def main():
     figure_a(picked, os.path.join(OUT_FIG, "fig_a_envelopes.png"))
     figure_b(picked, os.path.join(OUT_FIG, "fig_b_mel.png"))
     figure_ab(picked, os.path.join(OUT_FIG, "fig_ab_combined.png"))
+    figure_c_timeline(os.path.join(OUT_FIG, "fig_c_timeline.png"))
     return 0
 
 

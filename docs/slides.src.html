@@ -146,7 +146,7 @@ dl.spec dd em{font-style:normal;color:var(--muted);font-size:19px;}
 .stat .s{font-size:18.5px;color:var(--muted);line-height:1.4;}
 
 /* --- audio buttons --------------------------------------------------------- */
-.clips{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.clips{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;}
 .clip{
   appearance:none;background:var(--surface);color:var(--ink);cursor:pointer;
   border:1px solid var(--line);border-left:3px solid var(--c,var(--amber));
@@ -309,29 +309,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </div>
   </div>
 </section>
-<section class="slide vc" data-act="1" data-time="0:50">
-  <div class="eyebrow"><i class="dot"></i>The question</div>
-  <h2>Restoring it usually costs hardware</h2>
-  <div class="cols c2">
-    <ul class="b" style="font-size:24px;">
-      <li>Vibration rigs, thermal modules, body suits.</li>
-      <li>The earlier <em>Feel the Sports</em> work: a wrist device.</li>
-      <li>You only get the feeling if you already bought something.</li>
-    </ul>
-    <div class="stack">
-      <div class="callout">
-        <span class="lbl">The device almost everyone already has</span>
-        <strong>70%</strong> of people worldwide own a smartphone.
-        Wearables are nowhere near that.
-      </div>
-      <div class="panel">
-        <span class="tag">And deliberately a cheap one</span>
-        <p>Tested on a <strong>Samsung Galaxy A03</strong>, not a flagship.
-        &ldquo;Already own&rdquo; has to mean already own.</p>
-      </div>
-    </div>
-  </div>
-</section>
+
 <section class="slide vc" data-act="1" data-time="0:35">
   <div class="eyebrow"><i class="dot"></i>The question</div>
   <h2>Where this sits</h2>
@@ -370,10 +348,16 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       Caprioli et al. 2025</p>
     </div>
   </div>
-  <div class="callout" style="margin-top:18px;">
-    <span class="lbl">The gap</span>
-    Tennis sound has never driven vibration on a phone the viewer
-    <strong>already owns</strong>. And there was no dataset to start from.
+  <div class="cols" style="grid-template-columns:1.55fr 1fr;flex:none;gap:20px;margin-top:16px;">
+    <div class="callout">
+      <span class="lbl">The gap</span>
+      Tennis sound has never driven vibration on a phone the viewer
+      <strong>already owns</strong>. And there was no dataset to start from.
+    </div>
+    <div class="callout" style="border-left-color:var(--sky);">
+      <span class="lbl" style="color:var(--sky);">Why a phone</span>
+      <strong>70%</strong> of people own one. Wearables are nowhere near that.
+    </div>
   </div>
 </section>
 <section class="slide" data-act="2" data-time="0:55">
@@ -460,66 +444,62 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
 </section>
 <section class="slide" data-act="3" data-time="1:30">
   <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
-  <h2 style="font-size:36px;margin-bottom:2px;">Four sounds. Listen.</h2>
+  <h2 style="font-size:36px;margin-bottom:2px;">Five sounds. Listen.</h2>
 <div class="clips" style="margin-bottom:10px;--clip-pad:10px;">
     <button class="clip" data-clip="racket_hit" style="--c:var(--amber);">
       <span class="key"><b>1</b> PLAY</span>
       <span class="nm">Racket hit</span>
-      <span class="sub">hard court</span>
       <span class="bar"><i></i></span>
     </button>
     <button class="clip" data-clip="ball_bounce" style="--c:var(--sky);">
       <span class="key"><b>2</b> PLAY</span>
       <span class="nm">Ball bounce</span>
-      <span class="sub">hard court</span>
       <span class="bar"><i></i></span>
     </button>
     <button class="clip" data-clip="shoe_squeak" style="--c:var(--violet);">
       <span class="key"><b>3</b> PLAY</span>
       <span class="nm">Shoe squeak</span>
-      <span class="sub">hard court</span>
+      <span class="bar"><i></i></span>
+    </button>
+    <button class="clip" data-clip="grunt_speech" style="--c:var(--good);">
+      <span class="key"><b>4</b> PLAY</span>
+      <span class="nm">Grunt / speech</span>
       <span class="bar"><i></i></span>
     </button>
     <button class="clip" data-clip="ambient_noise" style="--c:var(--slate);">
-      <span class="key"><b>4</b> PLAY</span>
+      <span class="key"><b>5</b> PLAY</span>
       <span class="nm">Crowd / background</span>
-      <span class="sub">clay court</span>
       <span class="bar"><i></i></span>
     </button>
   </div>
     <figure style="flex:1;min-height:0;margin-top:8px;">
-    <img src="__ASSET:docs/figures/fig_ab_combined.png__" style="max-height:100%;object-fit:contain;" alt="Four columns, one per sound. The top row is the onset envelope the detector reduces each event to: four near-identical spikes. The bottom row is the log-mel spectrogram the model is given for the same 150 ms: visibly different from one another.">
-    <figcaption>Same four events, top and bottom &nbsp;&middot;&nbsp; the envelope keeps one number, the spectrogram keeps the shape</figcaption>
+    <img src="__ASSET:docs/figures/fig_ab_combined.png__" style="max-height:100%;object-fit:contain;" alt="Five columns, one per sound. The top row is the onset envelope the detector reduces each event to: five near-identical spikes. The bottom row is the log-mel spectrogram the model is given for the same 150 ms: visibly different from one another.">
+    <figcaption>Same five events, top and bottom &nbsp;&middot;&nbsp; the envelope keeps one number, the spectrogram keeps the shape</figcaption>
   </figure>
 </section>
-<section class="slide vc" data-act="3" data-time="0:35">
+<section class="slide" data-act="3" data-time="0:50">
   <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
-  <h2>You just told them apart.<br>The detector cannot.</h2>
-  <div class="cols c2" style="align-items:center;">
-    <div class="stack">
-      <ul class="b" style="font-size:24px;">
-        <li>It looks for <strong>sudden rises in energy</strong>.</li>
-        <li>A squeak, a bounce, a seat banging: all sudden rises.</li>
-        <li>Finding a sound is not knowing what it is.</li>
-      </ul>
+  <h2 style="font-size:38px;margin-bottom:4px;">The detector cannot tell them apart</h2>
+  <figure style="flex:none;margin-top:6px;">
+    <img src="__ASSET:docs/figures/fig_c_timeline.png__" alt="Twelve seconds of a rally. The onset envelope spikes eighteen times; six of the spikes are racket hits, the rest are crowd noise, shoe squeaks and a grunt.">
+    <figcaption>Twelve seconds of one rally &nbsp;&middot;&nbsp; every spike the detector fired on, coloured by what it turned out to be</figcaption>
+  </figure>
+  <div class="cols" style="grid-template-columns:1fr 1fr 1.6fr;flex:none;gap:20px;margin-top:16px;">
+    <div class="stat">
+      <span class="n good">97%</span>
+      <span class="k">Detector recall</span>
+      <span class="s">of confirmed hits are found</span>
     </div>
-    <div class="stats" style="grid-template-columns:1fr 1fr;">
-      <div class="stat">
-        <span class="n good">97%</span>
-        <span class="k">Detector recall</span>
-        <span class="s">of confirmed hits are found</span>
-      </div>
-      <div class="stat">
-        <span class="n">46%</span>
-        <span class="k">Are actually hits</span>
-        <span class="s">583 of 1,270 checked events &mdash; the rest are unwanted</span>
-      </div>
+    <div class="stat">
+      <span class="n">46%</span>
+      <span class="k">Are actually hits</span>
+      <span class="s">583 of 1,270 checked events</span>
     </div>
-  </div>
-  <div class="callout" style="margin-top:26px;">
-    <span class="lbl">Consequence</span>
-    Buzzing on everything it finds is not an option. What each sound
-    <strong>is</strong> has to come from the sound itself.
+    <div class="callout">
+      <span class="lbl">Consequence</span>
+      Buzzing on everything it finds is not an option. What each sound
+      <strong>is</strong> has to come from the sound itself.
+    </div>
   </div>
 </section>
 
@@ -799,6 +779,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <li>Order balanced across participants.</li>
       <li><strong>Sound on</strong> in both, as anyone would actually watch.</li>
       <li>A questionnaire before, and a longer one after.</li>
+      <li>On a <strong>Samsung Galaxy A03</strong>, a budget phone, not a flagship.</li>
       <li>Ethics approved; participants identified only by code.</li>
     </ul>
   </div>
@@ -829,13 +810,46 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <ul class="b">
         <li>Buzz strength is relative to each video.</li>
         <li>Highlights, not live &mdash; and not yet running live either.</li>
-        <li>A bigger study &mdash; this seminar is a chance to recruit.</li>
+        <li>A bigger study, with more people.</li>
       </ul>
     </div>
   </div>
   <div class="callout" style="margin-top:20px;">
     <span class="lbl">Where the rest of this project goes</span>
     The detector works. Finding who the feeling suits is the open half.
+  </div>
+</section>
+<section class="slide" data-act="5" data-time="0:10">
+  <div class="title-wrap">
+    <div class="title-rule"></div>
+    <h1 style="font-size:76px;">Questions</h1>
+    <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-top:34px;max-width:1000px;">
+      <div class="stat">
+        <span class="n">0.84</span>
+        <span class="k">Accuracy &middot; five classes</span>
+        <span class="s">on a match never trained on</span>
+      </div>
+      <div class="stat">
+        <span class="n sky">4.67</span>
+        <span class="k">of 5 &middot; in time</span>
+        <span class="s">nobody doubted the timing</span>
+      </div>
+      <div class="stat">
+        <span class="n good">6 / 5</span>
+        <span class="k">Would install it, or not</span>
+        <span class="s">twelve people, split down the middle</span>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:30px;max-width:1000px;">
+      <span class="lbl">And an ask</span>
+      The next study needs more people. If you would sit on a sofa for ten
+      minutes and tell me how it felt, please come and find me.
+    </div>
+    <div class="byline" style="margin-top:26px;">
+      <span><b>Chuan Xi</b></span>
+      <span>University of Waikato</span>
+      <span class="mono">COMPX520 &middot; 2026</span>
+    </div>
   </div>
 </section>
 
@@ -948,8 +962,9 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       else document.documentElement.requestFullscreen().catch(function(){});
       e.preventDefault();
     }
-    else if (k >= "1" && k <= "4"){
-      const names = ["racket_hit", "ball_bounce", "shoe_squeak", "ambient_noise"];
+    else if (k >= "1" && k <= "5"){
+      const names = ["racket_hit", "ball_bounce", "shoe_squeak", "grunt_speech",
+                     "ambient_noise"];
       play(names[+k - 1]);
       e.preventDefault();
     }
