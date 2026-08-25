@@ -18,6 +18,12 @@ without — with **presentation order counterbalanced** (6 participants received
 the haptic condition first, 6 received it second). Both clips played with
 **sound at normal level**.
 
+**Apparatus.** The handheld device was a **Samsung Galaxy A03**, a low-end
+Android handset, driven over Wi-Fi from a laptop running the playback system. A
+budget phone was chosen deliberately rather than a flagship: the claim being
+tested is that the feedback runs on a device a viewer already owns, which only
+holds if it is not a device they would have to buy first.
+
 The two clips were different footage rather than the same clip repeated, which
 avoids the participant having already seen the rally in the second condition
 but means **clip content varies alongside the haptic condition**. See
