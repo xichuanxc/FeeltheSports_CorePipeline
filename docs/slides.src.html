@@ -182,6 +182,13 @@ dl.spec dd em{font-style:normal;color:var(--muted);font-size:19px;}
 
 /* --- pipeline / architecture ----------------------------------------------- */
 .flow{display:flex;align-items:stretch;gap:0;}
+.steps{display:flex;flex-direction:column;}
+.step{display:flex;align-items:baseline;gap:13px;background:var(--surface);
+  border:1px solid var(--line);border-radius:5px;padding:11px 15px;}
+.step .n{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.1em;flex:none;}
+.step b{font-size:18px;color:var(--ink);font-weight:600;}
+.step i{font-style:normal;font-size:15px;color:var(--muted);}
+.tick{height:15px;display:grid;place-items:center;color:var(--line);font-family:var(--mono);font-size:13px;}
 .node{
   flex:1;background:var(--surface);border:1px solid var(--line);border-radius:5px;
   padding:16px 16px 14px;display:flex;flex-direction:column;gap:6px;
@@ -326,7 +333,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <span class="tag">Strand 01</span>
       <h3>Haptics for spectators</h3>
       <ul class="b" style="font-size:20px;">
-        <li>Sensors on court, actuators on the body.</li>
+        <li>Sensors on court, tactile units on the body.</li>
         <li>Every system needs <strong>both</strong>.</li>
       </ul>
     </div>
@@ -360,14 +367,17 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
   <div class="cols" style="grid-template-columns:1fr 1.5fr;flex:none;gap:22px;margin-top:28px;">
     <div class="stat">
-      <span class="n sky">70%</span>
+      <span class="n sky">70.1%</span>
       <span class="k">Own a smartphone</span>
-      <span class="s">worldwide</span>
+      <span class="s">worldwide, 2026</span>
     </div>
     <div class="panel" style="border-left:3px solid var(--sky);">
       <span class="tag">Why that matters</span>
-      <p>Haptic wearables are nowhere near that, and a viewer has to buy one
-      first. The phone is already in the room, and already in the hand.</p>
+      <p>Smartwatches reach <strong>38%</strong> of those smartphone users, and
+      a viewer has to buy one first. The phone is already in the room, and
+      already in the hand.</p>
+      <p class="cite" style="margin-top:12px;">SQ Magazine, <em>Smartphone
+      Statistics 2026</em> &middot; sqmagazine.co.uk/smartphone-statistics</p>
     </div>
   </div>
 </section>
@@ -375,60 +385,87 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <div class="eyebrow"><i class="dot"></i>The big picture</div>
   <h2>The whole thing, before the parts</h2>
   <figure>
-    <svg viewBox="0 0 1148 310" role="img" class="arch"
-         aria-label="The project as three stages with three programs spanning them. The stages are tennis video, haptic feedback, and user study. The annotation program spans tennis video and haptic feedback. The haptic player spans all three. The phone spans haptic feedback and user study.">
-      <rect x="20" y="12" width="375" height="54" rx="5"
-            fill="var(--surface)" stroke="var(--line)"></rect>
-      <text x="207" y="36" text-anchor="middle" fill="var(--ink)"
-            font-size="19" font-weight="700">Tennis video</text>
-      <text x="207" y="56" text-anchor="middle" fill="var(--faint)"
-            font-size="13.5">broadcast, sound as aired</text>
-      <rect x="400" y="12" width="375" height="54" rx="5"
-            fill="var(--surface)" stroke="var(--line)"></rect>
-      <text x="587" y="36" text-anchor="middle" fill="var(--ink)"
-            font-size="19" font-weight="700">Haptic feedback</text>
-      <text x="587" y="56" text-anchor="middle" fill="var(--faint)"
-            font-size="13.5">the system built here</text>
-      <rect x="800" y="12" width="328" height="54" rx="5"
-            fill="var(--surface)" stroke="var(--line)"></rect>
-      <text x="964" y="36" text-anchor="middle" fill="var(--ink)"
-            font-size="19" font-weight="700">User study</text>
-      <text x="964" y="56" text-anchor="middle" fill="var(--faint)"
-            font-size="13.5">does it change watching?</text>
-      <line x1="388" y1="72" x2="388" y2="296" stroke="var(--line)"
-            stroke-dasharray="3 6"></line>
-      <line x1="788" y1="72" x2="788" y2="296" stroke="var(--line)"
-            stroke-dasharray="3 6"></line>
-      <rect x="20" y="96" width="750" height="54" rx="6"
-            fill="#0F1B24" stroke="var(--sky)" stroke-width="1.6"></rect>
-      <text x="40" y="120" fill="var(--sky)" font-size="18" font-weight="700">Annotation program</text>
-      <text x="40" y="140" fill="var(--muted)" font-size="13.5">peak detection and the CNN propose &#183; a person confirms</text>
-      <rect x="20" y="162" width="1108" height="54" rx="6"
-            fill="#1B1608" stroke="var(--amber)" stroke-width="1.6"></rect>
-      <text x="40" y="186" fill="var(--amber)" font-size="18" font-weight="700">Haptic player</text>
-      <text x="40" y="206" fill="var(--muted)" font-size="13.5">reads the timeline, drives the phone, runs the session</text>
-      <rect x="400" y="228" width="728" height="54" rx="6"
-            fill="#171430" stroke="var(--violet)" stroke-width="1.6"></rect>
-      <text x="420" y="252" fill="var(--violet)" font-size="18" font-weight="700">Phone</text>
-      <text x="420" y="272" fill="var(--muted)" font-size="13.5">buzzes in time, from its own clock</text>
+    <svg viewBox="0 0 1108 372" role="img" class="arch"
+         aria-label="Tennis video feeds the annotator, which is fed in turn by the traditional peak detection and the CNN. The annotator's events go to the haptic player, which also receives the video itself, and the player and the phone talk to each other.">
+      <defs>
+        <marker id="bp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path></marker>
+        <marker id="bv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--violet)"></path></marker>
+      </defs>
+      <rect x="16" y="104" width="190" height="72" rx="6" fill="var(--surface)"
+            stroke="var(--line)" stroke-width="1.8"></rect>
+      <text x="111" y="134" text-anchor="middle" fill="var(--ink)"
+            font-size="20" font-weight="700">Tennis video</text>
+      <text x="111" y="158" text-anchor="middle" fill="var(--faint)"
+            font-size="14.5">the broadcast</text>
+      <rect x="300" y="104" width="210" height="72" rx="6" fill="#0F1B24"
+            stroke="var(--sky)" stroke-width="1.8"></rect>
+      <text x="405" y="134" text-anchor="middle" fill="var(--sky)"
+            font-size="20" font-weight="700">Annotator</text>
+      <text x="405" y="158" text-anchor="middle" fill="var(--faint)"
+            font-size="14.5">events, adjudicated</text>
+      <rect x="606" y="104" width="210" height="72" rx="6" fill="#1B1608"
+            stroke="var(--amber)" stroke-width="1.8"></rect>
+      <text x="711" y="134" text-anchor="middle" fill="var(--amber)"
+            font-size="20" font-weight="700">Haptic player</text>
+      <text x="711" y="158" text-anchor="middle" fill="var(--faint)"
+            font-size="14.5">plays and serves</text>
+      <rect x="912" y="104" width="180" height="72" rx="6" fill="#171430"
+            stroke="var(--violet)" stroke-width="1.8"></rect>
+      <text x="1002" y="134" text-anchor="middle" fill="var(--violet)"
+            font-size="20" font-weight="700">Phone</text>
+      <text x="1002" y="158" text-anchor="middle" fill="var(--faint)"
+            font-size="14.5">buzzes in time</text>
+      <line x1="210" y1="140" x2="294" y2="140" stroke="var(--muted)" marker-end="url(#bp)"></line>
+      <line x1="514" y1="140" x2="600" y2="140" stroke="var(--muted)" marker-end="url(#bp)"></line>
+      <text x="557" y="128" text-anchor="middle" fill="var(--faint)" font-size="14">events</text>
+      <line x1="820" y1="140" x2="906" y2="140" stroke="var(--violet)" stroke-width="2"
+            marker-start="url(#bv)" marker-end="url(#bv)"></line>
+      <rect x="288" y="248" width="100" height="56" rx="6"
+            fill="var(--surface)" stroke="var(--good)"></rect>
+      <text x="338" y="282" text-anchor="middle" fill="var(--good)"
+            font-size="16.5" font-weight="600">Traditional</text>
+      <line x1="338" y1="244" x2="338" y2="182" stroke="var(--good)"
+            stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#bp)"></line>
+      <rect x="410" y="248" width="100" height="56" rx="6"
+            fill="var(--surface)" stroke="var(--sky)"></rect>
+      <text x="460" y="282" text-anchor="middle" fill="var(--sky)"
+            font-size="16.5" font-weight="600">CNN</text>
+      <line x1="460" y1="244" x2="460" y2="182" stroke="var(--sky)"
+            stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#bp)"></line>
+      <path d="M111,180 L111,344 L711,344 L711,182" fill="none" stroke="var(--muted)"
+            stroke-width="1.6" marker-end="url(#bp)"></path>
+      <text x="411" y="334" text-anchor="middle" fill="var(--faint)" font-size="14.5">the video itself</text>
     </svg>
-    <figcaption>Each bar spans the stages it touches &#183; the player is in all three, which is why it was built first</figcaption>
+    <figcaption>Every slide from here on is one box of this diagram</figcaption>
   </figure>
 </section>
 <section class="slide" data-act="2" data-time="0:35">
   <div class="eyebrow"><i class="dot"></i>What was built</div>
-  <h2>The annotation program</h2>
-  <div class="cols c52" style="flex:none;align-content:start;gap:32px;">
-    <img src="__ASSET:docs/figures/annotator.png__" style="width:100%;max-height:400px;object-fit:contain;border-radius:3px;" alt="The annotation tool: a paused match with the onset envelope below, candidate markers, per-class progress bars, and the model's own guess for the current candidate">
-    <div class="stack">
-      <span class="tag">The detector proposes, a person judges</span>
-      <ul class="b" style="font-size:26px;gap:20px;">
-        <li>By hand, this does not scale.</li>
-        <li>So the audio is searched first.</li>
-        <li>A person only confirms.</li>
-      </ul>
+  <h2>The Annotator</h2>
+  <div class="cols" style="grid-template-columns:1.5fr 1fr;align-items:center;gap:40px;min-height:0;">
+    <figure style="min-height:0;height:100%;">
+      <img src="__ASSET:docs/figures/annotator.png__" style="border-radius:3px;" alt="The annotation tool: a paused match with the onset envelope below, candidate markers, per-class progress bars, and the model's own guess for the current candidate">
+    </figure>
+    <div class="steps">
+      <div class="step"><span class="n">01</span><span><b>Extract the audio</b> &nbsp;<i>from the broadcast</i></span></div>
+      <div class="tick">&darr;</div>
+      <div class="step" style="border-left:3px solid var(--good);"><span class="n">02</span><span><b>Find and pre-label</b> &nbsp;<i>traditional &middot; spectral flux</i></span></div>
+      <div class="tick">&darr;</div>
+      <div class="step" style="border-left:3px solid var(--sky);"><span class="n">03</span><span><b>Filter with the CNN</b> &nbsp;<i>fewer left to check</i></span></div>
+      <div class="tick">&darr;</div>
+      <div class="step" style="border-left:3px solid var(--amber);"><span class="n">04</span><span><b>A person audits</b> &nbsp;<i>confirm or correct</i></span></div>
+      <div class="tick">&darr;</div>
+      <div class="step"><span class="n">05</span><span><b>Save</b> &nbsp;<i>into the corpus</i></span></div>
     </div>
   </div>
+</section>
+<section class="slide" data-act="3" data-time="0:50">
+  <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
+  <h2>The traditional approach on its own</h2>
+  <figure style="flex:1;min-height:0;">
+    <img src="__ASSET:docs/figures/fig_c_timeline_trad.png__" style="max-height:100%;object-fit:contain;" alt="Sixteen seconds of a rally. The onset envelope spikes around twenty times; eight of the spikes are racket hits, the rest are shoe squeaks, crowd noise, a grunt and a ball bounce. A hollow ring marks a real racket hit the threshold walked past. One dashed line marks the threshold the traditional method needs on its own, 0.30.">
+    <figcaption>The bar has to sit high to stay right &nbsp;&middot;&nbsp; and real hits fall below it</figcaption>
+  </figure>
 </section>
 <section class="slide" data-act="3" data-time="1:30">
   <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
@@ -461,16 +498,51 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </button>
   </div>
     <figure style="flex:1;min-height:0;margin-top:8px;">
-    <img src="__ASSET:docs/figures/fig_ab_combined.png__" style="max-height:100%;object-fit:contain;" alt="Five columns, one per sound. The top row is the onset envelope the detector reduces each event to: five near-identical spikes. The bottom row is the log-mel spectrogram the model is given for the same 150 ms: visibly different from one another.">
-    <figcaption>Same five events, top and bottom &nbsp;&middot;&nbsp; the envelope keeps one number, the spectrogram keeps the shape</figcaption>
+    <img src="__ASSET:docs/figures/fig_a_envelopes_only.png__" style="max-height:100%;object-fit:contain;" alt="Five columns, one per sound, each showing the onset envelope the annotator reduces that event to. Five near-identical spikes.">
+    <figcaption>All the annotator keeps of each one &nbsp;&middot;&nbsp; a spike, and how big it is</figcaption>
   </figure>
 </section>
 <section class="slide" data-act="3" data-time="0:50">
   <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
-  <h2>The detector cannot tell them apart</h2>
+  <h2>CNN</h2>
   <figure style="flex:1;min-height:0;">
-    <img src="__ASSET:docs/figures/fig_c_timeline.png__" style="max-height:100%;object-fit:contain;" alt="Sixteen seconds of a rally. The onset envelope spikes around twenty times; eight of the spikes are racket hits, the rest are shoe squeaks, crowd noise, a grunt and a ball bounce. Two dashed lines mark the labelling threshold at 0.12 and the playback threshold at 0.30.">
-    <figcaption>Every spike the detector fired on, coloured by what it turned out to be</figcaption>
+    <img src="__ASSET:docs/figures/fig_c_timeline.png__" style="max-height:100%;object-fit:contain;" alt="Sixteen seconds of a rally. The onset envelope spikes around twenty times; eight of the spikes are racket hits, the rest are shoe squeaks, crowd noise, a grunt and a ball bounce. Every marked spike fired at the lower threshold. Two dashed lines mark the threshold the CNN pipeline runs at, 0.12, and the higher one the traditional method needs on its own, 0.30.">
+    <figcaption>Drop the bar and every hit is caught &nbsp;&middot;&nbsp; along with a crowd of other sounds</figcaption>
+  </figure>
+</section>
+<section class="slide" data-act="3" data-time="1:30">
+  <div class="eyebrow"><i class="dot"></i>Finding the hits</div>
+  <h2 style="font-size:36px;margin-bottom:2px;">The same five sounds, but with mel spectrograms</h2>
+<div class="clips" style="margin-bottom:10px;--clip-pad:10px;">
+    <button class="clip" data-clip="racket_hit" style="--c:var(--amber);">
+      <span class="key"><b>1</b> PLAY</span>
+      <span class="nm">Racket hit</span>
+      <span class="bar"><i></i></span>
+    </button>
+    <button class="clip" data-clip="ball_bounce" style="--c:var(--sky);">
+      <span class="key"><b>2</b> PLAY</span>
+      <span class="nm">Ball bounce</span>
+      <span class="bar"><i></i></span>
+    </button>
+    <button class="clip" data-clip="shoe_squeak" style="--c:var(--violet);">
+      <span class="key"><b>3</b> PLAY</span>
+      <span class="nm">Shoe squeak</span>
+      <span class="bar"><i></i></span>
+    </button>
+    <button class="clip" data-clip="grunt_speech" style="--c:var(--good);">
+      <span class="key"><b>4</b> PLAY</span>
+      <span class="nm">Grunt / speech</span>
+      <span class="bar"><i></i></span>
+    </button>
+    <button class="clip" data-clip="ambient_noise" style="--c:var(--slate);">
+      <span class="key"><b>5</b> PLAY</span>
+      <span class="nm">Crowd / background</span>
+      <span class="bar"><i></i></span>
+    </button>
+  </div>
+    <figure style="flex:1;min-height:0;margin-top:8px;">
+    <img src="__ASSET:docs/figures/fig_ab_combined.png__" style="max-height:100%;object-fit:contain;" alt="Five columns, one per sound. The top row is the onset envelope the annotator reduces each event to: five near-identical spikes. The bottom row is the log-mel spectrogram the model is given for the same 150 ms: visibly different from one another.">
+    <figcaption>Same five events, the spectrogram keeps the 'shape'</figcaption>
   </figure>
 </section>
 <section class="slide vc" data-act="3" data-time="0:45">
@@ -478,7 +550,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <h2>Find them, then name them</h2>
   <div class="cols c2" style="flex:none;gap:28px;">
     <div class="panel">
-      <span class="tag">Conventional &middot; where</span>
+      <span class="tag">Traditional &middot; where</span>
       <h3>Spectral-flux peak detection</h3>
       <ul class="b" style="font-size:19px;">
         <li>Band-pass, then pick the sudden rises.</li>
@@ -507,15 +579,86 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <div class="eyebrow"><i class="dot"></i>What was built</div>
   <h2>The VideoPlayer program</h2>
   <div class="cols c52" style="flex:none;align-content:start;gap:32px;">
-    <img src="__ASSET:docs/figures/player.png__" style="width:100%;max-height:400px;object-fit:contain;border-radius:3px;" alt="The haptic player: a clay-court rally with an event readout showing intensity, the connected phone count, and the event strip below">
-    <div class="stack">
-      <span class="tag">Plays the match, drives the phone</span>
-      <ul class="b" style="font-size:26px;gap:20px;">
-        <li>Reads a timeline of events.</li>
-        <li>Loudness becomes buzz strength.</li>
-        <li>Scaled within each video.</li>
-        <li>Holds the connection to the phone.</li>
+    <img src="__ASSET:docs/figures/player.png__" style="width:100%;max-height:330px;object-fit:contain;border-radius:3px;" alt="The haptic player: a clay-court rally with an event readout showing intensity, the connected phone count, and the event strip below">
+    <div class="stack" style="gap:12px;">
+      <span class="tag">Plays the match, serves the phones</span>
+      <ul class="b" style="font-size:22px;gap:13px;">
+        <li>Reads a timeline of events </li>
+        <li>Synchronised ticks with phones </li>
+        <li>A TCP Server for broadcasting events</li>
       </ul>
+      <svg viewBox="0 0 500 240" role="img" class="arch"
+           aria-label="One VideoPlayer acting as server, connected to three phones as clients, and more.">
+        <defs>
+          <marker id="cl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"
+                  markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--sky)"></path>
+          </marker>
+        </defs>
+        <rect x="6" y="82" width="172" height="52" rx="6" fill="#1B1608"
+              stroke="var(--amber)" stroke-width="2"></rect>
+        <text x="92" y="103" text-anchor="middle" fill="var(--amber)"
+              font-size="16.5" font-weight="700">VideoPlayer</text>
+        <text x="92" y="123" text-anchor="middle" fill="var(--faint)"
+              font-size="13">one server</text>
+        <path d="M178,108 C250,108 250,34 322,34" fill="none"
+              stroke="var(--sky)" stroke-width="1.8" marker-end="url(#cl)"></path>
+        <rect x="326" y="8" width="146" height="52" rx="6"
+              fill="var(--surface)" stroke="var(--sky)"></rect>
+        <text x="399" y="40" text-anchor="middle" fill="var(--ink)"
+              font-size="16" font-weight="600">Phone 1</text>
+        <path d="M178,108 C250,108 250,108 322,108" fill="none"
+              stroke="var(--sky)" stroke-width="1.8" marker-end="url(#cl)"></path>
+        <rect x="326" y="82" width="146" height="52" rx="6"
+              fill="var(--surface)" stroke="var(--sky)"></rect>
+        <text x="399" y="114" text-anchor="middle" fill="var(--ink)"
+              font-size="16" font-weight="600">Phone 2</text>
+        <path d="M178,108 C250,108 250,182 322,182" fill="none"
+              stroke="var(--sky)" stroke-width="1.8" marker-end="url(#cl)"></path>
+        <rect x="326" y="156" width="146" height="52" rx="6"
+              fill="var(--surface)" stroke="var(--sky)"></rect>
+        <text x="399" y="188" text-anchor="middle" fill="var(--ink)"
+              font-size="16" font-weight="600">Phone 3</text>
+        <text x="399" y="228" text-anchor="middle" fill="var(--faint)"
+              font-size="14.5" font-style="italic">&hellip;and more</text>
+      </svg>
+      <p style="margin:2px 0 0;font-size:17px;color:var(--faint);">Every phone
+      gets the <strong style="color:var(--muted);">same timeline</strong> and is
+      held to the <strong style="color:var(--muted);">same clock</strong>.</p>
+    </div>
+  </div>
+</section>
+<section class="slide" data-act="4" data-time="0:30">
+  <div class="eyebrow"><i class="dot"></i>What was built</div>
+  <h2>The FeeltheSports app</h2>
+  <div class="cols" style="grid-template-columns:318px 1fr;flex:none;align-content:start;gap:44px;">
+    <figure>
+      <img src="__ASSET:docs/screenshots/SamsungA03-front.jpeg__"
+           style="border-radius:8px;max-height:424px;"
+           alt="The phone running FeeltheSports: the app icon and name, a status pill reading Searching for Haptic Server, and the University of Waikato crest at the foot of the screen">
+      <figcaption>Opened, looking for the laptop</figcaption>
+    </figure>
+    <div class="stack" style="gap:16px;">
+      <span class="tag">The client, in the hand</span>
+      <ul class="b" style="font-size:21.5px;gap:14px;">
+        <li>Finds the laptop by itself &mdash; nothing to pair,
+        no address to type in</li>
+        <li>Buzzes on every racket strike, in time with the match</li>
+        <li>No add-on hardware &mdash; the phone&rsquo;s own vibration motor</li>
+      </ul>
+      <div style="display:flex;gap:20px;align-items:center;margin-top:6px;
+                  background:var(--surface);border:1px solid var(--line);
+                  border-radius:5px;padding:16px 20px;">
+        <img src="__ASSET:docs/screenshots/SamsungA03-back.jpeg__"
+             style="width:104px;height:auto;border-radius:5px;flex:none;display:block;"
+             alt="The back of the Samsung Galaxy A03 handset used in the study">
+        <div>
+          <span class="tag" style="display:block;margin-bottom:6px;">Samsung Galaxy A03</span>
+          <p style="margin:0;font-size:18.5px;line-height:1.45;">A
+          <strong>budget phone, on purpose</strong>. If the effect only lands on
+          a flagship, it does not reach the viewers this is for.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -523,7 +666,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   <div class="eyebrow"><i class="dot"></i>What was built</div>
   <h2>The VideoPlayer Server and the Smartphone Client</h2>
   <figure style="flex:1;min-height:0;">
-    <svg viewBox="0 0 1136 350" role="img" class="arch"
+    <svg viewBox="0 0 1136 452" role="img" class="arch"
          aria-label="Sequence diagram. During setup the phone discovers the laptop over mDNS, says hello over TCP, receives the whole event timeline in one message, and syncs its clock over eight round trips. During playback the laptop sends transport commands and a UDP sync pulse at 5 to 10 hertz, while the phone's vibrations fire from its own clock with no message sent per hit.">
       <defs>
         <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5"
@@ -536,85 +679,77 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
         </marker>
       </defs>
 
-      <!-- actors -->
-      <rect x="112" y="12" width="156" height="32" rx="4"
+      <rect x="104" y="8" width="172" height="42" rx="5"
             fill="var(--surface)" stroke="var(--line)"></rect>
-      <text x="190" y="33" text-anchor="middle" fill="var(--ink)"
-            font-size="15.5" font-weight="600">Laptop</text>
-      <rect x="712" y="12" width="156" height="32" rx="4"
+      <text x="190" y="36" text-anchor="middle" fill="var(--ink)"
+            font-size="21" font-weight="600">Laptop</text>
+      <rect x="704" y="8" width="172" height="42" rx="5"
             fill="var(--surface)" stroke="var(--line)"></rect>
-      <text x="790" y="33" text-anchor="middle" fill="var(--ink)"
-            font-size="15.5" font-weight="600">Phone</text>
-      <line x1="190" y1="44" x2="190" y2="342" stroke="var(--line)"></line>
-      <line x1="790" y1="44" x2="790" y2="342" stroke="var(--line)"></line>
+      <text x="790" y="36" text-anchor="middle" fill="var(--ink)"
+            font-size="21" font-weight="600">Phone</text>
+      <line x1="190" y1="50" x2="190" y2="444" stroke="var(--line)"></line>
+      <line x1="790" y1="50" x2="790" y2="444" stroke="var(--line)"></line>
 
-      <!-- setup -->
-      <text x="0" y="82" fill="var(--faint)" font-size="13"
-            letter-spacing="1.6">SETUP</text>
-      <text x="0" y="96" fill="var(--faint)" font-size="13"
-            letter-spacing="1.6">ONCE</text>
+      <text x="0" y="96" fill="var(--faint)" font-size="16" letter-spacing="1.8">SETUP</text>
+      <text x="0" y="118" fill="var(--faint)" font-size="16" letter-spacing="1.8">ONCE</text>
 
-      <text x="490" y="76" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">find the laptop &nbsp;&middot;&nbsp; mDNS</text>
-      <line x1="784" y1="86" x2="196" y2="86" stroke="var(--muted)"
+      <text x="490" y="88" text-anchor="middle" fill="var(--muted)"
+            font-size="19.5">find the laptop &nbsp;&middot;&nbsp; mDNS</text>
+      <line x1="784" y1="102" x2="196" y2="102" stroke="var(--muted)"
             marker-end="url(#ar)"></line>
 
-      <text x="490" y="116" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">hello &nbsp;&middot;&nbsp; TCP</text>
-      <line x1="784" y1="126" x2="196" y2="126" stroke="var(--muted)"
+      <text x="490" y="140" text-anchor="middle" fill="var(--muted)"
+            font-size="19.5">hello &nbsp;&middot;&nbsp; TCP</text>
+      <line x1="784" y1="154" x2="196" y2="154" stroke="var(--muted)"
             marker-end="url(#ar)"></line>
 
-      <text x="490" y="158" text-anchor="middle" fill="var(--amber)"
-            font-size="15" font-weight="600">every event of the match, in one message</text>
-      <line x1="196" y1="170" x2="784" y2="170" stroke="var(--amber)"
-            stroke-width="2.4" marker-end="url(#ara)"></line>
+      <text x="490" y="196" text-anchor="middle" fill="var(--amber)"
+            font-size="20.5" font-weight="700">every event of the match, in one message</text>
+      <line x1="196" y1="212" x2="784" y2="212" stroke="var(--amber)"
+            stroke-width="2.8" marker-end="url(#ara)"></line>
 
-      <text x="490" y="198" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">match the clocks &nbsp;&middot;&nbsp; 8 round trips</text>
-      <line x1="196" y1="208" x2="784" y2="208" stroke="var(--muted)"
+      <text x="490" y="252" text-anchor="middle" fill="var(--muted)"
+            font-size="19.5">match the clocks &nbsp;&middot;&nbsp; 8 round trips</text>
+      <line x1="196" y1="266" x2="784" y2="266" stroke="var(--muted)"
             marker-start="url(#ar)" marker-end="url(#ar)"></line>
 
-      <line x1="0" y1="232" x2="1136" y2="232" stroke="var(--line)"
+      <line x1="0" y1="298" x2="1136" y2="298" stroke="var(--line)"
             stroke-dasharray="3 5"></line>
 
-      <!-- playback -->
-      <text x="0" y="262" fill="var(--faint)" font-size="13"
-            letter-spacing="1.6">PLAY</text>
-      <text x="0" y="276" fill="var(--faint)" font-size="13"
-            letter-spacing="1.6">ONWARD</text>
+      <text x="0" y="342" fill="var(--faint)" font-size="16" letter-spacing="1.8">PLAY</text>
+      <text x="0" y="364" fill="var(--faint)" font-size="16" letter-spacing="1.8">ONWARD</text>
 
-      <text x="490" y="262" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">play &nbsp;&middot;&nbsp; pause &nbsp;&middot;&nbsp; seek</text>
-      <line x1="196" y1="272" x2="784" y2="272" stroke="var(--muted)"
+      <text x="490" y="340" text-anchor="middle" fill="var(--muted)"
+            font-size="19.5">play &nbsp;&middot;&nbsp; pause &nbsp;&middot;&nbsp; seek</text>
+      <line x1="196" y1="354" x2="784" y2="354" stroke="var(--muted)"
             marker-end="url(#ar)"></line>
 
-      <text x="490" y="306" text-anchor="middle" fill="var(--muted)"
-            font-size="14.5">keep-in-step pulse &nbsp;&middot;&nbsp; UDP &nbsp;&middot;&nbsp; 5&ndash;10 a second</text>
-      <line x1="196" y1="316" x2="784" y2="316" stroke="var(--muted)"
+      <text x="490" y="400" text-anchor="middle" fill="var(--muted)"
+            font-size="19.5">keep-in-step pulse &nbsp;&middot;&nbsp; UDP &nbsp;&middot;&nbsp; 5&ndash;10 a second</text>
+      <line x1="196" y1="414" x2="784" y2="414" stroke="var(--muted)"
             stroke-dasharray="5 4" marker-end="url(#ar)"></line>
 
-      <!-- the buzzes: on the phone only, with nothing arriving -->
-      <line x1="812" y1="248" x2="812" y2="338" stroke="var(--amber)"
+      <line x1="812" y1="322" x2="812" y2="438" stroke="var(--amber)"
             stroke-width="1" opacity="0.45"></line>
-      <line x1="790" y1="248" x2="836" y2="248" stroke="var(--amber)" stroke-width="2.2"></line>
-      <line x1="790" y1="278" x2="836" y2="278" stroke="var(--amber)" stroke-width="2.2"></line>
-      <line x1="790" y1="308" x2="836" y2="308" stroke="var(--amber)" stroke-width="2.2"></line>
-      <line x1="790" y1="338" x2="836" y2="338" stroke="var(--amber)" stroke-width="2.2"></line>
-      <text x="848" y="284" fill="var(--amber)" font-size="14.5" font-weight="600">each buzz fires from</text>
-      <text x="848" y="302" fill="var(--amber)" font-size="14.5" font-weight="600">the phone&rsquo;s own clock</text>
-      <text x="848" y="322" fill="var(--muted)" font-size="14">nothing is sent per hit</text>
+      <line x1="790" y1="322" x2="840" y2="322" stroke="var(--amber)" stroke-width="2.6"></line>
+      <line x1="790" y1="360" x2="840" y2="360" stroke="var(--amber)" stroke-width="2.6"></line>
+      <line x1="790" y1="399" x2="840" y2="399" stroke="var(--amber)" stroke-width="2.6"></line>
+      <line x1="790" y1="438" x2="840" y2="438" stroke="var(--amber)" stroke-width="2.6"></line>
+      <text x="854" y="368" fill="var(--amber)" font-size="18.5" font-weight="700">each buzz fires from</text>
+      <text x="854" y="392" fill="var(--amber)" font-size="18.5" font-weight="700">the phone&rsquo;s own clock</text>
+      <text x="854" y="416" fill="var(--muted)" font-size="17.5">nothing is sent per hit</text>
     </svg>
   </figure>
 </section>
 <section class="slide" data-act="5" data-time="0:45">
-  <div class="eyebrow"><i class="dot"></i>The answer</div>
-  <h2>How the study ran</h2>
-  <div class="cols c25" style="flex:none;align-content:start;">
+  <div class="eyebrow"><i class="dot"></i>User Study</div>
+  <h2>How the study runs</h2>
+  <div class="cols" style="grid-template-columns:1fr 1.22fr;flex:none;align-content:start;gap:38px;">
     <figure>
       <img src="__ASSET:docs/figures/study_scene.jpg__" style="max-height:392px;object-fit:contain;" alt="A participant sitting on a sofa in a lab furnished like a living room, holding the phone, watching a tennis match on a television, questionnaires on the side table">
       <figcaption>A room furnished as a living room, the phone held rather than worn</figcaption>
     </figure>
-    <ul class="b" style="font-size:24px;gap:18px;">
+    <ul class="b" style="font-size:24px;gap:20px;white-space:nowrap;">
       <li>Two clips: one <strong>with</strong> vibration, one <strong>without</strong>.</li>
       <li>A questionnaire before, and a longer one after.</li>
       <li>On a budget phone, not a flagship.</li>
@@ -622,8 +757,8 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
 </section>
 <section class="slide vc" data-act="5" data-time="1:20">
-  <div class="eyebrow"><i class="dot"></i>The answer</div>
-  <h2>What we measured</h2>
+  <div class="eyebrow"><i class="dot"></i>User Study</div>
+  <h2>What we measure</h2>
   <div class="cols" style="grid-template-columns:repeat(3,1fr);align-items:stretch;gap:26px;">
     <div class="panel" style="border-left:3px solid var(--sky);">
       <span class="tag" style="color:var(--sky);">Did the system work?</span>
@@ -639,7 +774,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <ul class="q">
         <li><span>Helped me follow the match</span><b class="veil">3.75</b></li>
         <li><span>Enough variation between hits</span><b class="veil">3.42</b></li>
-        <li><span>Distracted me <em style="font-style:normal;color:var(--faint);">(lower is better)</em></span><b class="veil">2.33</b></li>
+        <li><span>Distracted me</span><b class="veil">2.33</b></li>
       </ul>
     </div>
     <div class="panel" style="border-left:3px solid var(--amber);">
@@ -658,7 +793,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   accuracy on a match it never trained on.</p>
 </section>
 <section class="slide" data-act="5" data-time="0:20">
-  <div class="eyebrow"><i class="dot"></i>The answer</div>
+  <div class="eyebrow"><i class="dot"></i>User Study</div>
   <h2>Take part in the next one</h2>
   <div class="cols" style="grid-template-columns:360px 1fr;align-items:stretch;gap:48px;">
     <figure style="min-height:0;">
@@ -704,6 +839,9 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <span class="tag">Strand 02 &middot; haptics on a phone</span>
       <p class="cite" style="border-top:none;padding-top:4px;margin-top:8px;">
       G&oacute;mez-Monroy et al. 2026</p>
+      <p class="cite" style="border-top:none;padding-top:14px;margin-top:0;">
+      Ownership figures: SQ Magazine, <em>Smartphone Statistics 2026</em>,
+      S. Ramirez, 18 Feb 2026 &middot; sqmagazine.co.uk/smartphone-statistics</p>
     </div>
     <div class="panel">
       <span class="tag">Strand 03 &middot; detecting tennis events</span>
@@ -759,7 +897,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   addEventListener("resize", fit); fit();
 
   /* --- the rail is segmented by act, not by slide ------------------------- */
-  const ACTS = ["", "The question", "Annotation", "Finding the hits", "Playback", "The answer", "Q&A"];
+  const ACTS = ["", "The question", "Annotation", "Finding the hits", "Playback", "User Study", "Q&A"];
   const counts = {};
   slides.forEach(s => { const a = +s.dataset.act; counts[a] = (counts[a] || 0) + 1; });
   const segs = [];

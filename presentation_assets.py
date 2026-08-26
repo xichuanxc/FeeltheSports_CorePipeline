@@ -237,7 +237,7 @@ def figure_a(picked, path):
             ax.text(0.5 * (SLICE_POST_S - SLICE_PRE_S) * 1000, top_y * 0.90,
                     "150 ms given to the model", color=MUTED, fontsize=10.5,
                     ha="center", va="top", style="italic")
-    fig.text(0.045, 0.925, "What the onset detector sees",
+    fig.text(0.045, 0.925, "What the annotator sees",
              color=INK, fontsize=21, fontweight="bold")
     fig.text(0.045, 0.845,
              f"Typical examples of each class. The envelope reduces an event to "
@@ -285,7 +285,7 @@ def figure_b(picked, path):
     print(f"  wrote {path}")
 
 
-def figure_ab(picked, path):
+def figure_ab(picked, path, show_mel=True, show_slice=True):
     """Both views, one column per sound, so the argument fits on one slide.
 
     figure_a and figure_b are the same four events in the same order; split
@@ -294,9 +294,11 @@ def figure_ab(picked, path):
     the envelope the detector reduces the event to, and the log-mel the model
     is given instead.
     """
-    fig = plt.figure(figsize=(15, 5.0), facecolor=BG)
-    gs = gridspec.GridSpec(2, len(CLASSES), wspace=0.15, hspace=0.40,
-                           left=0.062, right=0.988, top=0.90, bottom=0.10)
+    rows = 2 if show_mel else 1
+    fig = plt.figure(figsize=(15, 5.0 if show_mel else 3.1), facecolor=BG)
+    gs = gridspec.GridSpec(rows, len(CLASSES), wspace=0.15, hspace=0.40,
+                           left=0.062, right=0.988,
+                           top=0.90, bottom=0.10 if show_mel else 0.17)
     top_y = 1.32 * max(e["peak"] for e in picked.values())
     for k, c in enumerate(CLASSES):
         e = picked.get(c)
@@ -309,8 +311,9 @@ def figure_ab(picked, path):
             et = librosa.frames_to_time(np.arange(len(env)), sr=sr, hop_length=A_HOP)
             m = (et >= e["peak_t"] - VIEW_S) & (et <= e["peak_t"] + VIEW_S)
             x = (et[m] - e["peak_t"]) * 1000.0
-            ax.axvspan(-SLICE_PRE_S * 1000, SLICE_POST_S * 1000,
-                       color=INK, alpha=0.04, linewidth=0)
+            if show_slice:
+                ax.axvspan(-SLICE_PRE_S * 1000, SLICE_POST_S * 1000,
+                           color=INK, alpha=0.04, linewidth=0)
             ax.fill_between(x, 0, env[m], color=COLOURS[c], alpha=0.20, linewidth=0)
             ax.plot(x, env[m], color=COLOURS[c], linewidth=2.1)
             ax.set_ylim(0, top_y)
@@ -321,8 +324,11 @@ def figure_ab(picked, path):
         ax.set_title(TITLES[k], color=INK, fontsize=17, pad=10,
                      fontweight="semibold", loc="left")
         if k == 0:
-            ax.set_ylabel("the detector\nreduces it to this", color=MUTED,
+            ax.set_ylabel("the annotator\nreduces it to this", color=MUTED,
                           fontsize=12, labelpad=12, linespacing=1.5)
+        if not show_mel:
+            ax.set_xlabel("ms", color=MUTED, fontsize=10.5, labelpad=1)
+            continue
 
         ax = fig.add_subplot(gs[1, k])
         style_axis(ax)
@@ -344,22 +350,26 @@ def figure_ab(picked, path):
     print(f"  wrote {path}")
 
 
-# A stretch of real play for the "some of these are strikes" slide, chosen by
-# search for a window carrying all five classes. ball_bounce is the
-# constraint: 13 examples in the whole corpus, so windows holding one
-# alongside the other four are rare, and this is the only one.
-TIMELINE_VIDEO = "Carlos Alcaraz"
-TIMELINE_T0 = 159.0
-TIMELINE_WIN = 16.0
+# A stretch of real play for the threshold pair. Chosen by search for a window
+# that carries all five classes AND holds racket hits in the band between the
+# two thresholds, since those hits are the whole argument: lost at 0.30, caught
+# at 0.12. Only Kyrgios has windows satisfying both, which costs a few
+# unadjudicated candidates -- that file is 10% reviewed.
+TIMELINE_VIDEO = "Nick Kyrgios"
+TIMELINE_T0 = 70.0
+TIMELINE_WIN = 18.0
 TIMELINE_TOL = 0.12        # human timestamps drift from the peak they describe
 
 
-def figure_c_timeline(path):
-    """Twelve seconds of a rally, every detected spike coloured by what it is.
+def figure_c_timeline(path, fire_thr=0.12, show_cnn=True):
+    """A rally, with every spike the annotator fires on at `fire_thr`.
 
-    The four-example figure shows the classes are separable. This shows the
-    problem they cause: the detector fires on all of them, and only some are
-    racket hits.
+    Both figures draw every candidate the annotator finds at the low threshold,
+    coloured by what it turned out to be, so the two slides differ only in
+    where the bar sits. On the traditional figure the hits that fall below that
+    bar are ringed: they are still on screen, still real, and still missed.
+    Drawing them rather than dropping them is the point, since a marker that is
+    absent cannot be seen to be lost.
     """
     from matplotlib.lines import Line2D
     import analyzer
@@ -370,46 +380,81 @@ def figure_c_timeline(path):
     y, sr = load_audio(v["media"], sr=A_SR)
     env, _ = compute_envelope(y, sr)
     et = librosa.frames_to_time(np.arange(len(env)), sr=sr, hop_length=A_HOP)
-    peaks, _, _, _ = analyzer.detect_onsets(y, sr, A_HOP, 0.12, 0.08, 1000.0, 10000.0)
+
+    T0, WIN = TIMELINE_T0, TIMELINE_WIN
+    def onsets(thr):
+        pk, _, _, _ = analyzer.detect_onsets(y, sr, A_HOP, thr, 0.08, 1000.0, 10000.0)
+        return [t for t in pk if T0 <= t < T0 + WIN]
+    # every candidate is drawn on both figures; fire_thr only decides which of
+    # them count as caught, and therefore which hits get ringed as lost
+    allpk = onsets(0.12)
+    fired = onsets(fire_thr)
 
     lt = np.array([t for t, _ in ann])
     ll = [l for _, l in ann]
-
     def label_at(t):
         i = int(np.argmin(np.abs(lt - t)))
         return ll[i] if abs(lt[i] - t) <= TIMELINE_TOL else None
 
-    T0, WIN = TIMELINE_T0, TIMELINE_WIN
+    m = (et >= T0) & (et <= T0 + WIN)
+    x, e = et[m] - T0, env[m] / env.max()
+
+    def height(t):
+        return e[int(np.argmin(np.abs(x - (t - T0))))]
+
+    # "Caught" is decided by the line the figure draws, not by peak_pick, whose
+    # delta is measured against a local average. The two disagree often enough
+    # that markers would sit below the bar and still be counted as found, which
+    # reads as a bug. The line is the claim the slide makes, so the line rules.
+    # Counted over the peaks actually drawn, not over the annotation times, so
+    # every ring lands exactly on a marker the audience can see. Basing it on
+    # annotations instead put rings a few milliseconds off their dots.
+    hit_peaks = [t for t in allpk if label_at(t) == "racket_hit"]
+    truth = hit_peaks
+    caught = [t for t in hit_peaks if height(t) >= fire_thr]
+    missed = [t for t in hit_peaks if height(t) < fire_thr]
+    others = [t for t in allpk
+              if label_at(t) != "racket_hit" and height(t) >= fire_thr]
+
     fig = plt.figure(figsize=(15, 5.4), facecolor=BG)
     ax = fig.add_axes([0.135, 0.19, 0.85, 0.72])
     style_axis(ax)
-
-    m = (et >= T0) & (et <= T0 + WIN)
-    # detect_onsets scales by the whole file's maximum, so the threshold
-    # lines below are only in the right place if this matches it
-    x, e = et[m] - T0, env[m] / env.max()
     w = y[int(T0 * sr):int((T0 + WIN) * sr)]
     wx = np.linspace(0, WIN, len(w))
     wn = np.abs(w) / np.abs(w).max() * 0.16 * (env[m].max() / env.max())
     ax.fill_between(wx, -wn, wn, color=MUTED, alpha=0.13, linewidth=0)
     ax.plot(x, e, color=INK, linewidth=1.5, alpha=0.85)
 
-    for thr, lab, col in ((0.12, "labelling  0.12", "#5CC9FF"),
-                          (0.30, "playback  0.30", "#FFB43D")):
+    lines = [(0.30, "traditional  0.30", "#4ADEA8")]
+    if show_cnn:
+        lines.insert(0, (0.12, "CNN  0.12", "#5CC9FF"))
+    for thr, lab, col in lines:
         ax.axhline(thr, color=col, linewidth=1.2, linestyle=(0, (6, 5)), alpha=0.75)
         ax.text(-0.012, thr, lab, color=col, fontsize=12.5, ha="right",
-                va="center", family="monospace",
-                transform=ax.get_yaxis_transform())
+                va="center", family="monospace", transform=ax.get_yaxis_transform())
 
-    for t in peaks:
-        if not (T0 <= t < T0 + WIN):
-            continue
+    def at(t):
+        return t - T0, height(t)
+
+    for t in allpk:
         c = COLOURS.get(label_at(t), "#5A6675")
-        xv = t - T0
-        j = int(np.argmin(np.abs(x - xv)))
-        ax.plot([xv, xv], [0, e[j]], color=c, linewidth=1.4, alpha=0.55)
-        ax.plot([xv], [e[j]], marker="o", markersize=9, color=c,
+        xv, yv = at(t)
+        ax.plot([xv, xv], [0, yv], color=c, linewidth=1.4, alpha=0.55)
+        ax.plot([xv], [yv], marker="o", markersize=9, color=c,
                 markeredgecolor=BG, markeredgewidth=1.6, zorder=5)
+    for h in missed:
+        xv, yv = at(h)
+        ax.plot([xv, xv], [0, yv], color=COLOURS["racket_hit"], linewidth=1.2,
+                alpha=0.30, linestyle=(0, (2, 3)))
+        ax.plot([xv], [yv], marker="o", markersize=11, markerfacecolor="none",
+                markeredgecolor=COLOURS["racket_hit"], markeredgewidth=2.2, zorder=6)
+
+    other_word = "other sound" if len(others) == 1 else "other sounds"
+    ax.text(0.012, 0.97,
+            f"{len(caught)} of {len(truth)} racket hits" +
+            f"   ·   {len(others)} {other_word}",
+            transform=ax.transAxes, ha="left", va="top", color=INK,
+            fontsize=17, fontweight="semibold")
 
     ax.set_xlim(0, WIN)
     ax.set_ylim(-0.06 * e.max(), 1.10 * e.max())
@@ -418,10 +463,15 @@ def figure_c_timeline(path):
     ax.set_xticklabels([f"{i}s" for i in range(0, int(WIN) + 1, 2)])
     ax.tick_params(colors=MUTED, labelsize=11)
 
-    present = {label_at(t) for t in peaks if T0 <= t < T0 + WIN}
+    present = {label_at(t) for t in allpk}
     handles = [Line2D([], [], marker="o", linestyle="", markersize=9,
                       markerfacecolor=COLOURS[c], markeredgecolor=BG, label=t)
                for c, t in zip(CLASSES, TITLES) if c in present]
+    if missed:
+        handles.append(Line2D([], [], marker="o", linestyle="", markersize=10,
+                              markerfacecolor="none",
+                              markeredgecolor=COLOURS["racket_hit"],
+                              markeredgewidth=2, label="hit it walked past"))
     leg = ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, -0.14),
                     ncol=len(handles), frameon=False, fontsize=12.5,
                     handletextpad=0.4, columnspacing=1.8)
@@ -429,7 +479,7 @@ def figure_c_timeline(path):
         t.set_color(MUTED)
     fig.savefig(path, dpi=190, facecolor=BG)
     plt.close(fig)
-    print(f"  wrote {path}")
+    print(f"  wrote {path}  ({len(caught)}/{len(truth)} hits, {len(others)} other)")
 
 
 def main():
@@ -452,7 +502,13 @@ def main():
     figure_a(picked, os.path.join(OUT_FIG, "fig_a_envelopes.png"))
     figure_b(picked, os.path.join(OUT_FIG, "fig_b_mel.png"))
     figure_ab(picked, os.path.join(OUT_FIG, "fig_ab_combined.png"))
+    # envelopes only, and without the 150 ms crop shading: what the traditional
+    # front end sees, before the model is introduced at all
+    figure_ab(picked, os.path.join(OUT_FIG, "fig_a_envelopes_only.png"),
+              show_mel=False, show_slice=False)
     figure_c_timeline(os.path.join(OUT_FIG, "fig_c_timeline.png"))
+    figure_c_timeline(os.path.join(OUT_FIG, "fig_c_timeline_trad.png"),
+                      fire_thr=0.30, show_cnn=False)
     return 0
 
 
