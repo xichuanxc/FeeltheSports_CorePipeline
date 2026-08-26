@@ -146,6 +146,13 @@ dl.spec dd em{font-style:normal;color:var(--muted);font-size:19px;}
    to stays sharp, so the slide shows what was measured without the number.
    Delete the class to reveal. */
 .veil{filter:blur(14px);opacity:.7;user-select:none;}
+.q{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:12px;}
+.q li{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font-size:17.5px;line-height:1.35;color:var(--muted);}
+.q b{font-family:var(--mono);font-size:20px;color:var(--ink);flex:none;}
+.q b.veil{filter:blur(9px);}
+.pooled{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--line);font-family:var(--mono);font-size:14px;letter-spacing:.06em;color:var(--faint);}
+.pooled b{color:var(--muted);}
+.pooled b.veil{filter:blur(7px);}
 .stat .s.veil{filter:blur(7px);}
 .stat .n.good{color:var(--good);}
 .stat .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);}
@@ -618,41 +625,41 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </ul>
   </div>
 </section>
-<section class="slide vc" data-act="5" data-time="1:30">
-  <div class="title-rule" style="margin:0 0 24px;"></div>
-  <h2 style="font-size:52px;">What we measured</h2>
-  <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
-    <div class="stat">
-      <span class="n veil">0.84</span>
-      <span class="k">Accuracy &middot; five classes</span>
-      <span class="s veil">on a match never trained on</span>
+<section class="slide vc" data-act="5" data-time="1:20">
+  <div class="eyebrow"><i class="dot"></i>The answer</div>
+  <h2>What we measured</h2>
+  <div class="cols" style="grid-template-columns:repeat(3,1fr);align-items:stretch;gap:26px;">
+    <div class="panel" style="border-left:3px solid var(--sky);">
+      <span class="tag" style="color:var(--sky);">Did the system work?</span>
+      <ul class="q">
+        <li><span>Vibrations clearly noticeable</span><b class="veil">4.67</b></li>
+        <li><span>Fitted what I saw and heard</span><b class="veil">4.67</b></li>
+        <li><span>Synchronised with the hits</span><b class="veil">4.67</b></li>
+      </ul>
+      <p class="pooled">pooled <b class="veil">4.67</b> &middot; sd <b class="veil">0.53</b></p>
     </div>
-    <div class="stat">
-      <span class="n sky veil">4.67</span>
-      <span class="k">of 5 &middot; noticed, fits, in time</span>
-      <span class="s veil">nobody doubted the buzzes land in the right place</span>
-    </div>
-    <div class="stat">
-      <span class="n good veil">3.36</span>
-      <span class="k">of 5 &middot; enjoyed, engaging, would install</span>
-      <span class="s veil">six would install it, five would not</span>
-    </div>
-  </div>
-  <div class="cols c52">
-    <div class="panel" style="border-left:3px solid var(--amber);">
-      <span class="tag">The answer that explains the split</span>
-      <p class="veil">&ldquo;When I&rsquo;m not focused it helps me focus. When
-      I&rsquo;m focused it distracts me from watching.&rdquo;</p>
-    </div>
-    <div class="stack">
-      <span class="tag">Still open</span>
-      <ul class="b">
-        <li>Buzz strength is relative to each video.</li>
-        <li>Highlights, not live &mdash; and not yet running live either.</li>
-        <li>A bigger study, with more people.</li>
+    <div class="panel" style="border-left:3px solid var(--violet);">
+      <span class="tag" style="color:var(--violet);">Did it change the watching?</span>
+      <ul class="q">
+        <li><span>Helped me follow the match</span><b class="veil">3.75</b></li>
+        <li><span>Enough variation between hits</span><b class="veil">3.42</b></li>
+        <li><span>Distracted me <em style="font-style:normal;color:var(--faint);">(lower is better)</em></span><b class="veil">2.33</b></li>
       </ul>
     </div>
+    <div class="panel" style="border-left:3px solid var(--amber);">
+      <span class="tag" style="color:var(--amber);">Did they want it?</span>
+      <ul class="q">
+        <li><span>More engaging than without</span><b class="veil">3.92</b></li>
+        <li><span>Enjoyed it</span><b class="veil">3.08</b></li>
+        <li><span>Would install it</span><b class="veil">3.08</b></li>
+      </ul>
+      <p class="pooled">pooled <b class="veil">3.36</b> &middot; sd <b class="veil">1.32</b></p>
+    </div>
   </div>
+  <p style="margin-top:20px;font-size:18px;color:var(--faint);">Nine items,
+  five-point scale, twelve participants &middot; the model itself scores
+  <b class="veil" style="font-family:var(--mono);color:var(--muted);">0.84</b>
+  accuracy on a match it never trained on.</p>
 </section>
 <section class="slide" data-act="5" data-time="0:20">
   <div class="eyebrow"><i class="dot"></i>The answer</div>
