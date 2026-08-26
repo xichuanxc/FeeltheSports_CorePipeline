@@ -85,6 +85,7 @@ strong{color:var(--ink);font-weight:600;}
 
 /* --- title slide ----------------------------------------------------------- */
 #trace{position:absolute;inset:0;width:100%;height:100%;opacity:.5;}
+.qa{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
 .title-wrap{position:relative;z-index:1;margin-top:auto;margin-bottom:auto;}
 .title-rule{width:64px;height:3px;background:var(--amber);margin:0 0 34px;}
 .byline{
@@ -610,13 +611,10 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
       <img src="__ASSET:docs/figures/study_scene.jpg__" style="max-height:392px;object-fit:contain;" alt="A participant sitting on a sofa in a lab furnished like a living room, holding the phone, watching a tennis match on a television, questionnaires on the side table">
       <figcaption>A room furnished as a living room, the phone held rather than worn</figcaption>
     </figure>
-    <ul class="b" style="font-size:19px;">
+    <ul class="b" style="font-size:24px;gap:18px;">
       <li>Two clips: one <strong>with</strong> vibration, one <strong>without</strong>.</li>
-      <li>Order balanced across participants.</li>
-      <li><strong>Sound on</strong> in both, as anyone would actually watch.</li>
       <li>A questionnaire before, and a longer one after.</li>
-      <li>On a <strong>Samsung Galaxy A03</strong>, a budget phone, not a flagship.</li>
-      <li>Ethics approved; participants identified only by code.</li>
+      <li>On a budget phone, not a flagship.</li>
     </ul>
   </div>
 </section>
@@ -656,24 +654,40 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
     </div>
   </div>
 </section>
-<section class="slide" data-act="5" data-time="0:10">
-  <div class="title-wrap">
-    <div class="title-rule"></div>
-    <h1 style="font-size:76px;">Questions</h1>
-    <div class="callout" style="margin-top:34px;max-width:1000px;">
-      <span class="lbl">And an ask</span>
-      The next study needs more people. If you would sit on a sofa for ten
-      minutes and tell me how it felt, please come and find me.
-    </div>
-    <div class="byline" style="margin-top:30px;">
-      <span><b>Chuan Xi</b></span>
-      <span>University of Waikato</span>
-      <span class="mono">COMPX520 &middot; 2026</span>
+<section class="slide" data-act="5" data-time="0:20">
+  <div class="eyebrow"><i class="dot"></i>The answer</div>
+  <h2>Take part in the next one</h2>
+  <div class="cols" style="grid-template-columns:360px 1fr;align-items:stretch;gap:48px;">
+    <figure style="min-height:0;">
+      <img src="__ASSET:docs/figures/poster.png__" style="border-radius:3px;" alt="Recruitment poster: Watch a tennis video, now feel it too. One 30-minute session, two short clips, adults 18 plus, no tennis experience needed. Usability Lab G.1.12 at the University of Waikato, August to early September 2026. A QR code and contact emails for the researcher and supervisors.">
+    </figure>
+    <div class="stack" style="gap:22px;align-self:center;">
+      <div class="callout" style="font-size:23px;line-height:1.5;">
+        <span class="lbl">And an ask</span>
+        The next study needs more people. If you would sit on a sofa for ten
+        minutes and tell me how it felt, <strong>scan the code</strong> or come
+        and find me afterwards.
+      </div>
+      <div class="cols" style="grid-template-columns:1fr auto;gap:36px;align-items:center;flex:none;">
+        <ul class="b" style="font-size:22px;">
+          <li>One session, about 30 minutes.</li>
+          <li>Two short clips, one with vibration.</li>
+          <li>No tennis experience needed.</li>
+        </ul>
+        <div style="text-align:center;">
+          <img src="__ASSET:docs/figures/poster_qr.png__" style="width:210px;height:210px;display:block;border-radius:5px;" alt="QR code linking to the study sign-up form">
+          <span style="display:block;margin-top:10px;font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);">Scan to sign up</span>
+        </div>
+      </div>
+      <div class="byline" style="margin-top:2px;">
+        <span><b>Chuan Xi</b></span>
+        <span class="mono">cx68@students.waikato.ac.nz</span>
+      </div>
     </div>
   </div>
 </section>
-<section class="slide vc" data-act="6" data-time="0:00">
-  <div class="eyebrow"><i class="dot"></i>Appendix</div>
+<section class="slide vc" data-act="5" data-time="0:00">
+  <div class="eyebrow"><i class="dot"></i>References</div>
   <h2>References</h2>
   <div class="cols" style="grid-template-columns:repeat(3,1fr);align-items:stretch;gap:26px;">
     <div class="panel">
@@ -697,6 +711,13 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   </div>
   <p style="margin-top:20px;font-size:17px;color:var(--faint);">Full entries in
   the interim report bibliography.</p>
+</section>
+<section class="slide" data-act="6" data-time="0:10">
+  <div class="qa">
+    <div class="title-rule" style="margin:0 auto 30px;"></div>
+    <h1 style="font-size:104px;">Q&amp;A</h1>
+    <p class="lede" style="margin-top:22px;font-size:24px;">Thank you for listening.</p>
+  </div>
 </section>
 
 <!-- furniture -->
@@ -737,7 +758,7 @@ ul.ticks li b{color:var(--ink);font-weight:600;}
   addEventListener("resize", fit); fit();
 
   /* --- the rail is segmented by act, not by slide ------------------------- */
-  const ACTS = ["", "The question", "Annotation", "Finding the hits", "Playback", "The answer", "Appendix"];
+  const ACTS = ["", "The question", "Annotation", "Finding the hits", "Playback", "The answer", "Q&A"];
   const counts = {};
   slides.forEach(s => { const a = +s.dataset.act; counts[a] = (counts[a] || 0) + 1; });
   const segs = [];
