@@ -68,3 +68,6 @@ vision/
 # Checksum of the last built deck, used by build_slides.py to notice a
 # hand-edit of docs/slides.html before overwriting it.
 docs/.slides.build.json
+
+# Built PowerPoint export; regenerate with build_pptx.py
+docs/*.pptx

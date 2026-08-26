@@ -1,0 +1,419 @@
+<title>Feel the Sports Responses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap">
+<style>
+:root{
+  --ground:#EDF1F4; --surface:#FFFFFF; --sunk:#E3E9ED;
+  --ink:#161C24; --muted:#59ararara;
+  --muted:#59656F; --faint:#8894A0; --line:#D3DBE1;
+  --accent:#2C6257; --accent-soft:#DCE9E6;
+  --s1:#A24B3C; --s2:#D19585; --s3:#BFC5CC; --s4:#7BA8A0; --s5:#2C6257;
+  --warn:#B4703A;
+  --r:4px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#11161B; --surface:#19212A; --sunk:#141B22;
+    --ink:#E6ECF2; --muted:#9DAAB6; --faint:#71808D; --line:#2A343E;
+    --accent:#6FBFAE; --accent-soft:#1E2E2C;
+    --s1:#C4614F; --s2:#9A6357; --s3:#4A555F; --s4:#5C8F85; --s5:#6FBFAE;
+    --warn:#D08B4E;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#11161B; --surface:#19212A; --sunk:#141B22;
+  --ink:#E6ECF2; --muted:#9DAAB6; --faint:#71808D; --line:#2A343E;
+  --accent:#6FBFAE; --accent-soft:#1E2E2C;
+  --s1:#C4614F; --s2:#9A6357; --s3:#4A555F; --s4:#5C8F85; --s5:#6FBFAE;
+  --warn:#D08B4E;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px; margin:0 auto; padding:40px 28px 72px;}
+h1{
+  font-family:"IBM Plex Serif",Georgia,serif; font-weight:700;
+  font-size:clamp(28px,4vw,40px); line-height:1.12; margin:0 0 8px;
+  letter-spacing:-.01em; text-wrap:balance;
+}
+.sub{color:var(--muted); margin:0 0 4px; max-width:62ch;}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums;}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--faint); margin:0 0 10px;
+}
+header{border-bottom:1px solid var(--line); padding-bottom:26px; margin-bottom:26px;}
+.headline{display:flex; flex-wrap:wrap; gap:14px; margin-top:20px;}
+.stat{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  padding:12px 16px; min-width:150px; flex:1 1 150px;
+}
+.stat .n{font-family:"IBM Plex Mono",monospace; font-size:25px; font-weight:600;
+  font-variant-numeric:tabular-nums; display:block; line-height:1.1;}
+.stat .k{font-size:12px; color:var(--muted); display:block; margin-top:3px;}
+.controls{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  padding:16px 18px; margin-bottom:26px;
+}
+.ctl-row{display:flex; flex-wrap:wrap; gap:8px; align-items:center;}
+.ctl-row + .ctl-row{margin-top:14px; padding-top:14px; border-top:1px solid var(--line);}
+.ctl-label{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--faint); margin-right:6px; min-width:74px;
+}
+button.chip{
+  font:inherit; font-size:13.5px; cursor:pointer; color:var(--muted);
+  background:var(--sunk); border:1px solid var(--line); border-radius:100px;
+  padding:5px 13px; transition:background .13s,color .13s,border-color .13s;
+}
+button.chip:hover{color:var(--ink); border-color:var(--faint);}
+button.chip[aria-pressed="true"]{
+  background:var(--accent); border-color:var(--accent); color:var(--surface); font-weight:500;
+}
+:root[data-theme="dark"] button.chip[aria-pressed="true"],
+:root:not([data-theme="light"]) button.chip[aria-pressed="true"]{color:#11161B;}
+button.chip:focus-visible, tr.prow:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+section{margin-bottom:34px;}
+h2{
+  font-family:"IBM Plex Serif",Georgia,serif; font-size:19px; font-weight:600;
+  margin:0 0 3px; letter-spacing:-.005em;
+}
+.note{color:var(--faint); font-size:13px; margin:0 0 16px;}
+.grp{margin-bottom:22px;}
+.grp-h{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 9px;
+  padding-bottom:6px; border-bottom:1px solid var(--line);
+}
+.item{padding:9px 0;}
+.item + .item{border-top:1px dotted var(--line);}
+.item-h{display:flex; justify-content:space-between; align-items:baseline; gap:14px;}
+.item-name{font-size:14.5px;}
+.item-num{font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:600;
+  font-variant-numeric:tabular-nums; flex:none;}
+.bar{display:flex; height:19px; margin-top:6px; border-radius:2px; overflow:hidden;
+  background:var(--sunk);}
+.seg{transition:flex-grow .28s ease;}
+.seg[data-v="1"]{background:var(--s1);} .seg[data-v="2"]{background:var(--s2);}
+.seg[data-v="3"]{background:var(--s3);} .seg[data-v="4"]{background:var(--s4);}
+.seg[data-v="5"]{background:var(--s5);}
+.splitrow{display:flex; align-items:center; gap:12px; margin-top:7px;}
+.splitrow .lab{font-size:12.5px; color:var(--muted); min-width:130px; flex:none;}
+.splitrow .bar{margin-top:0; flex:1;}
+.splitrow .num{font-family:"IBM Plex Mono",monospace; font-size:12.5px;
+  font-variant-numeric:tabular-nums; min-width:64px; text-align:right; flex:none; color:var(--muted);}
+.legend{display:flex; flex-wrap:wrap; gap:14px; margin:14px 0 0; font-size:12px; color:var(--muted);}
+.legend span{display:flex; align-items:center; gap:6px;}
+.sw{width:11px; height:11px; border-radius:2px; display:inline-block;}
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--r); background:var(--surface);}
+table{border-collapse:collapse; width:100%; font-size:13px;}
+th,td{padding:7px 9px; text-align:left; white-space:nowrap;}
+thead th{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--faint); font-weight:500;
+  border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--surface);
+}
+tbody tr{border-top:1px solid var(--line); cursor:pointer;}
+tbody tr:hover{background:var(--sunk);}
+tbody tr.sel{background:var(--accent-soft);}
+td.v{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+  text-align:center; width:34px;}
+.cell{display:inline-block; width:22px; height:22px; line-height:22px; border-radius:3px;
+  text-align:center; font-size:12px; color:var(--surface);}
+:root[data-theme="dark"] .cell, :root:not([data-theme="light"]) .cell{color:#11161B;}
+.flagdot{color:var(--warn); font-size:11px;}
+.ft{background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  padding:18px 20px;}
+.ft h3{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 12px;}
+.q{margin:0 0 14px;}
+.q:last-child{margin-bottom:0;}
+.q dt{font-size:12px; color:var(--faint); margin-bottom:2px;}
+.q dd{margin:0; font-size:14.5px;}
+.empty{color:var(--faint); font-style:italic;}
+footer{margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
+  font-size:12.5px; color:var(--faint);}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+@media (max-width:640px){
+  .ctl-label{min-width:100%;} .splitrow .lab{min-width:96px;}
+}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">Feel the Sports &middot; post-study questionnaire</p>
+  <h1>What fourteen people said</h1>
+  <p class="sub">Every response from the smartphone-haptics viewing study, with the
+  nine-item battery split any way you like. Nobody disputed that the buzzes landed
+  in the right place; whether they wanted them is where the group comes apart.</p>
+  <div class="headline" id="headline"></div>
+</header>
+
+<div class="controls">
+  <div class="ctl-row">
+    <span class="ctl-label">Split by</span>
+    <span id="splitChips"></span>
+  </div>
+  <div class="ctl-row">
+    <span class="ctl-label">Showing</span>
+    <span id="filterChips"></span>
+  </div>
+</div>
+
+<section>
+  <h2>The nine items</h2>
+  <p class="note" id="itemsNote"></p>
+  <div id="items"></div>
+  <div class="legend" id="legend"></div>
+</section>
+
+<section>
+  <h2>Every participant</h2>
+  <p class="note">One row each, nine answers. Select a row to read what they wrote.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr id="thead"></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>In their own words</h2>
+  <p class="note" id="ftNote">Select a participant above.</p>
+  <div class="ft" id="ft"></div>
+</section>
+
+<footer>
+  <span class="mono">n = 14</span> &middot; P07 was scanned but never transcribed and is
+  excluded. Two participants are flagged on &ldquo;enjoyed it&rdquo;: they marked
+  strongly disagree while also marking much more engaging and writing positively, so
+  that one answer may be a mis-mark. Items 10 and 11 use their own wording &mdash;
+  much less to much more engaging, and definitely not to definitely yes.
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const D = [{"participant":"P01","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"rarely","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"very","sequence":"no_vib_first","q3_enjoyed":"3","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"3","q9_variation":"4","q10_engagement":"3","q11_install":"2","flag":"","q12":"Not a big difference.","q13":"It felt nature. no distracting.","q14":"A dummy racked would work better for me, and I prefer only feeling the vibration when one athlete hit the tennis."},{"participant":"P02","age":"55+","gender":"M","watch_sport":"a few times a year","phone_while_watching":"never","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"very","sequence":"no_vib_first","q3_enjoyed":"1","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"4","q7_synchronised":"4","q8_distracted":"1","q9_variation":"1","q10_engagement":"5","q11_install":"4","flag":"q3_suspect","q12":"I concentrated more. I had fewer distractions. But I noticed a slight mismatch in the timing","q13":"Not natural. But fun","q14":"Synchronization can distort [transcription uncertain]. I think one time it missed a shot"},{"participant":"P03","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"moderately","sequence":"no_vib_first","q3_enjoyed":"5","q4_helped_follow":"5","q5_noticeable":"4","q6_fit":"5","q7_synchronised":"5","q8_distracted":"1","q9_variation":"4","q10_engagement":"5","q11_install":"5","flag":"","q12":"Yes, the vibration can drag me into the exciting sports, can help me more concentrate. And the application can help me have the feel of my hand, it seems I'm in this match, it's more reality, more interesting.","q13":"The vibration feel natural, not distracting. It give me feeling of myself match.","q14":"If the vibration's strength more stronger, it would be have more exciting feeling. The power of vibration can help viewer have more exciting feeling."},{"participant":"P04","age":"35-44","gender":"M","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"slightly","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"5","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"3","q9_variation":"4","q10_engagement":"5","q11_install":"4","flag":"","q12":"Much more engagement","q13":"Some time distracting. I may expect some response from the app","q14":"the overall experience is better. It is better to produce higher level and longer time span of the vibration when the hit is stronger."},{"participant":"P05","age":"25-34","gender":"M","watch_sport":"weekly","phone_while_watching":"sometimes","watch_tennis":"never","play_tennis":"never","vib_familiar":"moderately","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"3","q5_noticeable":"5","q6_fit":"4","q7_synchronised":"5","q8_distracted":"1","q9_variation":"3","q10_engagement":"4","q11_install":"3","flag":"","q12":"Yes, a little. I can feel that I am in the tennis game.","q13":"Natural. Most of time it match the hit of the ball.","q14":"It is a mobile app, so how to ensure during the video playing time avoid to others message or apps' notification vibration?"},{"participant":"P06","age":"35-44","gender":"M","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"moderately","sequence":"no_vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"4","q7_synchronised":"5","q8_distracted":"2","q9_variation":"2","q10_engagement":"4","q11_install":"2","flag":"","q12":"More engaging","q13":"Natural, difference between gentle hits and smash is a bit too small","q14":"phone is too big to hold."},{"participant":"P08","age":"35-44","gender":"M","watch_sport":"monthly","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"not_at_all","sequence":"vib_first","q3_enjoyed":"2","q4_helped_follow":"2","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"4","q8_distracted":"3","q9_variation":"4","q10_engagement":"3","q11_install":"1","flag":"","q12":"No. Because I prefer the visual experience.","q13":"Yes. Because the vibration feedback just reflected the hitting voice and didn't contain other information in the game.","q14":"No."},{"participant":"P09","age":"25-34","gender":"M","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"never","play_tennis":"never","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"1","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"1","q9_variation":"4","q10_engagement":"5","q11_install":"5","flag":"q3_suspect","q12":"Definitely YES. I feel a part of the game when I watched the video with vibration.","q13":"feels nature. It makes me feels like I am the on who play the game.","q14":"It would be even better if the feedback on the hitting force could be provided."},{"participant":"P10","age":"25-34","gender":"M","watch_sport":"a few times a year","phone_while_watching":"often","watch_tennis":"never","play_tennis":"never","vib_familiar":"slightly","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"5","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"4","q8_distracted":"2","q9_variation":"4","q10_engagement":"4","q11_install":"4","flag":"","q12":"Yes, it helped me to find out easily whether they get the ball.","q13":"Natural. The feedback is slight.","q14":"It'll be better if it report the result by different vibration"},{"participant":"P11","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"never","watch_tennis":"never","play_tennis":"never","vib_familiar":"slightly","sequence":"no_vib_first","q3_enjoyed":"2","q4_helped_follow":"2","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"5","q9_variation":"4","q10_engagement":"1","q11_install":"1","flag":"","q12":"I just wait the next vibration. and less focus on what the match displayed.","q13":"distracting. my feeling just focus on my hand and I forget the content I watched (my eyes can't focusing at all)","q14":"I think I can not deal with (combinate) these two part of my body feeling at the same time without training."},{"participant":"P13","age":"18-24","gender":"F","watch_sport":"a few times a year","phone_while_watching":"often","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"3","q6_fit":"5","q7_synchronised":"5","q8_distracted":"2","q9_variation":"4","q10_engagement":"4","q11_install":"4","flag":"","q12":"It feels like playing by ourselves. Feels like I'm also holding the racket, and I will have the urge to swing my hands along.","q13":"It's natural. I use the strongest mode already, but it's still not too strong because the vibration while I'm actually playing tennis is even stronger.","q14":"If the vibration could be even stronger, I would like it even more."},{"participant":"P14","age":"45-54","gender":"M","watch_sport":"monthly","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"slightly","sequence":"no_vib_first","q3_enjoyed":"3","q4_helped_follow":"3","q5_noticeable":"4","q6_fit":"4","q7_synchronised":"4","q8_distracted":"4","q9_variation":"3","q10_engagement":"4","q11_install":"2","flag":"","q12":"when I'm not focused vb helps me focused but when I'm focused vb distract me from watching  [\"vb\" = vibration]","q13":"half and half","q14":"vb has a limitation to express action because it moves for only ball touch. If it has different sequence could help  [transcription uncertain]"},{"participant":"P17","age":"35-44","gender":"M","watch_sport":"a few times a year","phone_while_watching":"often","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"4","q6_fit":"4","q7_synchronised":"4","q8_distracted":"2","q9_variation":"5","q10_engagement":"5","q11_install":"5","flag":"","q12":"I was more engaged","q13":"Initially I thought it would be distracting but I was surprised how engaged I was. I'm unsure if I would use it for watching every sporting event, however it would be interesting to know over an extended period of time","q14":"The vibration feedback was in sync with what I was viewing."},{"participant":"P18","age":"18-24","gender":"F","watch_sport":"a few times a year","phone_while_watching":"never","watch_tennis":"never","play_tennis":"never","vib_familiar":"slightly","sequence":"no_vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"4","q8_distracted":"3","q9_variation":"4","q10_engagement":"4","q11_install":"4","flag":"","q12":"The game's points felt more noticeable with the haptic feedback and I got to focus more on the game rather than whether they hit the ball or not.","q13":"It was unusual at first but I got used to it at the end.","q14":"This haptic feedback was useful for when the sound was not very loud so I couldn't hear the points / the ball being hit."}];
+
+const ITEMS = [
+  ["q5_noticeable","Vibrations clearly noticeable","sys"],
+  ["q6_fit","Fitted what I saw and heard","sys"],
+  ["q7_synchronised","Synchronised with the hits","sys"],
+  ["q4_helped_follow","Helped me follow the match","watch"],
+  ["q9_variation","Enough variation between hits","watch"],
+  ["q8_distracted","Distracted me <em style=\"font-style:normal;color:var(--faint)\">(lower is better)</em>","watch"],
+  ["q10_engagement","More engaging than without","want"],
+  ["q11_install","Would install it","want"],
+  ["q3_enjoyed","Enjoyed it","want"]
+];
+const GROUPS = [
+  ["sys","Did the system work?"],
+  ["watch","Did it change the watching?"],
+  ["want","Did they want it?"]
+];
+const DIMS = [
+  ["none","Everyone"],
+  ["sequence","Order seen"],
+  ["gender","Gender"],
+  ["age","Age"],
+  ["watch_tennis","Watches tennis"],
+  ["play_tennis","Plays tennis"],
+  ["vib_familiar","Haptics familiarity"],
+  ["phone_while_watching","Phone while watching"]
+];
+const PRETTY = {
+  no_vib_first:"No vibration first", vib_first:"Vibration first",
+  F:"Female", M:"Male", not_at_all:"Not at all", never:"Never",
+  occasionally:"Occasionally", slightly:"Slightly", moderately:"Moderately",
+  very:"Very", rarely:"Rarely", sometimes:"Sometimes", often:"Often",
+  "a few times a year":"A few times a year", monthly:"Monthly", weekly:"Weekly"
+};
+const pretty = v => PRETTY[v] || v;
+
+let split = "none";
+let filter = null;          // {dim, val}
+let selected = null;
+
+const mean = a => a.length ? a.reduce((s,x)=>s+x,0)/a.length : 0;
+// sample sd (n-1), matching user_study.py's std(ddof=1) so the figures here
+// are the same ones the write-up and the deck quote
+const sd = a => { if(a.length<2) return 0; const m=mean(a);
+  return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/(a.length-1)); };
+const vals = (rows,k) => rows.map(r=>+r[k]);
+
+function visible(){
+  return filter ? D.filter(r => r[filter.dim] === filter.val) : D;
+}
+function poolOf(rows, keys){
+  return keys.flatMap(k => vals(rows,k));
+}
+
+function barHTML(rows,k){
+  const c=[0,0,0,0,0,0];
+  rows.forEach(r=>c[+r[k]]++);
+  const n=rows.length||1;
+  let h='<div class="bar" role="img" aria-label="';
+  h+=[1,2,3,4,5].map(v=>c[v]+" answered "+v).join(", ")+'">';
+  for(let v=1;v<=5;v++){
+    h+='<div class="seg" data-v="'+v+'" style="flex-grow:'+c[v]+
+       ';flex-basis:0" title="'+c[v]+' of '+n+' answered '+v+'"></div>';
+  }
+  return h+'</div>';
+}
+
+function groupsFor(dim){
+  const seen=[];
+  D.forEach(r=>{ if(!seen.includes(r[dim])) seen.push(r[dim]); });
+  if(dim==="sequence") return ["vib_first","no_vib_first"].filter(v=>seen.includes(v));
+  if(dim==="age") return seen.slice().sort();
+  return seen.sort((a,b)=>
+    D.filter(r=>r[dim]===b).length - D.filter(r=>r[dim]===a).length);
+}
+
+function render(){
+  const rows = visible();
+
+  // headline
+  const sys = poolOf(rows,["q5_noticeable","q6_fit","q7_synchronised"]);
+  const want = poolOf(rows,["q3_enjoyed","q10_engagement","q11_install"]);
+  const inst = vals(rows,"q11_install");
+  document.getElementById("headline").innerHTML =
+    stat(rows.length, "participants shown") +
+    stat(mean(sys).toFixed(2), "system quality &middot; sd "+sd(sys).toFixed(2)) +
+    stat(mean(want).toFixed(2), "experience &middot; sd "+sd(want).toFixed(2)) +
+    stat(inst.filter(v=>v>=4).length+" / "+rows.length, "would install it");
+
+  // items
+  let html="";
+  GROUPS.forEach(([g,gname])=>{
+    html+='<div class="grp"><p class="grp-h">'+gname+'</p>';
+    ITEMS.filter(i=>i[2]===g).forEach(([k,name])=>{
+      const v=vals(rows,k);
+      html+='<div class="item"><div class="item-h"><span class="item-name">'+name+
+            '</span><span class="item-num">'+(v.length?mean(v).toFixed(2):"--")+'</span></div>';
+      if(split==="none"){
+        html+=barHTML(rows,k);
+      } else {
+        groupsFor(split).forEach(gv=>{
+          const sub=rows.filter(r=>r[split]===gv);
+          html+='<div class="splitrow"><span class="lab">'+pretty(gv)+'</span>'+
+                barHTML(sub,k)+'<span class="num">'+
+                (sub.length?mean(vals(sub,k)).toFixed(2):"--")+
+                ' <span style="color:var(--faint)">n'+sub.length+'</span></span></div>';
+        });
+      }
+      html+='</div>';
+    });
+    html+='</div>';
+  });
+  document.getElementById("items").innerHTML=html;
+  document.getElementById("itemsNote").textContent =
+    split==="none"
+      ? "Each bar is all fourteen answers, strongly disagree on the left."
+      : "Split by "+DIMS.find(d=>d[0]===split)[1].toLowerCase()+
+        ". Bars are that group's answers; the figure on the right is its mean.";
+
+  // table
+  document.getElementById("thead").innerHTML =
+    "<th>Who</th><th>Order</th>" +
+    ITEMS.map(([k,name])=>'<th title="'+name+'">'+k.split("_")[0].toUpperCase()+"</th>").join("") +
+    "<th>Age</th><th>Tennis</th><th>Haptics</th>";
+  document.getElementById("tbody").innerHTML = rows.map(r=>{
+    const cells = ITEMS.map(([k])=>{
+      const v=+r[k];
+      return '<td class="v"><span class="cell" data-v="'+v+
+             '" style="background:var(--s'+v+')">'+v+"</span></td>";
+    }).join("");
+    return '<tr class="prow'+(selected===r.participant?" sel":"")+
+      '" data-p="'+r.participant+'" tabindex="0">'+
+      "<td><strong>"+r.participant+"</strong>"+
+      (r.flag?' <span class="flagdot" title="'+r.flag+'">&#9679;</span>':"")+"</td>"+
+      "<td>"+(r.sequence==="vib_first"?"Vib first":"No vib first")+"</td>"+
+      cells+"<td>"+r.age+"</td><td>"+pretty(r.watch_tennis)+
+      "</td><td>"+pretty(r.vib_familiar)+"</td></tr>";
+  }).join("");
+  document.querySelectorAll("tr.prow").forEach(tr=>{
+    const pick=()=>{ selected = selected===tr.dataset.p ? null : tr.dataset.p; render(); };
+    tr.addEventListener("click",pick);
+    tr.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();} });
+  });
+
+  renderFT();
+  renderChips();
+}
+
+function stat(n,k){
+  return '<div class="stat"><span class="n">'+n+'</span><span class="k">'+k+"</span></div>";
+}
+
+function renderFT(){
+  const box=document.getElementById("ft");
+  const note=document.getElementById("ftNote");
+  const rows=visible();
+  const r = selected ? D.find(x=>x.participant===selected) : null;
+  if(r){
+    note.textContent = "Participant "+r.participant+". Select the row again to close.";
+    box.innerHTML =
+      '<h3>'+r.participant+" &middot; "+(r.sequence==="vib_first"?"vibration first":"no vibration first")+"</h3>"+
+      q("Did the vibration change how you experienced the match?", r.q12)+
+      q("Natural or distracting?", r.q13)+
+      q("Anything else?", r.q14);
+  } else {
+    const withText = rows.filter(x=>x.q12||x.q13||x.q14);
+    note.textContent = withText.length+" of "+rows.length+
+      " shown wrote something. Select a row above for one person, or read them all here.";
+    box.innerHTML = withText.map(x=>
+      '<h3>'+x.participant+"</h3>"+
+      q("Changed the experience", x.q12)+q("Natural or distracting", x.q13)+
+      q("Anything else", x.q14)).join('<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">')
+      || '<p class="empty">Nobody in this selection wrote anything.</p>';
+  }
+}
+function q(label,text){
+  return '<dl class="q"><dt>'+label+"</dt><dd>"+
+    (text ? escapeHTML(text) : '<span class="empty">no answer</span>')+"</dd></dl>";
+}
+function escapeHTML(s){
+  return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+
+function renderChips(){
+  document.getElementById("splitChips").innerHTML = DIMS.map(([k,label])=>
+    '<button class="chip" data-split="'+k+'" aria-pressed="'+(split===k)+'">'+label+"</button>"
+  ).join(" ");
+  const opts = [['<button class="chip" data-clear="1" aria-pressed="'+(!filter)+'">Everyone</button>']];
+  if(split!=="none"){
+    groupsFor(split).forEach(v=>{
+      const n=D.filter(r=>r[split]===v).length;
+      opts.push('<button class="chip" data-dim="'+split+'" data-val="'+v+
+        '" aria-pressed="'+(filter&&filter.val===v)+'">'+pretty(v)+
+        ' <span style="opacity:.7">'+n+"</span></button>");
+    });
+  }
+  document.getElementById("filterChips").innerHTML = opts.flat().join(" ");
+  document.querySelectorAll("[data-split]").forEach(b=>b.onclick=()=>{
+    split=b.dataset.split; filter=null; render();
+  });
+  document.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>{ filter=null; render(); });
+  document.querySelectorAll("[data-dim]").forEach(b=>b.onclick=()=>{
+    filter = (filter&&filter.val===b.dataset.val) ? null
+           : {dim:b.dataset.dim, val:b.dataset.val};
+    selected=null; render();
+  });
+}
+
+document.getElementById("legend").innerHTML =
+  ["Strongly disagree","Disagree","Neutral","Agree","Strongly agree"].map((l,i)=>
+    '<span><i class="sw" style="background:var(--s'+(i+1)+')"></i>'+l+"</span>").join("");
+
+render();
+})();
+</script>
