@@ -192,7 +192,7 @@ how incoming notifications would be prevented from being mistaken for feedback
 - **n = 14**, convenience sample, no regular tennis viewers. Sufficient to
   establish that the experience response is divided; insufficient to explain
   who falls on which side.
-- Order is evenly counterbalanced (6/6), but the sample is far too small to
+- Order is evenly counterbalanced (7/7), but the sample is far too small to
   test the apparent order effect.
 - Single session, single device, short clips — nothing here speaks to whether
   the effect survives an hour of viewing, or novelty decay.
@@ -204,6 +204,23 @@ how incoming notifications would be prevented from being mistaken for feedback
   does not depend on it.
 - Participant codes P07 and P12 are absent from the returned forms; whether
   those sessions occurred should be confirmed against the recruitment log.
+
+- **Detector figures quoted beside this study are leave-one-match-out, and two
+  earlier leaks are corrected.** The study says nothing about the classifier —
+  the timelines participants felt came from the conventional front end — but the
+  two sets of numbers are often shown together, so what the model figures rest
+  on matters here. Every one is measured on a match excluded from both training
+  and epoch selection, split by video rather than by sample: two slices from one
+  rally are near-duplicates, and a sample-level split would report memorisation.
+  Two ways this previously flattered itself were found and fixed. Choosing the
+  training epoch by watching the test match overstated macro-F1 by **+0.102**,
+  corrected in `f81f88a` by holding out a third video to validate on. Measuring
+  the delivered-buzz figures on matches the model had trained on overstated
+  recall by about **+0.2**. A third, reporting a single run, is not a leak but
+  reads like one: individual folds move up to **0.10** between runs on nothing
+  but the seed or the compute backend, so figures are averaged over seven folds
+  and four seeds rather than taken from one run. `train.py`'s docstring carries
+  the reproducibility half of this.
 
 ## Conclusion
 
