@@ -67,12 +67,14 @@ PRE_ITEMS = [
 # A flag marks a form that argues with itself: one tick contradicts the rest of
 # the sheet. The row is kept as written and the contradiction is reported,
 # because deciding which tick was the slip would be us editing the data.
-FLAG_ITEM = {"q3_suspect": "Q3", "q10_suspect": "Q10"}
+FLAG_ITEM = {"q3_suspect": "Q3", "q10_suspect": "Q10", "q8_suspect": "Q8"}
 FLAG_NOTE = {
     "q3_suspect": "'strongly disagree' on q3 (enjoyed), against "
                   "'much more engaging' on q10 and positive free text",
     "q10_suspect": "'much less engaging' on q10, against "
                    "'strongly agree' on q3 (enjoyed) and warm free text",
+    "q8_suspect": "'agree' on q8 (distracted me), against free text saying "
+                  "in as many words that it was not distracting",
 }
 FLAG_MD = {
     "q3_suspect": "Recorded as *strongly disagree* for \u201cI enjoyed the "
@@ -81,6 +83,10 @@ FLAG_MD = {
     "q10_suspect": "Recorded as *much less engaging* on Q10, while also "
                    "selecting *strongly agree* on Q3 and writing that the "
                    "feedback was \u201cgreat\u201d and felt natural.",
+    "q8_suspect": "Recorded as *agree* for \u201cthe vibration feedback "
+                  "distracted me\u201d, while answering the free-text question "
+                  "on exactly that point with \u201cI felt it was good. and "
+                  "not distracting.\u201d",
 }
 
 
