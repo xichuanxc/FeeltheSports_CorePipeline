@@ -207,6 +207,36 @@ td.v{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
 .empty{color:var(--faint); font-style:italic;}
 footer{margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
   font-size:12.5px; color:var(--faint);}
+
+.dist{display:flex; flex-direction:column; gap:11px;}
+.drow{display:flex; align-items:center; gap:12px;}
+.drow .dlab{font-size:13px; color:var(--muted); min-width:150px; flex:none;}
+.dtrack{flex:1; display:flex; height:21px; border-radius:2px; overflow:hidden; background:var(--sunk);}
+.dseg{background:var(--accent-soft); border-right:1px solid var(--surface);
+  display:flex; align-items:center; justify-content:center; font-size:11px;
+  font-family:"IBM Plex Mono",monospace; color:var(--muted); cursor:pointer;
+  white-space:nowrap; overflow:hidden; transition:background .14s,color .14s;}
+.dseg:hover{background:var(--line); color:var(--ink);}
+.dseg.on{background:var(--accent); color:var(--surface);}
+:root[data-theme="dark"] .dseg.on, :root:not([data-theme="light"]) .dseg.on{color:#11161B;}
+.pred{display:flex; flex-direction:column; gap:16px;}
+.prow{border-top:1px dotted var(--line); padding-top:13px;}
+.prow:first-child{border-top:0; padding-top:0;}
+.pname{font-size:13.5px; margin:0 0 9px; display:flex; justify-content:space-between; gap:10px;}
+.pspread{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--faint);}
+.axis{position:relative; height:26px; margin:0 0 3px;}
+.axis .rail{position:absolute; left:0; right:0; top:12px; height:1px; background:var(--line);}
+.dot{position:absolute; top:6px; width:13px; height:13px; margin-left:-6.5px;
+  border-radius:50%; border:2px solid var(--surface);}
+.dot.sys{background:var(--s5);} .dot.exp{background:#B4703A;}
+.dot.thin{opacity:.4;}
+.axlab{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px; color:var(--faint); letter-spacing:.06em;}
+.pkey{display:flex; gap:16px; font-size:12px; color:var(--muted); margin-top:2px;}
+.finding{background:var(--accent-soft); border:1px solid var(--line); border-left:3px solid var(--accent);
+  border-radius:var(--r); padding:14px 16px; margin-top:16px; font-size:14px;}
+.finding strong{font-weight:600;}
+
 @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
 @media (max-width:640px){
   .ctl-label{min-width:100%;} .splitrow .lab{min-width:96px;}
@@ -216,7 +246,7 @@ footer{margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
 <div class="wrap">
 <header>
   <p class="eyebrow">Feel the Sports &middot; post-study questionnaire</p>
-  <h1>What fourteen people said</h1>
+  <h1>What sixteen people said</h1>
   <p class="sub">Every response from the smartphone-haptics viewing study, with the
   nine-item battery split any way you like. Nobody disputed that the buzzes landed
   in the right place; whether they wanted them is where the group comes apart.</p>
@@ -233,6 +263,23 @@ footer{margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
     <span id="filterChips"></span>
   </div>
 </div>
+
+<section>
+  <h2>Who they were</h2>
+  <p class="note">Answered before anyone saw a clip. Click a band to filter everything below.</p>
+  <div class="dist" id="dist"></div>
+</section>
+
+<section>
+  <h2>Does the background predict the response?</h2>
+  <p class="note" id="predNote"></p>
+  <div class="pred" id="pred"></div>
+  <div class="pkey">
+    <span><i class="sw" style="background:var(--s5)"></i>System quality &mdash; noticeable, fitted, synchronised</span>
+    <span><i class="sw" style="background:#B4703A"></i>Experience &mdash; enjoyed, engaging, would install</span>
+  </div>
+  <div class="finding" id="finding"></div>
+</section>
 
 <section>
   <h2>The nine items</h2>
@@ -259,18 +306,20 @@ footer{margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
 </section>
 
 <footer>
-  <span class="mono">n = 14</span> &middot; P07 was scanned but never transcribed and is
-  excluded. Two participants are flagged on &ldquo;enjoyed it&rdquo;: they marked
-  strongly disagree while also marking much more engaging and writing positively, so
-  that one answer may be a mis-mark. Items 10 and 11 use their own wording &mdash;
-  much less to much more engaging, and definitely not to definitely yes.
+  <span class="mono" id="footn"></span> &middot; every returned packet is transcribed.
+  Three participants are flagged where one tick argues with the rest
+  of their sheet: two marked strongly disagree on &ldquo;enjoyed it&rdquo; while also
+  marking much more engaging, and one marked much less engaging while also marking
+  strongly agree on &ldquo;enjoyed it&rdquo;. Each is kept as written. Items 10 and 11
+  use their own wording &mdash; much less to much more engaging, and definitely not to
+  definitely yes.
 </footer>
 </div>
 
 <script>
 (function(){
 "use strict";
-const D = [{"participant":"P01","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"rarely","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"very","sequence":"no_vib_first","q3_enjoyed":"3","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"3","q9_variation":"4","q10_engagement":"3","q11_install":"2","flag":"","q12":"Not a big difference.","q13":"It felt nature. no distracting.","q14":"A dummy racked would work better for me, and I prefer only feeling the vibration when one athlete hit the tennis."},{"participant":"P02","age":"55+","gender":"M","watch_sport":"a few times a year","phone_while_watching":"never","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"very","sequence":"no_vib_first","q3_enjoyed":"1","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"4","q7_synchronised":"4","q8_distracted":"1","q9_variation":"1","q10_engagement":"5","q11_install":"4","flag":"q3_suspect","q12":"I concentrated more. I had fewer distractions. But I noticed a slight mismatch in the timing","q13":"Not natural. But fun","q14":"Synchronization can distort [transcription uncertain]. I think one time it missed a shot"},{"participant":"P03","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"moderately","sequence":"no_vib_first","q3_enjoyed":"5","q4_helped_follow":"5","q5_noticeable":"4","q6_fit":"5","q7_synchronised":"5","q8_distracted":"1","q9_variation":"4","q10_engagement":"5","q11_install":"5","flag":"","q12":"Yes, the vibration can drag me into the exciting sports, can help me more concentrate. And the application can help me have the feel of my hand, it seems I'm in this match, it's more reality, more interesting.","q13":"The vibration feel natural, not distracting. It give me feeling of myself match.","q14":"If the vibration's strength more stronger, it would be have more exciting feeling. The power of vibration can help viewer have more exciting feeling."},{"participant":"P04","age":"35-44","gender":"M","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"slightly","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"5","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"3","q9_variation":"4","q10_engagement":"5","q11_install":"4","flag":"","q12":"Much more engagement","q13":"Some time distracting. I may expect some response from the app","q14":"the overall experience is better. It is better to produce higher level and longer time span of the vibration when the hit is stronger."},{"participant":"P05","age":"25-34","gender":"M","watch_sport":"weekly","phone_while_watching":"sometimes","watch_tennis":"never","play_tennis":"never","vib_familiar":"moderately","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"3","q5_noticeable":"5","q6_fit":"4","q7_synchronised":"5","q8_distracted":"1","q9_variation":"3","q10_engagement":"4","q11_install":"3","flag":"","q12":"Yes, a little. I can feel that I am in the tennis game.","q13":"Natural. Most of time it match the hit of the ball.","q14":"It is a mobile app, so how to ensure during the video playing time avoid to others message or apps' notification vibration?"},{"participant":"P06","age":"35-44","gender":"M","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"moderately","sequence":"no_vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"4","q7_synchronised":"5","q8_distracted":"2","q9_variation":"2","q10_engagement":"4","q11_install":"2","flag":"","q12":"More engaging","q13":"Natural, difference between gentle hits and smash is a bit too small","q14":"phone is too big to hold."},{"participant":"P08","age":"35-44","gender":"M","watch_sport":"monthly","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"not_at_all","sequence":"vib_first","q3_enjoyed":"2","q4_helped_follow":"2","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"4","q8_distracted":"3","q9_variation":"4","q10_engagement":"3","q11_install":"1","flag":"","q12":"No. Because I prefer the visual experience.","q13":"Yes. Because the vibration feedback just reflected the hitting voice and didn't contain other information in the game.","q14":"No."},{"participant":"P09","age":"25-34","gender":"M","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"never","play_tennis":"never","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"1","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"1","q9_variation":"4","q10_engagement":"5","q11_install":"5","flag":"q3_suspect","q12":"Definitely YES. I feel a part of the game when I watched the video with vibration.","q13":"feels nature. It makes me feels like I am the on who play the game.","q14":"It would be even better if the feedback on the hitting force could be provided."},{"participant":"P10","age":"25-34","gender":"M","watch_sport":"a few times a year","phone_while_watching":"often","watch_tennis":"never","play_tennis":"never","vib_familiar":"slightly","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"5","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"4","q8_distracted":"2","q9_variation":"4","q10_engagement":"4","q11_install":"4","flag":"","q12":"Yes, it helped me to find out easily whether they get the ball.","q13":"Natural. The feedback is slight.","q14":"It'll be better if it report the result by different vibration"},{"participant":"P11","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"never","watch_tennis":"never","play_tennis":"never","vib_familiar":"slightly","sequence":"no_vib_first","q3_enjoyed":"2","q4_helped_follow":"2","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"5","q9_variation":"4","q10_engagement":"1","q11_install":"1","flag":"","q12":"I just wait the next vibration. and less focus on what the match displayed.","q13":"distracting. my feeling just focus on my hand and I forget the content I watched (my eyes can't focusing at all)","q14":"I think I can not deal with (combinate) these two part of my body feeling at the same time without training."},{"participant":"P13","age":"18-24","gender":"F","watch_sport":"a few times a year","phone_while_watching":"often","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"3","q6_fit":"5","q7_synchronised":"5","q8_distracted":"2","q9_variation":"4","q10_engagement":"4","q11_install":"4","flag":"","q12":"It feels like playing by ourselves. Feels like I'm also holding the racket, and I will have the urge to swing my hands along.","q13":"It's natural. I use the strongest mode already, but it's still not too strong because the vibration while I'm actually playing tennis is even stronger.","q14":"If the vibration could be even stronger, I would like it even more."},{"participant":"P14","age":"45-54","gender":"M","watch_sport":"monthly","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"slightly","sequence":"no_vib_first","q3_enjoyed":"3","q4_helped_follow":"3","q5_noticeable":"4","q6_fit":"4","q7_synchronised":"4","q8_distracted":"4","q9_variation":"3","q10_engagement":"4","q11_install":"2","flag":"","q12":"when I'm not focused vb helps me focused but when I'm focused vb distract me from watching  [\"vb\" = vibration]","q13":"half and half","q14":"vb has a limitation to express action because it moves for only ball touch. If it has different sequence could help  [transcription uncertain]"},{"participant":"P17","age":"35-44","gender":"M","watch_sport":"a few times a year","phone_while_watching":"often","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"4","q6_fit":"4","q7_synchronised":"4","q8_distracted":"2","q9_variation":"5","q10_engagement":"5","q11_install":"5","flag":"","q12":"I was more engaged","q13":"Initially I thought it would be distracting but I was surprised how engaged I was. I'm unsure if I would use it for watching every sporting event, however it would be interesting to know over an extended period of time","q14":"The vibration feedback was in sync with what I was viewing."},{"participant":"P18","age":"18-24","gender":"F","watch_sport":"a few times a year","phone_while_watching":"never","watch_tennis":"never","play_tennis":"never","vib_familiar":"slightly","sequence":"no_vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"4","q8_distracted":"3","q9_variation":"4","q10_engagement":"4","q11_install":"4","flag":"","q12":"The game's points felt more noticeable with the haptic feedback and I got to focus more on the game rather than whether they hit the ball or not.","q13":"It was unusual at first but I got used to it at the end.","q14":"This haptic feedback was useful for when the sound was not very loud so I couldn't hear the points / the ball being hit."}];
+const D = [{"participant":"P01","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"rarely","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"very","sequence":"no_vib_first","q3_enjoyed":"3","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"3","q9_variation":"4","q10_engagement":"3","q11_install":"2","flag":"","q12":"Not a big difference.","q13":"It felt nature. no distracting.","q14":"A dummy racked would work better for me, and I prefer only feeling the vibration when one athlete hit the tennis."},{"participant":"P02","age":"55+","gender":"M","watch_sport":"a few times a year","phone_while_watching":"never","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"very","sequence":"no_vib_first","q3_enjoyed":"1","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"4","q7_synchronised":"4","q8_distracted":"1","q9_variation":"1","q10_engagement":"5","q11_install":"4","flag":"q3_suspect","q12":"I concentrated more. I had fewer distractions. But I noticed a slight mismatch in the timing","q13":"Not natural. But fun","q14":"Synchronization can distort [transcription uncertain]. I think one time it missed a shot"},{"participant":"P03","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"moderately","sequence":"no_vib_first","q3_enjoyed":"5","q4_helped_follow":"5","q5_noticeable":"4","q6_fit":"5","q7_synchronised":"5","q8_distracted":"1","q9_variation":"4","q10_engagement":"5","q11_install":"5","flag":"","q12":"Yes, the vibration can drag me into the exciting sports, can help me more concentrate. And the application can help me have the feel of my hand, it seems I'm in this match, it's more reality, more interesting.","q13":"The vibration feel natural, not distracting. It give me feeling of myself match.","q14":"If the vibration's strength more stronger, it would be have more exciting feeling. The power of vibration can help viewer have more exciting feeling."},{"participant":"P04","age":"35-44","gender":"M","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"slightly","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"5","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"3","q9_variation":"4","q10_engagement":"5","q11_install":"4","flag":"","q12":"Much more engagement","q13":"Some time distracting. I may expect some response from the app","q14":"the overall experience is better. It is better to produce higher level and longer time span of the vibration when the hit is stronger."},{"participant":"P05","age":"25-34","gender":"M","watch_sport":"weekly","phone_while_watching":"sometimes","watch_tennis":"never","play_tennis":"never","vib_familiar":"moderately","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"3","q5_noticeable":"5","q6_fit":"4","q7_synchronised":"5","q8_distracted":"1","q9_variation":"3","q10_engagement":"4","q11_install":"3","flag":"","q12":"Yes, a little. I can feel that I am in the tennis game.","q13":"Natural. Most of time it match the hit of the ball.","q14":"It is a mobile app, so how to ensure during the video playing time avoid to others message or apps' notification vibration?"},{"participant":"P06","age":"35-44","gender":"M","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"moderately","sequence":"no_vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"4","q7_synchronised":"5","q8_distracted":"2","q9_variation":"2","q10_engagement":"4","q11_install":"2","flag":"","q12":"More engaging","q13":"Natural, difference between gentle hits and smash is a bit too small","q14":"phone is too big to hold."},{"participant":"P07","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"rarely","watch_tennis":"never","play_tennis":"never","vib_familiar":"not_at_all","sequence":"vib_first","q3_enjoyed":"5","q4_helped_follow":"2","q5_noticeable":"4","q6_fit":"3","q7_synchronised":"3","q8_distracted":"2","q9_variation":"4","q10_engagement":"4","q11_install":"5","flag":"","q12":"The clip with vibration gave me the feeling of being a part of a game rather than only a viewer","q13":"The vibration felt natural and I sensed the game better.","q14":"I guess, if the vibration matches more precisely with some movements like scoring a goal, or hitting the racket harshly from the competitor side, it would be more effective like you are riding on a roller coaster and when it goes up or down fast, you feel something in your heart. In some exciting moments of the game feeling the vibration would be enjoyable and exciting."},{"participant":"P08","age":"35-44","gender":"M","watch_sport":"monthly","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"not_at_all","sequence":"vib_first","q3_enjoyed":"2","q4_helped_follow":"2","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"4","q8_distracted":"3","q9_variation":"4","q10_engagement":"3","q11_install":"1","flag":"","q12":"No. Because I prefer the visual experience.","q13":"Yes. Because the vibration feedback just reflected the hitting voice and didn't contain other information in the game.","q14":"No."},{"participant":"P09","age":"25-34","gender":"M","watch_sport":"a few times a year","phone_while_watching":"sometimes","watch_tennis":"never","play_tennis":"never","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"1","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"1","q9_variation":"4","q10_engagement":"5","q11_install":"5","flag":"q3_suspect","q12":"Definitely YES. I feel a part of the game when I watched the video with vibration.","q13":"feels nature. It makes me feels like I am the on who play the game.","q14":"It would be even better if the feedback on the hitting force could be provided."},{"participant":"P10","age":"25-34","gender":"M","watch_sport":"a few times a year","phone_while_watching":"often","watch_tennis":"never","play_tennis":"never","vib_familiar":"slightly","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"5","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"4","q8_distracted":"2","q9_variation":"4","q10_engagement":"4","q11_install":"4","flag":"","q12":"Yes, it helped me to find out easily whether they get the ball.","q13":"Natural. The feedback is slight.","q14":"It'll be better if it report the result by different vibration"},{"participant":"P11","age":"35-44","gender":"F","watch_sport":"a few times a year","phone_while_watching":"never","watch_tennis":"never","play_tennis":"never","vib_familiar":"slightly","sequence":"no_vib_first","q3_enjoyed":"2","q4_helped_follow":"2","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"5","q9_variation":"4","q10_engagement":"1","q11_install":"1","flag":"","q12":"I just wait the next vibration. and less focus on what the match displayed.","q13":"distracting. my feeling just focus on my hand and I forget the content I watched (my eyes can't focusing at all)","q14":"I think I can not deal with (combinate) these two part of my body feeling at the same time without training."},{"participant":"P13","age":"18-24","gender":"F","watch_sport":"a few times a year","phone_while_watching":"often","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"3","q6_fit":"5","q7_synchronised":"5","q8_distracted":"2","q9_variation":"4","q10_engagement":"4","q11_install":"4","flag":"","q12":"It feels like playing by ourselves. Feels like I'm also holding the racket, and I will have the urge to swing my hands along.","q13":"It's natural. I use the strongest mode already, but it's still not too strong because the vibration while I'm actually playing tennis is even stronger.","q14":"If the vibration could be even stronger, I would like it even more."},{"participant":"P14","age":"45-54","gender":"M","watch_sport":"monthly","phone_while_watching":"sometimes","watch_tennis":"a few times a year","play_tennis":"never","vib_familiar":"slightly","sequence":"no_vib_first","q3_enjoyed":"3","q4_helped_follow":"3","q5_noticeable":"4","q6_fit":"4","q7_synchronised":"4","q8_distracted":"4","q9_variation":"3","q10_engagement":"4","q11_install":"2","flag":"","q12":"when I'm not focused vb helps me focused but when I'm focused vb distract me from watching  [\"vb\" = vibration]","q13":"half and half","q14":"vb has a limitation to express action because it moves for only ball touch. If it has different sequence could help  [transcription uncertain]"},{"participant":"P17","age":"35-44","gender":"M","watch_sport":"a few times a year","phone_while_watching":"often","watch_tennis":"a few times a year","play_tennis":"occasionally","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"4","q6_fit":"4","q7_synchronised":"4","q8_distracted":"2","q9_variation":"5","q10_engagement":"5","q11_install":"5","flag":"","q12":"I was more engaged","q13":"Initially I thought it would be distracting but I was surprised how engaged I was. I'm unsure if I would use it for watching every sporting event, however it would be interesting to know over an extended period of time","q14":"The vibration feedback was in sync with what I was viewing."},{"participant":"P18","age":"18-24","gender":"F","watch_sport":"a few times a year","phone_while_watching":"never","watch_tennis":"never","play_tennis":"never","vib_familiar":"slightly","sequence":"no_vib_first","q3_enjoyed":"4","q4_helped_follow":"4","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"4","q8_distracted":"3","q9_variation":"4","q10_engagement":"4","q11_install":"4","flag":"","q12":"The game's points felt more noticeable with the haptic feedback and I got to focus more on the game rather than whether they hit the ball or not.","q13":"It was unusual at first but I got used to it at the end.","q14":"This haptic feedback was useful for when the sound was not very loud so I couldn't hear the points / the ball being hit."},{"participant":"P22","age":"35-44","gender":"M","watch_sport":"daily","phone_while_watching":"very often","watch_tennis":"monthly","play_tennis":"never","vib_familiar":"very","sequence":"vib_first","q3_enjoyed":"5","q4_helped_follow":"5","q5_noticeable":"5","q6_fit":"5","q7_synchronised":"5","q8_distracted":"1","q9_variation":"3","q10_engagement":"1","q11_install":"2","flag":"q10_suspect","q12":"It is great but holding the phone is tiresome. I would welcome another device.","q13":"natural. It's like using a playstation joystick.","q14":"Maybe another device so I am not tired after a few minutes of holding it."}];
 
 const ITEMS = [
   ["q5_noticeable","Vibrations clearly noticeable","sys"],
@@ -303,15 +352,33 @@ const PRETTY = {
   F:"Female", M:"Male", not_at_all:"Not at all", never:"Never",
   occasionally:"Occasionally", slightly:"Slightly", moderately:"Moderately",
   very:"Very", rarely:"Rarely", sometimes:"Sometimes", often:"Often",
-  "a few times a year":"A few times a year", monthly:"Monthly", weekly:"Weekly"
+  "a few times a year":"A few times a year", monthly:"Monthly",
+  weekly:"Weekly", daily:"Daily", "very often":"Very often"
 };
 const pretty = v => PRETTY[v] || v;
+// Item labels carry markup (q8 has an <em> with quoted styles). Fine inside a
+// heading, fatal inside title="..." -- the first quote ends the attribute -- so
+// tooltips get the tags stripped and the rest escaped.
+const attr = html => html.replace(/<[^>]*>/g, "")
+  .replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
 let split = "none";
 let filter = null;          // {dim, val}
 let selected = null;
 
 const mean = a => a.length ? a.reduce((s,x)=>s+x,0)/a.length : 0;
+// Two decimals, rounding halves to even. A mean of exactly 4.625 is a real tie
+// here (74 points over 16 people); toFixed would round it up to 4.63 while
+// Python's %.2f in user_study.py gives 4.62, and the write-up and the deck
+// quote that script. Same rule on both sides, so the page never disagrees with
+// the analysis over a hundredth.
+function f2(x){
+  const scaled = x * 100;
+  const near = Math.round(scaled);
+  const half = Math.abs(scaled - Math.trunc(scaled)) === 0.5;
+  const n = half ? 2 * Math.round(scaled / 2) : near;
+  return (n / 100).toFixed(2);
+}
 // sample sd (n-1), matching user_study.py's std(ddof=1) so the figures here
 // are the same ones the write-up and the deck quote
 const sd = a => { if(a.length<2) return 0; const m=mean(a);
@@ -347,6 +414,123 @@ function groupsFor(dim){
     D.filter(r=>r[dim]===b).length - D.filter(r=>r[dim]===a).length);
 }
 
+const PRE = [
+  ["play_tennis","Plays tennis"],
+  ["watch_tennis","Watches tennis"],
+  ["vib_familiar","Familiar with haptics"],
+  ["watch_sport","Watches sport on a screen"],
+  ["phone_while_watching","Phone in hand while watching"],
+  ["age","Age"],
+  ["gender","Gender"]
+];
+const SYSK = ["q5_noticeable","q6_fit","q7_synchronised"];
+const EXPK = ["q3_enjoyed","q10_engagement","q11_install"];
+const MIN_N = 3;                 // below this a group mean is noise, not a reading
+
+function personMean(r,keys){ return mean(keys.map(k=>+r[k])); }
+
+function renderPre(){
+  document.getElementById("dist").innerHTML = PRE.map(([dim,label])=>{
+    const gs = groupsFor(dim);
+    const segs = gs.map(v=>{
+      const n = D.filter(r=>r[dim]===v).length;
+      const on = filter && filter.dim===dim && filter.val===v;
+      return '<div class="dseg'+(on?" on":"")+'" data-pd="'+dim+'" data-pv="'+v+
+             '" style="flex-grow:'+n+';flex-basis:0" title="'+pretty(v)+
+             ' &middot; '+n+' of '+D.length+'">'+(n>1?pretty(v)+" "+n:n)+"</div>";
+    }).join("");
+    return '<div class="drow"><span class="dlab">'+label+
+           '</span><div class="dtrack">'+segs+"</div></div>";
+  }).join("");
+  document.querySelectorAll("[data-pd]").forEach(el=>el.onclick=()=>{
+    const d=el.dataset.pd, v=el.dataset.pv;
+    filter = (filter && filter.dim===d && filter.val===v) ? null : {dim:d, val:v};
+    selected=null; render();
+  });
+}
+
+function renderPredict(){
+  const rowsFor = v => D.filter(r=>r[v[0]]!==undefined);
+  const dims = PRE.concat([["sequence","Order seen (assigned, not background)"]]);
+  const stats = dims.map(([dim,label])=>{
+    const gs = groupsFor(dim).map(v=>{
+      const sub = D.filter(r=>r[dim]===v);
+      return {v, n:sub.length,
+              sys: mean(sub.map(r=>personMean(r,SYSK))),
+              exp: mean(sub.map(r=>personMean(r,EXPK)))};
+    });
+    const big = gs.filter(g=>g.n>=MIN_N);
+    const spread = big.length>1
+      ? Math.max(...big.map(g=>g.exp)) - Math.min(...big.map(g=>g.exp)) : null;
+    return {dim,label,gs,spread,usable:gs.every(g=>g.n>=MIN_N)};
+  });
+  stats.sort((a,b)=>(b.spread===null?-1:b.spread)-(a.spread===null?-1:a.spread));
+
+  const pos = v => ((v-1)/4*100);
+  document.getElementById("pred").innerHTML = stats.map(st=>{
+    const dots = st.gs.map(g=>{
+      const thin = g.n < MIN_N ? " thin" : "";
+      return '<span class="dot sys'+thin+'" style="left:'+pos(g.sys)+
+             '%" title="'+pretty(g.v)+' &middot; system '+f2(g.sys)+' (n'+g.n+')"></span>'+
+             '<span class="dot exp'+thin+'" style="left:'+pos(g.exp)+
+             '%" title="'+pretty(g.v)+' &middot; experience '+f2(g.exp)+' (n'+g.n+')"></span>';
+    }).join("");
+    const legend = st.gs.map(g=>pretty(g.v)+' <span style="color:var(--faint)">'+g.n+"</span>").join(" &middot; ");
+    return '<div class="prow"><p class="pname"><span>'+st.label+
+      '</span><span class="pspread">'+
+      (st.spread===null ? "one group too small to compare"
+        : "experience spread " + f2(st.spread) +
+          (st.usable ? "" : " &middot; some groups under "+MIN_N)) +
+      '</span></p><div class="axis"><div class="rail"></div>'+dots+"</div>"+
+      '<div class="axlab"><span>1</span><span>3</span><span>5</span></div>'+
+      '<p class="note" style="margin:4px 0 0">'+legend+"</p></div>";
+  }).join("");
+
+  document.getElementById("predNote").textContent =
+    "Each row is one background question. Every group in it gets two dots: where it "
+    + "landed on system quality, and on experience. Groups under " + MIN_N
+    + " people are faded \u2014 a mean of one or two says nothing.";
+
+  // Named from the data, not written in: the two dimensions that separate
+  // experience most among groups big enough to read.
+  const rank = stats.filter(x=>x.spread!==null).slice(0,2);
+  const say = st => {
+    const big = st.gs.filter(g=>g.n>=MIN_N).sort((a,b)=>b.exp-a.exp);
+    return "<strong>" + st.label.replace(/ \(.*\)/,"").toLowerCase() + "</strong> ("
+      + big.map(g=>pretty(g.v).toLowerCase()+" "+f2(g.exp)).join(", ") + ")";
+  };
+  const sysAll = mean(D.map(r=>personMean(r,SYSK)));
+  const spreadSys = (() => {
+    const all = stats.flatMap(x=>x.gs.filter(g=>g.n>=MIN_N).map(g=>g.sys));
+    return f2(Math.max(...all)-Math.min(...all));
+  })();
+  const spreadExp = (() => {
+    const all = stats.flatMap(x=>x.gs.filter(g=>g.n>=MIN_N).map(g=>g.exp));
+    return f2(Math.max(...all)-Math.min(...all));
+  })();
+  // spelled from the data so the sentence cannot drift as participants arrive
+  const gsRange = (() => {
+    const ns = stats.flatMap(st => st.gs.map(g => g.n)).filter(n => n >= MIN_N);
+    const words = ["zero","one","two","three","four","five","six","seven","eight",
+                   "nine","ten","eleven","twelve","thirteen","fourteen","fifteen",
+                   "sixteen","seventeen","eighteen","nineteen","twenty"];
+    const w = n => words[n] || n;
+    const lo = Math.min(...ns), hi = Math.max(...ns);
+    return lo === hi ? w(lo) : w(lo) + " to " + w(hi);
+  })();
+  document.getElementById("finding").innerHTML =
+    "<strong>The system dots barely move. The experience dots spread out.</strong> "
+    + "Across every background group of " + MIN_N + " or more, system quality sits within "
+    + spreadSys + " of itself; experience covers " + spreadExp + ". Whoever they were, "
+    + "people agreed the buzzes were noticeable, fitted and in time \u2014 what they made "
+    + "of it is a different question, and the background they arrived with is where the "
+    + "answer starts. The two clearest are " + say(rank[0]) + " and " + say(rank[1]) + ". "
+    + "With " + D.length + " people and groups of " + gsRange + " this is a "
+    + "direction to test, not a result \u2014 but both point the same way, and the "
+    + "free text echoes it: "
+    + "<em>\u201cit feels like playing by ourselves\u201d</em>.";
+}
+
 function render(){
   const rows = visible();
 
@@ -356,8 +540,8 @@ function render(){
   const inst = vals(rows,"q11_install");
   document.getElementById("headline").innerHTML =
     stat(rows.length, "participants shown") +
-    stat(mean(sys).toFixed(2), "system quality &middot; sd "+sd(sys).toFixed(2)) +
-    stat(mean(want).toFixed(2), "experience &middot; sd "+sd(want).toFixed(2)) +
+    stat(f2(mean(sys)), "system quality &middot; sd "+f2(sd(sys))) +
+    stat(f2(mean(want)), "experience &middot; sd "+f2(sd(want))) +
     stat(inst.filter(v=>v>=4).length+" / "+rows.length, "would install it");
 
   // items
@@ -367,7 +551,7 @@ function render(){
     ITEMS.filter(i=>i[2]===g).forEach(([k,name])=>{
       const v=vals(rows,k);
       html+='<div class="item"><div class="item-h"><span class="item-name">'+name+
-            '</span><span class="item-num">'+(v.length?mean(v).toFixed(2):"--")+'</span></div>';
+            '</span><span class="item-num">'+(v.length?f2(mean(v)):"--")+'</span></div>';
       if(split==="none"){
         html+=barHTML(rows,k);
       } else {
@@ -375,7 +559,7 @@ function render(){
           const sub=rows.filter(r=>r[split]===gv);
           html+='<div class="splitrow"><span class="lab">'+pretty(gv)+'</span>'+
                 barHTML(sub,k)+'<span class="num">'+
-                (sub.length?mean(vals(sub,k)).toFixed(2):"--")+
+                (sub.length?f2(mean(vals(sub,k))):"--")+
                 ' <span style="color:var(--faint)">n'+sub.length+'</span></span></div>';
         });
       }
@@ -386,14 +570,15 @@ function render(){
   document.getElementById("items").innerHTML=html;
   document.getElementById("itemsNote").textContent =
     split==="none"
-      ? "Each bar is all fourteen answers, strongly disagree on the left."
+      ? "Each bar is all " + D.length + " answers, strongly disagree on the left."
       : "Split by "+DIMS.find(d=>d[0]===split)[1].toLowerCase()+
         ". Bars are that group's answers; the figure on the right is its mean.";
 
   // table
   document.getElementById("thead").innerHTML =
     "<th>Who</th><th>Order</th>" +
-    ITEMS.map(([k,name])=>'<th title="'+name+'">'+k.split("_")[0].toUpperCase()+"</th>").join("") +
+    ITEMS.map(([k,name])=>'<th title="'+attr(name)+'">'+
+      k.split("_")[0].toUpperCase()+"</th>").join("") +
     "<th>Age</th><th>Tennis</th><th>Haptics</th>";
   document.getElementById("tbody").innerHTML = rows.map(r=>{
     const cells = ITEMS.map(([k])=>{
@@ -415,8 +600,11 @@ function render(){
     tr.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();} });
   });
 
+  renderPre();
+  renderPredict();
   renderFT();
   renderChips();
+  document.getElementById("footn").textContent = "n = " + D.length;
 }
 
 function stat(n,k){
