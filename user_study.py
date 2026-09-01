@@ -64,6 +64,35 @@ PRE_ITEMS = [
      ["not_at_all", "slightly", "moderately", "very"]),
 ]
 
+# A flag marks a form that argues with itself: one tick contradicts the rest of
+# the sheet. The row is kept as written and the contradiction is reported,
+# because deciding which tick was the slip would be us editing the data.
+FLAG_ITEM = {"q3_suspect": "Q3", "q10_suspect": "Q10"}
+FLAG_NOTE = {
+    "q3_suspect": "'strongly disagree' on q3 (enjoyed), against "
+                  "'much more engaging' on q10 and positive free text",
+    "q10_suspect": "'much less engaging' on q10, against "
+                   "'strongly agree' on q3 (enjoyed) and warm free text",
+}
+FLAG_MD = {
+    "q3_suspect": "Recorded as *strongly disagree* for \u201cI enjoyed the "
+                  "vibration feedback\u201d, while also selecting *much more "
+                  "engaging* on Q10 and writing positive free-text.",
+    "q10_suspect": "Recorded as *much less engaging* on Q10, while also "
+                   "selecting *strongly agree* on Q3 and writing that the "
+                   "feedback was \u201cgreat\u201d and felt natural.",
+}
+
+
+def by_flag(rows):
+    """Flagged participants grouped by the kind of contradiction."""
+    out = {}
+    for r in rows:
+        if r.get("flag"):
+            out.setdefault(r["flag"], []).append(r["participant"])
+    return out
+
+
 FREE_ITEMS = [
     ("q12_changed_experience",
      "Q12. Compared with the clip without vibration, did the vibration "
@@ -208,11 +237,11 @@ def main():
 
     if flagged:
         print(f"\nTRANSCRIPTION NOTE")
-        print(f"  {', '.join(flagged)} marked 'strongly disagree' on q3 (enjoyed)")
-        print(f"  while also marking 'much more engaging' on q10 and writing")
-        print(f"  positive free-text. Either a mis-mark by the participant or a")
-        print(f"  misreading of the scan. Verify against the paper originals")
-        print(f"  before quoting q3.")
+        for kind, who in by_flag(rows).items():
+            print(f"  {', '.join(who)}: {FLAG_NOTE[kind]}")
+        print(f"  In each case the paper is self-contradictory. Either a mis-mark")
+        print(f"  by the participant or a misreading of the scan; verify against")
+        print(f"  the originals before quoting that item on its own.")
 
     if args.figure:
         make_figure(rows)
@@ -336,26 +365,37 @@ def write_report(rows, path):
     L.append("---\n")
     L.append("## Caveats\n")
     flagged = [r["participant"] for r in rows if r.get("flag")]
-    if flagged:
-        L.append(f"- **{' and '.join(flagged)} on Q3.** Recorded as *strongly "
-                 "disagree* for “I enjoyed the vibration feedback”, while also "
-                 "selecting *much more engaging* on Q10 and writing positive "
-                 "free-text. Either a participant mis-mark or an error reading "
-                 "the scan; check the paper originals before quoting Q3. No "
-                 "other conclusion depends on it.\n")
+    for kind, who in by_flag(rows).items():
+        L.append(f"- **{' and '.join(who)} on {FLAG_ITEM[kind]}.** "
+                 f"{FLAG_MD[kind]} Either a participant mis-mark or an error "
+                 "reading the scan; check the paper originals before quoting "
+                 f"{FLAG_ITEM[kind]} on its own. No other conclusion depends "
+                 "on it.\n")
     L.append("- **Responses were transcribed by hand** from image-only scans; "
              "there is no text layer to verify against. Tick positions on "
              "5-point rows are the most error-prone part.\n")
-    L.append("- **Participant codes P07 and P12 are absent** from the returned "
-             "forms. Confirm against the recruitment log whether those "
-             "sessions took place.\n")
+    got = sorted(int(r["participant"][1:]) for r in rows)
+    gaps = [f"P{i:02d}" for i in range(got[0], got[-1]) if i not in got]
+    if gaps:
+        L.append(f"- **Participant codes {', '.join(gaps)} are absent** from the "
+                 "returned forms. Codes were assigned at booking, so a gap most "
+                 "likely means a session that did not happen; confirm against "
+                 "the recruitment log.\n")
     L.append("- **The two clips were different footage.** Condition order was "
              "counterbalanced and is recorded, but which clip carried the "
              "haptics is not, so clip content is a potential confound on every "
              "experience item. The system-quality items (noticeable, fits, "
              "synchronised) are judgements about the haptics themselves and "
              "are far less exposed to it.\n")
-    L.append(f"- **n = {n}, convenience sample, no regular tennis viewers.** "
+    # Stated from the data rather than asserted, so it cannot go stale as
+    # participants with heavier tennis habits arrive.
+    scale = next(o for k, _, o in PRE_ITEMS if k == "watch_tennis")
+    top = max((r["watch_tennis"] for r in rows), key=scale.index)
+    regular = sum(1 for r in rows
+                  if scale.index(r["watch_tennis"]) >= scale.index("weekly"))
+    reach = (f"nobody watches tennis more than {top}" if not regular
+             else f"{regular} of {n} watch tennis weekly or more")
+    L.append(f"- **n = {n}, convenience sample, {reach}.** "
              "Enough to establish that the experience response is divided; not "
              "enough to explain who falls on which side.\n")
 
