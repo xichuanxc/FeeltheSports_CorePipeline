@@ -63,15 +63,15 @@ Participants completed a pre-study questionnaire (demographics, viewing habits,
 haptic familiarity) and a post-study questionnaire: a nine-item 5-point Likert
 battery plus three free-text questions.
 
-**N = 17** (P01–P11, P13, P14, P17, P18, P20, P22).
+**N = 18** (P01–P11, P13, P14, P17, P18, P20–P22).
 
 | | |
 |---|---|
-| Age | 35–44 (9), 25–34 (3), 18–24 (3), 45–54 (1), 55+ (1) |
-| Gender | 10 male, 7 female |
-| Watches tennis | a few times a year (10), never (6), monthly (1) |
-| Plays tennis | never (12), occasionally (5) |
-| Haptics familiarity | very (7), slightly (5), moderately (3), not at all (2) |
+| Age | 35–44 (9), 25–34 (4), 18–24 (3), 45–54 (1), 55+ (1) |
+| Gender | 11 male, 7 female |
+| Watches tennis | a few times a year (11), never (6), monthly (1) |
+| Plays tennis | never (13), occasionally (5) |
+| Haptics familiarity | very (7), slightly (6), moderately (3), not at all (2) |
 
 No participant reported a condition affecting vibration sensitivity. The sample
 is drawn from a convenience population; **nobody watches tennis more often
@@ -86,11 +86,11 @@ finding.
 
 | Item | Mean | Median | Range |
 |---|---|---|---|
-| Vibrations clearly noticeable | 4.65 | 5 | 3–5 |
-| Fitted what I saw and heard | 4.53 | 5 | 3–5 |
-| **Synchronised with the hits** | **4.47** | **5** | **3–5** |
+| Vibrations clearly noticeable | 4.61 | 5 | 3–5 |
+| Fitted what I saw and heard | 4.50 | 5 | 3–5 |
+| **Synchronised with the hits** | **4.50** | **5** | **3–5** |
 
-Pooled mean **4.55**, standard deviation **0.61**. No participant scored any of
+Pooled mean **4.54**, standard deviation **0.61**. No participant scored any of
 these three items below 3, and only two — P07 and P13 — scored below 4 on any
 of them.
 
@@ -112,12 +112,12 @@ claim; it is a hypothesis for a larger sample.
 
 | Item | Mean | Median | Range |
 |---|---|---|---|
-| Enjoyed it | 3.47 | 4 | 1–5 |
-| More engaging than without | 3.82 | 4 | 1–5 |
-| Would install it | 3.41 | 4 | 1–5 |
+| Enjoyed it | 3.56 | 4 | 1–5 |
+| More engaging than without | 3.89 | 4 | 1–5 |
+| Would install it | 3.44 | 4 | 1–5 |
 
-Pooled mean **3.57**, standard deviation **1.32** — **2.2× the spread** of the
-system-quality items. Adoption intent split **10 yes / 1 unsure / 6 no**, and
+Pooled mean **3.63**, standard deviation **1.31** — **2.2× the spread** of the
+system-quality items. Adoption intent split **11 yes / 1 unsure / 6 no**, and
 the per-participant experience score ranges from 5.00 to 1.33.
 
 The variance is *between participants*, not between items: those who liked it
@@ -127,8 +127,8 @@ performing correctly is therefore not sufficient to predict acceptance.
 ### Order
 
 Participants who received the haptic condition first rated it higher on every
-experience item (engagement +0.19, would-install +0.94). The split is 10
-against 7, and 17 participants still cannot support a test; it is reported
+experience item (engagement +0.02, would-install +0.80). The split is 10
+against 8, and 18 participants still cannot support a test; it is reported
 so the direction is visible, and suggests a contrast effect worth controlling
 in a larger study.
 
@@ -174,11 +174,22 @@ and half"*. On this reading the haptic channel is not simply distracting or
 simply engaging; it competes for attention when attention is already committed
 to the screen, and recruits it when it is not. Both participants rated
 synchronisation 4/5 or better, so this is not a detection error but a cross-modal
-attention cost that no accuracy improvement addresses. Three of seventeen
+attention cost that no accuracy improvement addresses. Three of eighteen
 participants agree with "the vibration feedback distracted me"; the median
 answer is 2, disagree. The third, P20, wrote *"not distracting"* on the very
 next question, which is why that sheet is flagged below rather than read as
 a third case of attentional capture.
+
+P21 is the clearest evidence for the other half of P14's condition, and the
+first participant to describe the vibration as *repairing* attention rather
+than competing for it: *"sometimes we feel distract during game and miss some
+important shot/moment so it kinda try to keep focus on the game"*, and
+*"natural, I kind of keep my focus on game and not miss some important shots"*.
+Their baseline is a wandering viewer, not an absorbed one, and on that baseline
+the channel pulls attention back to the match instead of away from it. Taken
+with P11 at the opposite extreme, the same feature is doing opposite work for
+different viewers, which is a better description of the divided response than
+anything in the background variables so far.
 
 **Information content.** Three participants noted that the channel carries only
 timing: *"the vibration feedback just reflected the hitting voice and didn't
@@ -203,6 +214,13 @@ is a different proposition over a full match. P01 suggested a racket-shaped
 prop instead of a phone, and P05 asked how incoming notifications would be
 prevented from being mistaken for feedback.
 
+**Other sports.** P21 asked for it beyond tennis — *"other sport like cricket
+it would be useful"*. The acoustic front end is not tennis-specific in
+principle: it fires on a transient in a broadcast mix, and bat-on-ball is the
+same kind of event as racket-on-ball. What is tennis-specific is the trained
+classifier and the annotated data behind it, so the honest answer is that the
+pipeline would port and the model would have to be retrained.
+
 ## Limitations
 
 - **Clip content is confounded with condition.** The haptic and non-haptic
@@ -222,13 +240,12 @@ prevented from being mistaken for feedback.
   A repeat should either counterbalance clip against condition or record the
   clip-to-condition assignment per participant, which costs one extra field.
 
-- **n = 17**, convenience sample, nobody watching tennis more than monthly.
+- **n = 18**, convenience sample, nobody watching tennis more than monthly.
   Sufficient to establish that the experience response is divided; insufficient
   to explain who falls on which side.
-- Order has drifted out of balance (10 haptic-first against 7) as later
-  participants arrived, and the sample is far too small to test the apparent
-  order effect. The next sessions should be assigned no-vibration-first until
-  it evens up.
+- Order is 10 haptic-first against 8 and closing; the sample is still far too
+  small to test the apparent order effect. Keep assigning
+  no-vibration-first until it evens up.
 - Single session, single device, short clips — nothing here speaks to whether
   the effect survives an hour of viewing, or novelty decay.
 - **Transcription caveat.** Four sheets argue with themselves on one tick.
@@ -248,10 +265,10 @@ prevented from being mistaken for feedback.
   Q8 is the sole negatively worded statement, and Q10 the sole item not on an
   agree/disagree scale. The other two are both on Q3, the first Likert row on
   the page, and both fall at the extreme opposite end from everything else that
-  participant wrote. Four contradictions in seventeen sheets is a rate worth
+  participant wrote. Four contradictions in eighteen sheets is a rate worth
   designing against — reverse-coded and odd-scaled items are the usual suspects
   — rather than attributing to four careless participants.
-- Participant codes P12, P15, P16, P19 and P21 are absent from the returned
+- Participant codes P12, P15, P16 and P19 are absent from the returned
   forms. Codes were assigned at booking, so a gap most likely marks a session
   that did not take place; this should be confirmed against the recruitment
   log.
