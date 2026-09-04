@@ -1,0 +1,28 @@
+{
+  "media": "Incredible 13 MINUTE Game | In Full | Emma Raducanu vs Aryna Sabalenka_Wimbledon_720p.mp4",
+  "threshold": 0.15,
+  "rejected": [],
+  "manual_candidates": [
+    1.289,
+    1.556,
+    4.238,
+    53.359,
+    59.106,
+    65.202,
+    66.154,
+    78.286,
+    81.154,
+    82.094,
+    83.708,
+    96.386,
+    130.705,
+    154.529,
+    157.292,
+    196.859,
+    197.904,
+    229.018,
+    280.694,
+    503.732
+  ],
+  "last_time": 6.0836281179138325
+}

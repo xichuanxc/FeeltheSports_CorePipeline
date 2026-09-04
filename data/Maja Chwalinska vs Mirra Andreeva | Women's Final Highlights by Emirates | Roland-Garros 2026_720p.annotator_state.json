@@ -1,7 +1,18 @@
 {
   "media": "Maja Chwalinska vs Mirra Andreeva | Women's Final Highlights by Emirates | Roland-Garros 2026_720p.mp4",
-  "threshold": 0.17,
+  "threshold": 0.15,
   "rejected": [],
-  "manual_candidates": [],
-  "last_time": 21.838367346938774
+  "manual_candidates": [
+    199.899,
+    238.919,
+    244.189,
+    338.92,
+    383.308,
+    519.667,
+    575.844,
+    691.768,
+    692.152,
+    692.38
+  ],
+  "last_time": 736.618231292517
 }
