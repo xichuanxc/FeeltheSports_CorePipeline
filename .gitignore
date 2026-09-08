@@ -49,6 +49,11 @@ dataset/
 # personal data, so they stay out of a repository that may be shared or made
 # public. The derived, anonymised figures belong in docs/USER_STUDY.md instead.
 docs/user_study_results/
+# Recruitment and scheduling exports carry participant names. They belong
+# with the consent forms, outside the repository.
+docs/*Session Schedule*.pdf
+docs/*schedule*.pdf
+
 
 # Cached Silero speech segments, keyed by video and threshold. Pure derived
 # data — vad_impact.py recomputes any missing entry in a few seconds.
