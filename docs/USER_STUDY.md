@@ -63,15 +63,15 @@ Participants completed a pre-study questionnaire (demographics, viewing habits,
 haptic familiarity) and a post-study questionnaire: a nine-item 5-point Likert
 battery plus three free-text questions.
 
-**N = 19** (P01–P11, P13, P14, P17–P22).
+**N = 20** (P01–P11, P13, P14, P17–P23).
 
 | | |
 |---|---|
-| Age | 35–44 (9), 25–34 (5), 18–24 (3), 45–54 (1), 55+ (1) |
-| Gender | 11 male, 8 female |
-| Watches tennis | a few times a year (12), never (6), monthly (1) |
-| Plays tennis | never (14), occasionally (5) |
-| Haptics familiarity | very (7), slightly (6), moderately (4), not at all (2) |
+| Age | 35–44 (10), 25–34 (5), 18–24 (3), 45–54 (1), 55+ (1) |
+| Gender | 11 male, 9 female |
+| Watches tennis | a few times a year (13), never (6), monthly (1) |
+| Plays tennis | never (14), occasionally (6) |
+| Haptics familiarity | very (8), slightly (6), moderately (4), not at all (2) |
 
 No participant reported a condition affecting vibration sensitivity. The sample
 is drawn from a convenience population; **nobody watches tennis more often
@@ -82,42 +82,58 @@ than monthly**, which limits generalisation to an engaged audience.
 The battery separates into two groups, and that separation is the principal
 finding.
 
-### The detection system was not in dispute
+### The detection system was, with one exception, not in dispute
 
 | Item | Mean | Median | Range |
 |---|---|---|---|
-| Vibrations clearly noticeable | 4.58 | 5 | 3–5 |
-| Fitted what I saw and heard | 4.53 | 5 | 3–5 |
-| **Synchronised with the hits** | **4.53** | **5** | **3–5** |
+| Vibrations clearly noticeable | 4.55 | 5 | 3–5 |
+| Fitted what I saw and heard | 4.45 | 5 | 3–5 |
+| **Synchronised with the hits** | **4.40** | **5** | **2–5** |
 
-Pooled mean **4.54**, standard deviation **0.60**. No participant scored any of
-these three items below 3, and only two — P07 and P13 — scored below 4 on any
-of them.
+Pooled mean **4.47**, standard deviation **0.70**. Three participants — P07,
+P13 and P23 — scored below 4 on any of these, and **P23 is the first to score
+below 3**, answering *disagree* on synchronisation.
 
-This is the direct subjective validation of the acoustic pipeline. The measured
-firing timing (median 33 ms early against hand-labelled onsets) is, on this
-evidence, well inside what viewers perceive as synchronous — consistent with
-the ~100 ms tolerance generally reported for audio-tactile simultaneity.
+This remains the direct subjective validation of the acoustic pipeline: the
+measured firing timing (median 33 ms early against hand-labelled onsets) sits,
+for seventeen of twenty viewers, well inside what is perceived as synchronous —
+consistent with the ~100 ms tolerance generally reported for audio-tactile
+simultaneity.
 
-The dissent is worth naming rather than averaging away. P07 is the only
-participant to answer *neutral* on both "fitted" and "synchronised", and also
-the only one who rated familiarity with phone haptics as *not at all* while
-never having watched tennis. That combination — no prior model of what the
-buzz should feel like, and no prior model of the sport's rhythm — is the one
-place in this sample where the timing was not simply accepted, and it points at
-prior exposure rather than at the detector. One participant cannot carry that
-claim; it is a hypothesis for a larger sample.
+**P23 is the first participant to dispute the timing, and did so precisely.**
+Beside their *disagree* tick on Q7 they wrote, unprompted, *"slightly off"* —
+the only marginal annotation anywhere in the twenty sheets, and a diagnosis
+rather than a complaint. Until this session the claim "nobody disputed that the
+buzzes landed in the right place" was true of every returned form; it is not
+any more, and the phrasing has been corrected everywhere it appeared. One
+dissent in twenty does not overturn a pooled 4.47, but it is the first
+direct evidence that the 33 ms lead is perceptible to somebody, and it should
+be treated as a lead to chase rather than an outlier to average away.
+
+The milder dissent is still worth naming. P07 is the only participant to answer
+*neutral* on both "fitted" and "synchronised", and also the only one who rated
+familiarity with phone haptics as *not at all* while never having watched
+tennis. That combination — no prior model of what the buzz should feel like,
+and no prior model of the sport's rhythm — points at prior exposure rather than
+at the detector. P23 does not fit that explanation: they are *very* familiar
+with phone haptics, watch tennis a few times a year and play occasionally,
+which is the profile most likely to know what a struck ball should feel like.
+The two dissents therefore point in opposite directions, and neither can carry
+a claim on its own.
 
 ### Whether people wanted it was strongly divided
 
 | Item | Mean | Median | Range |
 |---|---|---|---|
-| Enjoyed it | 3.58 | 4 | 1–5 |
-| More engaging than without | 3.89 | 4 | 1–5 |
-| Would install it | 3.42 | 4 | 1–5 |
+| Enjoyed it | 3.50 | 4 | 1–5 |
+| More engaging than without | 3.80 | 4 | 1–5 |
+| Would install it | 3.35 | 4 | 1–5 |
 
-Pooled mean **3.63**, standard deviation **1.28** — **2.1× the spread** of the
-system-quality items. Adoption intent split **11 yes / 2 unsure / 6 no**, and
+Pooled mean **3.55**, standard deviation **1.29** — **1.8× the spread** of the
+system-quality items. That multiple has fallen from 2.1× because the
+system-quality spread widened, not because the experience spread narrowed:
+P23 is the first participant to disagree about the system itself. Adoption
+intent split **11 yes / 2 unsure / 7 no**, and
 the per-participant experience score ranges from 5.00 to 1.33.
 
 The variance is *between participants*, not between items: those who liked it
@@ -127,8 +143,8 @@ performing correctly is therefore not sufficient to predict acceptance.
 ### Order
 
 Participants who received the haptic condition first rated it higher on every
-experience item (engagement +0.03, would-install +0.73). The split is 11
-against 8, and 19 participants still cannot support a test; it is reported
+experience item (engagement +0.24, would-install +0.84). The split is 11
+against 9, and 20 participants still cannot support a test; it is reported
 so the direction is visible, and suggests a contrast effect worth controlling
 in a larger study.
 
@@ -152,14 +168,39 @@ feedback on the hitting force could be provided"*. This is the direct
 experiential cost of the per-broadcast relative intensity mapping, and the
 clearest actionable finding in the study.
 
-P07 asked for something stronger than force-tracking, and worth separating out:
-that the channel mark *significance* rather than impact — vibration matched
-"more precisely with some movements like scoring a goal, or hitting the racket
-harshly", so that it works "like you are riding on a roller coaster and when it
-goes up or down fast, you feel something in your heart". That is a request for
-event typing and dramatic weighting, not amplitude. The current pipeline emits
-one class of pulse per detected strike and can express neither; the CNN's
-five-class output is the part of the system closest to being able to.
+**The channel carries only timing, and seven people wanted it to carry
+meaning.** This is the largest theme in the study, larger than the intensity
+request, and it arrives in two forms.
+
+*Fire less often, on what matters.* P23 put it most sharply, twice: *"I would
+have preferred if it only vibrated with point-winning hits"*, and again in the
+suggestions box, *"focusing on & vibrating only with point-winning hits would
+help"*. P07 asked that the channel mark significance rather than impact —
+matched *"more precisely with some movements like scoring a goal, or hitting
+the racket harshly"*, so it works *"like you are riding on a roller coaster"*.
+P01 wanted vibration for only one player's strokes.
+
+*Say which event it was.* P08: the feedback *"just reflected the hitting voice
+and didn't contain other information in the game"*. P10: *"it'll be better if
+it report the result by different vibration"*. P14: it *"has a limitation to
+express action because it moves for only ball touch"*. P20: *"maybe adding diff
+vibrations for each player &hellip; so that [you know] which team scored"*.
+
+Both forms are the same complaint — an identical pulse at every detected strike
+is maximal frequency and zero information beyond timing — and the complaint
+tracks dissatisfaction. Of the five lowest experience scores, three (P08, P23,
+P01) are this objection rather than a complaint about accuracy or comfort. The
+channel's information content, not its detection accuracy, is what loses
+people.
+
+Two things follow for the build, and they differ sharply in cost. Event typing
+is already half-solved: the CNN emits five classes, so suppressing everything
+but `racket_hit`, or giving `ball_bounce` a different pattern, is something the
+pipeline can already express. Point-winning detection is not — knowing which
+stroke ended a rally needs scoreboard OCR or rally-boundary detection from the
+audio, and neither exists. The cheap experiment worth running first is simply
+firing less often, because every participant in the first group asked for fewer
+events rather than better ones.
 
 **Attentional capture, and the condition it depends on.** P11 reported the
 failure mode inverted: *"I just wait the next vibration, and less focus on what
@@ -174,7 +215,7 @@ and half"*. On this reading the haptic channel is not simply distracting or
 simply engaging; it competes for attention when attention is already committed
 to the screen, and recruits it when it is not. Both participants rated
 synchronisation 4/5 or better, so this is not a detection error but a cross-modal
-attention cost that no accuracy improvement addresses. Three of nineteen
+attention cost that no accuracy improvement addresses. Three of twenty
 participants agree with "the vibration feedback distracted me"; the median
 answer is 2, disagree. The third, P20, wrote *"not distracting"* on the very
 next question, which is why that sheet is flagged below rather than read as
@@ -191,16 +232,23 @@ with P11 at the opposite extreme, the same feature is doing opposite work for
 different viewers, which is a better description of the divided response than
 anything in the background variables so far.
 
-**Information content.** Three participants noted that the channel carries only
-timing: *"the vibration feedback just reflected the hitting voice and didn't
-contain other information in the game"*; *"it'll be better if it report the
-result by different vibration"*; and P14, that it *"has a limitation to express
-action because it moves for only ball touch"*, suggesting different patterns for
-different events. P01 wanted vibration for only one player's strokes.
+**Timing errors were perceptible to two people.** P02: *"I noticed a slight
+mismatch in the timing"* and *"I think one time it missed a shot"* — consistent
+with the measured strike recall of 0.78. P23 is the second and the more
+specific: they answered *disagree* on synchronisation and wrote *"slightly
+off"* in the margin beside the tick, the only marginal annotation in twenty
+sheets.
 
-**Detection errors were perceptible.** P02: *"I noticed a slight mismatch in the
-timing"* and *"I think one time it missed a shot"* — consistent with the
-measured strike recall of 0.78.
+Both descriptions match the direction of the measured error. Firing runs a
+median 33 ms **early** against hand-labelled onsets, so a viewer who notices
+anything should notice the buzz arriving slightly before the strike, which is
+what *"slightly off"* and *"slight mismatch"* describe without either
+participant being told what to look for. Eighteen of twenty did not notice, so
+33 ms is below threshold for most people and not for all — which is the
+expected shape for a tolerance that varies between individuals, rather than
+evidence the timing is wrong. If the next round changes one thing in the
+pipeline, shifting the fire point later by ~30 ms is the cheapest test of this,
+and it is a constant, not a model change.
 
 **Holding the phone is itself a cost.** Three participants objected to the
 handset rather than the haptics. P06 found it *"too big to hold"*. P22, who
@@ -258,18 +306,19 @@ pipeline would port and the model would have to be retrained.
   noticeable", "fitted what I saw and heard" and "were synchronised with the
   hits" are judgements about the haptic channel itself, answerable only from
   the clip that had it, and are not comparative. The principal finding — that
-  the detector was not in dispute — is therefore robust to this confound; the
-  experience finding is not.
+  the detector is very largely not in dispute — is therefore robust to this
+  confound; the experience finding is not. P23's dissent on synchronisation is
+  likewise a judgement about the haptic clip alone, so the confound does not
+  explain it away either.
 
   A repeat should either counterbalance clip against condition or record the
   clip-to-condition assignment per participant, which costs one extra field.
 
-- **n = 19**, convenience sample, nobody watching tennis more than monthly.
+- **n = 20**, convenience sample, nobody watching tennis more than monthly.
   Sufficient to establish that the experience response is divided; insufficient
   to explain who falls on which side.
-- Order is 11 haptic-first against 8; the sample is still far too small to test
-  the apparent order effect. Keep assigning no-vibration-first until it evens
-  up.
+- Order is 11 haptic-first against 9; the sample is still far too small to test
+  the apparent order effect. One more no-vibration-first session evens it up.
 - Single session, single device, short clips — nothing here speaks to whether
   the effect survives an hour of viewing, or novelty decay.
 - **Transcription caveat.** Four sheets argue with themselves on one tick.
@@ -289,7 +338,7 @@ pipeline would port and the model would have to be retrained.
   Q8 is the sole negatively worded statement, and Q10 the sole item not on an
   agree/disagree scale. The other two are both on Q3, the first Likert row on
   the page, and both fall at the extreme opposite end from everything else that
-  participant wrote. Four contradictions in nineteen sheets is a rate worth
+  participant wrote. Four contradictions in twenty sheets is a rate worth
   designing against — reverse-coded and odd-scaled items are the usual suspects
   — rather than attributing to four careless participants.
 - Participant codes P12, P15 and P16 are absent from the returned
