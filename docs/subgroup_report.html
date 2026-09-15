@@ -1,0 +1,409 @@
+<title>Does Anything Predict the Response?</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#FFFFFF; --desk:#EEF1F3;
+  --ink:#14191F; --muted:#5A6672; --faint:#8A949E;
+  --rule:#D8DEE3; --rule-soft:#E8ECEF;
+  --accent:#2C6257; --accent-soft:#E4EDEA;
+  --amber:#A8632A; --amber-soft:#F6EBE0;
+  --null:#8A949E;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#161B21; --desk:#0E1116;
+    --ink:#E7ECF1; --muted:#9AA6B2; --faint:#6E7A86;
+    --rule:#2B333C; --rule-soft:#222A32;
+    --accent:#74C0AF; --accent-soft:#1B2A28;
+    --amber:#D79A5F; --amber-soft:#2A2119;
+    --null:#6E7A86;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#161B21; --desk:#0E1116;
+  --ink:#E7ECF1; --muted:#9AA6B2; --faint:#6E7A86;
+  --rule:#2B333C; --rule-soft:#222A32;
+  --accent:#74C0AF; --accent-soft:#1B2A28;
+  --amber:#D79A5F; --amber-soft:#2A2119;
+  --null:#6E7A86;
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--desk); color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:9.6pt; line-height:1.5; padding:20px 12px 40px;
+}
+.sheet{
+  background:var(--paper); width:210mm; min-height:297mm;
+  margin:0 auto 20px; padding:16mm 15mm 14mm;
+  box-shadow:0 1px 3px rgba(0,0,0,.10), 0 10px 30px rgba(0,0,0,.07);
+  display:flex; flex-direction:column; gap:6mm;
+}
+.mast{display:flex; justify-content:space-between; align-items:flex-end;
+  gap:14px; border-bottom:2px solid var(--ink); padding-bottom:7px;}
+.eyebrow{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:7.4pt;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--muted);}
+h1{font-family:"IBM Plex Serif",Georgia,serif; font-weight:600; font-size:19pt;
+  line-height:1.12; margin:3px 0 0; letter-spacing:-.012em; text-wrap:balance;}
+.mast .who{text-align:right; font-size:8pt; color:var(--muted); line-height:1.45;
+  white-space:nowrap;}
+.mast .who b{color:var(--ink); font-weight:600;}
+.lede{font-size:10.4pt; line-height:1.55; max-width:64ch;}
+.lede b{color:var(--accent); font-weight:600;}
+h2{font-family:"IBM Plex Serif",Georgia,serif; font-weight:600; font-size:12pt;
+  margin:0 0 1mm; letter-spacing:-.006em; text-wrap:balance;}
+h2 .n{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:8pt;
+  color:var(--accent); margin-right:7px; font-weight:500;}
+.sub{color:var(--muted); font-size:8.5pt; margin:0 0 3mm; max-width:72ch;}
+section{display:flex; flex-direction:column;}
+
+/* ---- who took part ---- */
+.demo{display:grid; grid-template-columns:repeat(2,1fr); gap:0 8mm;}
+.dgroup{border-top:1px solid var(--rule); padding:2mm 0 2.5mm;}
+.dgroup h3{margin:0 0 1.5mm; font-size:7.4pt; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted); font-weight:500;
+  font-family:"IBM Plex Sans",sans-serif;}
+/* Rows rather than proportional bands: at 20 participants a band for n=1 is
+   too narrow to hold its own label, and a clipped label is worse than none. */
+.drow{display:grid; grid-template-columns:32mm 1fr 6mm; align-items:center;
+  gap:0 3mm; padding:.7mm 0; font-size:8.2pt;}
+.drow .lab{color:var(--ink); white-space:nowrap; overflow:hidden;
+  text-overflow:ellipsis;}
+.drow .bar{height:4mm; background:var(--rule-soft); border-radius:2px;
+  position:relative;}
+.drow .bar i{position:absolute; inset:0 auto 0 0; background:var(--accent-soft);
+  border-radius:2px; display:block;}
+.drow .ct{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:8pt;
+  color:var(--muted); text-align:right; font-variant-numeric:tabular-nums;}
+.dkey{font-size:7.4pt; color:var(--faint); margin:1.2mm 0 0;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;}
+
+/* ---- comparison blocks ---- */
+.cmp{border:1px solid var(--rule); border-radius:2px; overflow:hidden;
+  margin-bottom:4mm;}
+.cmp > header{display:flex; justify-content:space-between; align-items:baseline;
+  gap:8px; padding:2.5mm 4mm; background:var(--rule-soft);
+  border-bottom:1px solid var(--rule);}
+.cmp h3{margin:0; font-size:9.8pt; font-weight:600;}
+.verdict{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:7.2pt;
+  letter-spacing:.07em; text-transform:uppercase; padding:1px 6px;
+  border-radius:2px; white-space:nowrap;}
+.verdict.no{background:var(--rule); color:var(--muted);}
+.verdict.maybe{background:var(--amber-soft); color:var(--amber);}
+.cmp table{width:100%; border-collapse:collapse; font-size:8.6pt;}
+.cmp th{font-weight:500; font-size:7.2pt; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--muted); text-align:left;
+  padding:2mm 4mm 1.5mm; border-bottom:1px solid var(--rule-soft);}
+.cmp td{padding:1.9mm 4mm; border-bottom:1px solid var(--rule-soft);
+  vertical-align:middle;}
+.cmp tr:last-child td{border-bottom:0;}
+.cmp td.g{font-weight:600;}
+.cmp td.n{font-family:"IBM Plex Mono",ui-monospace,monospace; color:var(--muted);
+  font-size:8pt;}
+.cmp td.v{font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-variant-numeric:tabular-nums; text-align:right; width:13mm;}
+.track{position:relative; height:4.5px; background:var(--rule-soft);
+  border-radius:2px; min-width:26mm;}
+.track i{position:absolute; inset:0 auto 0 0; border-radius:2px; display:block;
+  background:var(--accent);}
+.track.exp i{background:var(--amber);}
+.stat{padding:2.5mm 4mm; background:var(--paper); font-size:8.2pt;
+  color:var(--muted); border-top:1px solid var(--rule);
+  display:flex; flex-wrap:wrap; gap:1mm 6mm;}
+.stat b{color:var(--ink); font-weight:600;}
+.stat code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:8pt;}
+
+.note{border:1px solid var(--rule); border-left:3px solid var(--accent);
+  border-radius:2px; padding:3.5mm 4mm; font-size:8.8pt; line-height:1.55;}
+.note.warn{border-left-color:var(--amber);}
+.note h4{margin:0 0 1.5mm; font-size:9.2pt; font-family:"IBM Plex Serif",serif;
+  font-weight:600;}
+.note p{margin:0 0 2mm;} .note p:last-child{margin:0;}
+.loo{width:100%; border-collapse:collapse; font-size:8.2pt; margin:2mm 0;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;}
+.loo td{padding:1mm 3mm 1mm 0; border-bottom:1px solid var(--rule-soft);}
+.loo td.hl{color:var(--amber); font-weight:500;}
+.foot{margin-top:auto; padding-top:4mm; border-top:1px solid var(--rule);
+  display:flex; justify-content:space-between; gap:10px; font-size:7.4pt;
+  color:var(--faint); font-family:"IBM Plex Mono",ui-monospace,monospace;
+  letter-spacing:.04em;}
+
+@media print{
+  :root{--paper:#fff; --desk:#fff; --ink:#000; --muted:#444; --faint:#666;
+        --rule:#bbb; --rule-soft:#e4e4e4;}
+  @page{size:A4; margin:14mm 13mm;}
+  body{background:#fff; padding:0; font-size:9.4pt;}
+  .sheet{width:auto; min-height:0; margin:0; padding:0; box-shadow:none;
+         break-after:page;}
+  .sheet:last-child{break-after:auto;}
+  .cmp,.note,.dgroup{break-inside:avoid;}
+}
+@media (max-width:230mm){
+  body{padding:10px 6px 24px;}
+  .sheet{width:100%; padding:9mm 7mm;}
+  .demo{grid-template-columns:1fr;}
+  .mast{flex-direction:column; align-items:flex-start;}
+  .mast .who{text-align:left;}
+}
+</style>
+
+<div class="sheet">
+  <header class="mast">
+    <div>
+      <div class="eyebrow">Feel the Sports &middot; Weekly meeting note</div>
+      <h1>Does Anything Predict the Response?</h1>
+    </div>
+    <div class="who">
+      <b>Chuan Xi</b> &middot; COMPX520<br>
+      University of Waikato<br>
+      N = 20 &middot; 15 September 2026
+    </div>
+  </header>
+
+  <p class="lede">Three questions from last week: does the <b>viewing order</b>,
+  <b>tennis experience</b>, or <b>gender</b> explain how people responded? Short
+  answer: <b>gender no, order probably not, tennis experience maybe</b> &mdash;
+  and none of it reaches significance at this sample size.</p>
+
+  <section>
+    <h2><span class="n">1</span>Who took part</h2>
+    <p class="sub">Twenty participants, recruited by convenience between 14
+    August and 11 September. The sample is young-to-middle-aged, evenly split by
+    gender, and light on tennis: nobody watches it more than monthly and
+    fourteen have never played.</p>
+    <div class="demo">
+      <div class="dgroup">
+        <h3>Age group</h3>
+        <div class="drow"><span class="lab">35-44</span><span class="bar"><i style="width:50%"></i></span><span class="ct">10</span></div>
+        <div class="drow"><span class="lab">25-34</span><span class="bar"><i style="width:25%"></i></span><span class="ct">5</span></div>
+        <div class="drow"><span class="lab">18-24</span><span class="bar"><i style="width:15%"></i></span><span class="ct">3</span></div>
+        <div class="drow"><span class="lab">45-54</span><span class="bar"><i style="width:5%"></i></span><span class="ct">1</span></div>
+        <div class="drow"><span class="lab">55+</span><span class="bar"><i style="width:5%"></i></span><span class="ct">1</span></div>
+      </div>
+      <div class="dgroup">
+        <h3>Gender</h3>
+        <div class="drow"><span class="lab">Male</span><span class="bar"><i style="width:55%"></i></span><span class="ct">11</span></div>
+        <div class="drow"><span class="lab">Female</span><span class="bar"><i style="width:45%"></i></span><span class="ct">9</span></div>
+        <p class="dkey">no other responses given</p>
+      </div>
+      <div class="dgroup">
+        <h3>Plays tennis</h3>
+        <div class="drow"><span class="lab">Never</span><span class="bar"><i style="width:70%"></i></span><span class="ct">14</span></div>
+        <div class="drow"><span class="lab">Occasionally</span><span class="bar"><i style="width:30%"></i></span><span class="ct">6</span></div>
+        <p class="dkey">nobody plays regularly</p>
+      </div>
+      <div class="dgroup">
+        <h3>Watches tennis</h3>
+        <div class="drow"><span class="lab">A few times a year</span><span class="bar"><i style="width:65%"></i></span><span class="ct">13</span></div>
+        <div class="drow"><span class="lab">Never</span><span class="bar"><i style="width:30%"></i></span><span class="ct">6</span></div>
+        <div class="drow"><span class="lab">Monthly</span><span class="bar"><i style="width:5%"></i></span><span class="ct">1</span></div>
+        <p class="dkey">none weekly or daily</p>
+      </div>
+      <div class="dgroup">
+        <h3>Familiar with phone haptics</h3>
+        <div class="drow"><span class="lab">Very</span><span class="bar"><i style="width:40%"></i></span><span class="ct">8</span></div>
+        <div class="drow"><span class="lab">Slightly</span><span class="bar"><i style="width:30%"></i></span><span class="ct">6</span></div>
+        <div class="drow"><span class="lab">Moderately</span><span class="bar"><i style="width:20%"></i></span><span class="ct">4</span></div>
+        <div class="drow"><span class="lab">Not at all</span><span class="bar"><i style="width:10%"></i></span><span class="ct">2</span></div>
+      </div>
+      <div class="dgroup">
+        <h3>Order seen (assigned)</h3>
+        <div class="drow"><span class="lab">Vibration first</span><span class="bar"><i style="width:55%"></i></span><span class="ct">11</span></div>
+        <div class="drow"><span class="lab">No vibration first</span><span class="bar"><i style="width:45%"></i></span><span class="ct">9</span></div>
+        <p class="dkey">one more no-vibration-first session evens it up</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span>What &ldquo;the result&rdquo; means here</h2>
+    <p class="sub">Each participant gets two scores, each the mean of three
+    items on the same 1&ndash;5 scale. <strong style="color:var(--accent)">System
+    quality</strong> is noticeable + fitted + synchronised, and asks whether the
+    detector worked: overall <strong>4.47</strong> (sd 0.70).
+    <strong style="color:var(--amber)">Experience</strong> is enjoyed + engaging
+    + would-install, and asks what they made of it: overall <strong>3.55</strong>
+    (sd 1.29). Every comparison below is against these two.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>The three comparisons</h2>
+
+    <div class="cmp">
+      <header>
+        <h3>Does the viewing order relate to the result?</h3>
+        <span class="verdict no">Not shown</span>
+      </header>
+      <table>
+        <thead><tr><th>Group</th><th></th><th></th><th class="v">Sys</th><th class="v">Exp</th></tr></thead>
+        <tbody>
+          <tr><td class="g">Vibration first</td><td class="n">n = 11</td>
+            <td><div class="track"><i style="width:88.0%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:69.8%"></i></div></td>
+            <td class="v">4.52</td><td class="v">3.79</td></tr>
+          <tr><td class="g">No vibration first</td><td class="n">n = 9</td>
+            <td><div class="track"><i style="width:85.3%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:56.5%"></i></div></td>
+            <td class="v">4.41</td><td class="v">3.26</td></tr>
+        </tbody>
+      </table>
+      <div class="stat">
+        <span>Experience difference <b>+0.53</b> in favour of seeing vibration first</span>
+        <span>Cliff's <code>d</code> &minus;0.29 (small)</span>
+        <span>Mann-Whitney <code>p</code> = 0.285</span>
+      </div>
+    </div>
+
+    <div class="cmp">
+      <header>
+        <h3>Does previous tennis experience relate to the result?</h3>
+        <span class="verdict maybe">Worth a follow-up</span>
+      </header>
+      <table>
+        <thead><tr><th>Group</th><th></th><th></th><th class="v">Sys</th><th class="v">Exp</th></tr></thead>
+        <tbody>
+          <tr><td class="g">Never played</td><td class="n">n = 14</td>
+            <td><div class="track"><i style="width:90.0%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:60.0%"></i></div></td>
+            <td class="v">4.60</td><td class="v">3.40</td></tr>
+          <tr><td class="g">Plays occasionally</td><td class="n">n = 6</td>
+            <td><div class="track"><i style="width:79.3%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:72.3%"></i></div></td>
+            <td class="v">4.17</td><td class="v">3.89</td></tr>
+        </tbody>
+      </table>
+      <div class="stat">
+        <span>System difference <b>+0.43</b>, non-players rating it <em>higher</em></span>
+        <span>Cliff's <code>d</code> +0.51 (large)</span>
+        <span>Mann-Whitney <code>p</code> = 0.073</span>
+      </div>
+    </div>
+
+    <div class="cmp">
+      <header>
+        <h3>Does gender relate to the result?</h3>
+        <span class="verdict no">No signal</span>
+      </header>
+      <table>
+        <thead><tr><th>Group</th><th></th><th></th><th class="v">Sys</th><th class="v">Exp</th></tr></thead>
+        <tbody>
+          <tr><td class="g">Male</td><td class="n">n = 11</td>
+            <td><div class="track"><i style="width:89.5%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:64.5%"></i></div></td>
+            <td class="v">4.58</td><td class="v">3.58</td></tr>
+          <tr><td class="g">Female</td><td class="n">n = 9</td>
+            <td><div class="track"><i style="width:83.3%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:63.0%"></i></div></td>
+            <td class="v">4.33</td><td class="v">3.52</td></tr>
+        </tbody>
+      </table>
+      <div class="stat">
+        <span>Experience difference <b>&minus;0.06</b></span>
+        <span>Cliff's <code>d</code> +0.06 (none)</span>
+        <span>Mann-Whitney <code>p</code> = 0.848 (system <code>p</code> = 0.637)</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span>Page 1 of 2</span>
+    <span>Bars: teal = system quality, amber = experience, both 1-5 from the scale floor</span>
+  </div>
+</div>
+
+<div class="sheet">
+  <header class="mast">
+    <div>
+      <div class="eyebrow">Caveats and the one lead</div>
+      <h1>How much of this would survive one more participant?</h1>
+    </div>
+    <div class="who">
+      8 comparisons run<br>
+      0 significant after correction<br>
+      Smallest group <b>n = 6</b>
+    </div>
+  </header>
+
+  <section>
+    <div class="note warn">
+      <h4>The tennis-experience result rests heavily on one person</h4>
+      <p>Six participants play tennis occasionally, and the contrast is worth
+      showing only with its sensitivity attached. Dropping each player in turn
+      and recomputing the system-quality difference:</p>
+      <table class="loo">
+        <tr><td>all 20</td><td>diff +0.43</td><td>p 0.073</td></tr>
+        <tr><td>drop P03</td><td>diff +0.53</td><td>p 0.051</td></tr>
+        <tr><td>drop P06</td><td>diff +0.53</td><td>p 0.051</td></tr>
+        <tr><td>drop P13</td><td>diff +0.46</td><td>p 0.102</td></tr>
+        <tr><td>drop P20</td><td>diff +0.46</td><td>p 0.102</td></tr>
+        <tr><td>drop P17</td><td>diff +0.40</td><td>p 0.136</td></tr>
+        <tr class="hl"><td class="hl">drop P23</td><td class="hl">diff +0.20</td><td class="hl">p 0.177</td></tr>
+      </table>
+      <p>Removing <strong>P23</strong> more than halves the effect. P23 plays
+      tennis, rated synchronisation 2, and is the only participant to dispute
+      the timing in writing (&ldquo;slightly off&rdquo;). So the finding is
+      partly a restatement of that one dissent.</p>
+      <p>The direction survives regardless &mdash; every leave-one-out is still
+      positive, and players average 4.40 against 4.60 even without P23 &mdash;
+      but the magnitude does not. <strong>The hypothesis worth testing, not
+      claiming:</strong> people who have played tennis have a bodily reference
+      for what a struck ball feels like, so they judge the timing more harshly.
+      Note the direction is a double one: players rate the system lower (4.17 vs
+      4.60) while rating the experience higher (3.89 vs 3.40). They are more
+      critical and more engaged at the same time.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span>Why none of this is a result yet</h2>
+    <p class="sub" style="max-width:74ch">Four reasons, in order of how much
+    they matter.</p>
+    <div class="note">
+      <p><strong>1. Nothing is significant.</strong> The smallest p-value is
+      0.073. I ran eight comparisons (two outcomes &times; four background
+      variables with usable group sizes); a Bonferroni correction for eight
+      tests would require p &lt; 0.006. Nothing is close.</p>
+      <p><strong>2. The groups are tiny.</strong> Six players, nine women, nine
+      no-vibration-first. A difference of 0.4 on a three-item mean is one
+      participant changing two ticks.</p>
+      <p><strong>3. Order is confounded with clip content.</strong> The haptic
+      and non-haptic clips were different footage and which clip carried the
+      haptics was not recorded, so the +0.53 order difference may be partly a
+      statement about which rally was more interesting. This is the one
+      confound a repeat can remove for free, by recording one extra field.</p>
+      <p><strong>4. Age, haptics familiarity and phone habit could not be
+      tested at all</strong> &mdash; each splits into three or more groups with
+      cells of 1 and 2. They are reported as descriptives only. For what it is
+      worth, the largest raw gaps there are experience by age (18&ndash;24 at
+      4.11 against 35&ndash;44 at 3.27) and by phone habit (never in hand, 2.89,
+      n = 3).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">5</span>What I would say in one sentence each</h2>
+    <div class="note">
+      <p><strong>Gender:</strong> no relationship, and this is the cleanest null
+      in the data &mdash; the two groups differ by 0.06 on experience, and by
+      0.17 with the four flagged sheets removed. If a supervisor asks whether to
+      recruit for gender balance, the answer from these twenty is that it will
+      not change the outcome.</p>
+      <p><strong>Order:</strong> seeing vibration first is associated with a
+      half-point higher experience score, which is the largest experience gap in
+      the study and is not significant. It survives removing the four flagged
+      sheets (+0.63, p = 0.341), so it is not an artefact of those. It is
+      confounded with clip content, so I would not report it as an order effect
+      until the assignment is recorded.</p>
+      <p><strong>Tennis experience:</strong> the only contrast with a large
+      effect size, and the only one I would spend more participants on. Six
+      players is too few, and one of them is doing much of the work. Recruiting
+      players specifically is the cheapest way to find out.</p>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span>Page 2 of 2</span>
+    <span>Tests: Mann-Whitney U, two-sided &middot; effect size: Cliff's delta</span>
+  </div>
+</div>
