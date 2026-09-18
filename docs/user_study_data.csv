@@ -1,23 +1,23 @@
 participant,age,gender,watch_sport,phone_while_watching,watch_tennis,play_tennis,vib_familiar,sequence,q3_enjoyed,q4_helped_follow,q5_noticeable,q6_fit,q7_synchronised,q8_distracted,q9_variation,q10_engagement,q11_install,flag
-P01,35-44,F,a few times a year,rarely,a few times a year,never,very,no_vib_first,3,4,5,5,5,3,4,3,2,
-P02,55+,M,a few times a year,never,a few times a year,never,very,no_vib_first,1,4,5,4,4,1,1,5,4,q3_suspect
-P03,35-44,F,a few times a year,sometimes,a few times a year,occasionally,moderately,no_vib_first,5,5,4,5,5,1,4,5,5,
-P04,35-44,M,a few times a year,sometimes,a few times a year,never,slightly,vib_first,4,5,5,5,5,3,4,5,4,
-P05,25-34,M,weekly,sometimes,never,never,moderately,vib_first,4,3,5,4,5,1,3,4,3,
-P06,35-44,M,a few times a year,sometimes,a few times a year,occasionally,moderately,no_vib_first,4,4,5,4,5,2,2,4,2,
-P07,35-44,F,a few times a year,rarely,never,never,not_at_all,vib_first,5,2,4,3,3,2,4,4,5,
 P08,35-44,M,monthly,sometimes,a few times a year,never,not_at_all,vib_first,2,2,5,5,4,3,4,3,1,
-P09,25-34,M,a few times a year,sometimes,never,never,very,vib_first,1,4,5,5,5,1,4,5,5,q3_suspect
+P02,55+,M,a few times a year,never,a few times a year,never,very,no_vib_first,1,4,5,4,4,1,1,5,4,q3_suspect
+P06,35-44,M,a few times a year,sometimes,a few times a year,occasionally,moderately,no_vib_first,4,4,5,4,5,2,2,4,2,
+P05,25-34,M,weekly,sometimes,never,never,moderately,vib_first,4,3,5,4,5,1,3,4,3,
 P10,25-34,M,a few times a year,often,never,never,slightly,vib_first,4,5,5,5,4,2,4,4,4,
+P04,35-44,M,a few times a year,sometimes,a few times a year,never,slightly,vib_first,4,5,5,5,5,3,4,5,4,
+P01,35-44,F,a few times a year,rarely,a few times a year,never,very,no_vib_first,3,4,5,5,5,3,4,3,2,
+P09,25-34,M,a few times a year,sometimes,never,never,very,vib_first,1,4,5,5,5,1,4,5,5,q3_suspect
+P03,35-44,F,a few times a year,sometimes,a few times a year,occasionally,moderately,no_vib_first,5,5,4,5,5,1,4,5,5,
 P11,35-44,F,a few times a year,never,never,never,slightly,no_vib_first,2,2,5,5,5,5,4,1,1,
-P12,25-34,F,a few times a year,sometimes,weekly,regularly,moderately,no_vib_first,4,4,4,3,3,2,4,2,2,
 P13,18-24,F,a few times a year,often,a few times a year,occasionally,very,vib_first,4,4,3,5,5,2,4,4,4,
 P14,45-54,M,monthly,sometimes,a few times a year,never,slightly,no_vib_first,3,3,4,4,4,4,3,4,2,
+P07,35-44,F,a few times a year,rarely,never,never,not_at_all,vib_first,5,2,4,3,3,2,4,4,5,
 P17,35-44,M,a few times a year,often,a few times a year,occasionally,very,vib_first,4,4,4,4,4,2,5,5,5,
 P18,18-24,F,a few times a year,never,never,never,slightly,no_vib_first,4,4,5,5,4,3,4,4,4,
-P19,25-34,F,monthly,often,a few times a year,never,moderately,vib_first,4,4,4,5,5,2,4,4,3,
+P22,35-44,M,daily,very often,monthly,never,very,vib_first,5,5,5,5,5,1,3,1,2,q10_suspect
 P20,18-24,F,a few times a year,sometimes,a few times a year,occasionally,very,vib_first,4,4,5,4,4,4,4,4,5,q8_suspect
 P21,25-34,M,a few times a year,often,a few times a year,never,slightly,no_vib_first,5,5,4,4,5,2,4,5,4,
-P22,35-44,M,daily,very often,monthly,never,very,vib_first,5,5,5,5,5,1,3,1,2,q10_suspect
+P19,25-34,F,monthly,often,a few times a year,never,moderately,vib_first,4,4,4,5,5,2,4,4,3,
 P23,35-44,F,monthly,often,a few times a year,occasionally,very,no_vib_first,2,2,4,3,2,3,2,2,2,
+P12,25-34,F,a few times a year,sometimes,weekly,regularly,moderately,no_vib_first,4,4,4,3,3,2,4,2,2,
 P24,25-34,F,weekly,often,a few times a year,occasionally,slightly,no_vib_first,4,4,4,4,4,3,4,4,3,

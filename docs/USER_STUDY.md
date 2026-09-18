@@ -5,6 +5,14 @@ the underlying responses are in `docs/user_study_data.csv`, transcribed by hand
 from the scanned forms. The scans themselves are participant records and are
 excluded from version control.*
 
+*Row order in both CSVs follows the collated packet PDFs — scan batches in date
+order, blocks in the order they were fed through the scanner — so row N of
+`user_study_data.csv` is packet N of `Pre-StudyQuestionnaire.pdf` and of
+`Post-StudyQuestionnaire.pdf`. This is roughly the order the sessions were run
+and deliberately not sorted by participant code; do not re-sort it. The seven
+packets in the 14 August batch were scanned together, so their order within
+that batch is scanner order rather than session order.*
+
 *Ethics: approved by the University of Waikato STEM Human Research Ethics
 Committee. Participants gave written consent and are identified only by code.*
 
@@ -380,6 +388,10 @@ pipeline would port and the model would have to be retrained.
   and remains confounded with clip content.
 - Single session, single device, short clips — nothing here speaks to whether
   the effect survives an hour of viewing, or novelty decay.
+- **Participant codes are normalised in the data.** P20 wrote their code as
+  `P-20` on both forms; every other participant used no separator. It is
+  recorded as `P20`, which is the only difference between any code as written
+  and as stored. All twenty-two codes on paper are distinct and match the CSVs.
 - **Transcription caveat.** Four sheets argue with themselves on one tick.
   P02 and P09 are recorded as *strongly disagree* on "enjoyed it" while also
   selecting *much more engaging* and writing strongly positive free-text. P22
