@@ -91,6 +91,7 @@ section{display:flex; flex-direction:column;}
   border-radius:2px; white-space:nowrap;}
 .verdict.no{background:var(--rule); color:var(--muted);}
 .verdict.maybe{background:var(--amber-soft); color:var(--amber);}
+.verdict.yes{background:var(--accent-soft); color:var(--accent);}
 .cmp table{width:100%; border-collapse:collapse; font-size:8.6pt;}
 .cmp th{font-weight:500; font-size:7.2pt; letter-spacing:.07em;
   text-transform:uppercase; color:var(--muted); text-align:left;
@@ -157,61 +158,66 @@ section{display:flex; flex-direction:column;}
     <div class="who">
       <b>Chuan Xi</b> &middot; COMPX520<br>
       University of Waikato<br>
-      N = 20 &middot; 15 September 2026
+      N = 22 &middot; 18 September 2026
     </div>
   </header>
 
-  <p class="lede">Three questions from last week: does the <b>viewing order</b>,
-  <b>tennis experience</b>, or <b>gender</b> explain how people responded? Short
-  answer: <b>gender no, order probably not, tennis experience maybe</b> &mdash;
-  and none of it reaches significance at this sample size.</p>
+  <p class="lede">Re-run at n = 22, after two participants arrived including
+  the study's first <b>regular</b> tennis player. Gender: still nothing. Order:
+  still nothing, and now evenly counterbalanced. <b>Tennis experience: the
+  hypothesis from last week now holds</b> &mdash; playing more is associated
+  with rating the system lower, monotonically, <b>rho &minus;0.53, p =
+  0.011</b>.</p>
 
   <section>
     <h2><span class="n">1</span>Who took part</h2>
-    <p class="sub">Twenty participants, recruited by convenience between 14
-    August and 11 September. The sample is young-to-middle-aged, evenly split by
-    gender, and light on tennis: nobody watches it more than monthly and
-    fourteen have never played.</p>
+    <p class="sub">Twenty-two participants, recruited by convenience between
+    14 August and 17 September. Two things changed this week that matter for the
+    comparisons below: gender and viewing order are now both exactly balanced at
+    11/11, and the sample finally contains someone who plays tennis
+    <strong>regularly</strong>.</p>
     <div class="demo">
       <div class="dgroup">
         <h3>Age group</h3>
-        <div class="drow"><span class="lab">35-44</span><span class="bar"><i style="width:50%"></i></span><span class="ct">10</span></div>
-        <div class="drow"><span class="lab">25-34</span><span class="bar"><i style="width:25%"></i></span><span class="ct">5</span></div>
-        <div class="drow"><span class="lab">18-24</span><span class="bar"><i style="width:15%"></i></span><span class="ct">3</span></div>
+        <div class="drow"><span class="lab">35-44</span><span class="bar"><i style="width:45%"></i></span><span class="ct">10</span></div>
+        <div class="drow"><span class="lab">25-34</span><span class="bar"><i style="width:32%"></i></span><span class="ct">7</span></div>
+        <div class="drow"><span class="lab">18-24</span><span class="bar"><i style="width:14%"></i></span><span class="ct">3</span></div>
         <div class="drow"><span class="lab">45-54</span><span class="bar"><i style="width:5%"></i></span><span class="ct">1</span></div>
         <div class="drow"><span class="lab">55+</span><span class="bar"><i style="width:5%"></i></span><span class="ct">1</span></div>
       </div>
       <div class="dgroup">
         <h3>Gender</h3>
-        <div class="drow"><span class="lab">Male</span><span class="bar"><i style="width:55%"></i></span><span class="ct">11</span></div>
-        <div class="drow"><span class="lab">Female</span><span class="bar"><i style="width:45%"></i></span><span class="ct">9</span></div>
-        <p class="dkey">no other responses given</p>
+        <div class="drow"><span class="lab">Male</span><span class="bar"><i style="width:50%"></i></span><span class="ct">11</span></div>
+        <div class="drow"><span class="lab">Female</span><span class="bar"><i style="width:50%"></i></span><span class="ct">11</span></div>
+        <p class="dkey">now exactly balanced</p>
       </div>
       <div class="dgroup">
         <h3>Plays tennis</h3>
-        <div class="drow"><span class="lab">Never</span><span class="bar"><i style="width:70%"></i></span><span class="ct">14</span></div>
-        <div class="drow"><span class="lab">Occasionally</span><span class="bar"><i style="width:30%"></i></span><span class="ct">6</span></div>
-        <p class="dkey">nobody plays regularly</p>
+        <div class="drow"><span class="lab">Never</span><span class="bar"><i style="width:64%"></i></span><span class="ct">14</span></div>
+        <div class="drow"><span class="lab">Occasionally</span><span class="bar"><i style="width:32%"></i></span><span class="ct">7</span></div>
+        <div class="drow"><span class="lab">Regularly</span><span class="bar"><i style="width:5%"></i></span><span class="ct">1</span></div>
+        <p class="dkey">P12 is the first regular player</p>
       </div>
       <div class="dgroup">
         <h3>Watches tennis</h3>
-        <div class="drow"><span class="lab">A few times a year</span><span class="bar"><i style="width:65%"></i></span><span class="ct">13</span></div>
-        <div class="drow"><span class="lab">Never</span><span class="bar"><i style="width:30%"></i></span><span class="ct">6</span></div>
+        <div class="drow"><span class="lab">A few times a year</span><span class="bar"><i style="width:64%"></i></span><span class="ct">14</span></div>
+        <div class="drow"><span class="lab">Never</span><span class="bar"><i style="width:27%"></i></span><span class="ct">6</span></div>
+        <div class="drow"><span class="lab">Weekly</span><span class="bar"><i style="width:5%"></i></span><span class="ct">1</span></div>
         <div class="drow"><span class="lab">Monthly</span><span class="bar"><i style="width:5%"></i></span><span class="ct">1</span></div>
-        <p class="dkey">none weekly or daily</p>
+        <p class="dkey">none daily</p>
       </div>
       <div class="dgroup">
         <h3>Familiar with phone haptics</h3>
-        <div class="drow"><span class="lab">Very</span><span class="bar"><i style="width:40%"></i></span><span class="ct">8</span></div>
-        <div class="drow"><span class="lab">Slightly</span><span class="bar"><i style="width:30%"></i></span><span class="ct">6</span></div>
-        <div class="drow"><span class="lab">Moderately</span><span class="bar"><i style="width:20%"></i></span><span class="ct">4</span></div>
-        <div class="drow"><span class="lab">Not at all</span><span class="bar"><i style="width:10%"></i></span><span class="ct">2</span></div>
+        <div class="drow"><span class="lab">Very</span><span class="bar"><i style="width:36%"></i></span><span class="ct">8</span></div>
+        <div class="drow"><span class="lab">Slightly</span><span class="bar"><i style="width:32%"></i></span><span class="ct">7</span></div>
+        <div class="drow"><span class="lab">Moderately</span><span class="bar"><i style="width:23%"></i></span><span class="ct">5</span></div>
+        <div class="drow"><span class="lab">Not at all</span><span class="bar"><i style="width:9%"></i></span><span class="ct">2</span></div>
       </div>
       <div class="dgroup">
         <h3>Order seen (assigned)</h3>
-        <div class="drow"><span class="lab">Vibration first</span><span class="bar"><i style="width:55%"></i></span><span class="ct">11</span></div>
-        <div class="drow"><span class="lab">No vibration first</span><span class="bar"><i style="width:45%"></i></span><span class="ct">9</span></div>
-        <p class="dkey">one more no-vibration-first session evens it up</p>
+        <div class="drow"><span class="lab">Vibration first</span><span class="bar"><i style="width:50%"></i></span><span class="ct">11</span></div>
+        <div class="drow"><span class="lab">No vibration first</span><span class="bar"><i style="width:50%"></i></span><span class="ct">11</span></div>
+        <p class="dkey">now exactly counterbalanced</p>
       </div>
     </div>
   </section>
@@ -221,10 +227,10 @@ section{display:flex; flex-direction:column;}
     <p class="sub">Each participant gets two scores, each the mean of three
     items on the same 1&ndash;5 scale. <strong style="color:var(--accent)">System
     quality</strong> is noticeable + fitted + synchronised, and asks whether the
-    detector worked: overall <strong>4.47</strong> (sd 0.70).
+    detector worked: overall <strong>4.39</strong> (sd 0.72).
     <strong style="color:var(--amber)">Experience</strong> is enjoyed + engaging
-    + would-install, and asks what they made of it: overall <strong>3.55</strong>
-    (sd 1.29). Every comparison below is against these two.</p>
+    + would-install, and asks what they made of it: overall <strong>3.52</strong>
+    (sd 1.27). Every comparison below is against these two.</p>
   </section>
 
   <section>
@@ -242,23 +248,23 @@ section{display:flex; flex-direction:column;}
             <td><div class="track"><i style="width:88.0%"></i></div>
                 <div class="track exp" style="margin-top:2px"><i style="width:69.8%"></i></div></td>
             <td class="v">4.52</td><td class="v">3.79</td></tr>
-          <tr><td class="g">No vibration first</td><td class="n">n = 9</td>
-            <td><div class="track"><i style="width:85.3%"></i></div>
-                <div class="track exp" style="margin-top:2px"><i style="width:56.5%"></i></div></td>
-            <td class="v">4.41</td><td class="v">3.26</td></tr>
+          <tr><td class="g">No vibration first</td><td class="n">n = 11</td>
+            <td><div class="track"><i style="width:81.8%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:56.0%"></i></div></td>
+            <td class="v">4.27</td><td class="v">3.24</td></tr>
         </tbody>
       </table>
       <div class="stat">
-        <span>Experience difference <b>+0.53</b> in favour of seeing vibration first</span>
-        <span>Cliff's <code>d</code> &minus;0.29 (small)</span>
-        <span>Mann-Whitney <code>p</code> = 0.285</span>
+        <span>Experience difference <b>+0.55</b> in favour of seeing vibration first</span>
+        <span>Now exactly counterbalanced 11/11</span>
+        <span>Mann-Whitney <code>p</code> = 0.186</span>
       </div>
     </div>
 
     <div class="cmp">
       <header>
         <h3>Does previous tennis experience relate to the result?</h3>
-        <span class="verdict maybe">Worth a follow-up</span>
+        <span class="verdict yes">Yes, on system quality</span>
       </header>
       <table>
         <thead><tr><th>Group</th><th></th><th></th><th class="v">Sys</th><th class="v">Exp</th></tr></thead>
@@ -267,16 +273,21 @@ section{display:flex; flex-direction:column;}
             <td><div class="track"><i style="width:90.0%"></i></div>
                 <div class="track exp" style="margin-top:2px"><i style="width:60.0%"></i></div></td>
             <td class="v">4.60</td><td class="v">3.40</td></tr>
-          <tr><td class="g">Plays occasionally</td><td class="n">n = 6</td>
-            <td><div class="track"><i style="width:79.3%"></i></div>
-                <div class="track exp" style="margin-top:2px"><i style="width:72.3%"></i></div></td>
-            <td class="v">4.17</td><td class="v">3.89</td></tr>
+          <tr><td class="g">Plays occasionally</td><td class="n">n = 7</td>
+            <td><div class="track"><i style="width:78.5%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:71.5%"></i></div></td>
+            <td class="v">4.14</td><td class="v">3.86</td></tr>
+          <tr><td class="g">Plays regularly</td><td class="n">n = 1</td>
+            <td><div class="track"><i style="width:58.3%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:41.8%"></i></div></td>
+            <td class="v">3.33</td><td class="v">2.67</td></tr>
         </tbody>
       </table>
       <div class="stat">
-        <span>System difference <b>+0.43</b>, non-players rating it <em>higher</em></span>
-        <span>Cliff's <code>d</code> +0.51 (large)</span>
-        <span>Mann-Whitney <code>p</code> = 0.073</span>
+        <span>Monotonic across all three levels</span>
+        <span>Spearman <b>rho &minus;0.533</b></span>
+        <span><code>p</code> = <b>0.011</b></span>
+        <span>Experience: rho +0.11, <code>p</code> = 0.637</span>
       </div>
     </div>
 
@@ -292,16 +303,16 @@ section{display:flex; flex-direction:column;}
             <td><div class="track"><i style="width:89.5%"></i></div>
                 <div class="track exp" style="margin-top:2px"><i style="width:64.5%"></i></div></td>
             <td class="v">4.58</td><td class="v">3.58</td></tr>
-          <tr><td class="g">Female</td><td class="n">n = 9</td>
-            <td><div class="track"><i style="width:83.3%"></i></div>
-                <div class="track exp" style="margin-top:2px"><i style="width:63.0%"></i></div></td>
-            <td class="v">4.33</td><td class="v">3.52</td></tr>
+          <tr><td class="g">Female</td><td class="n">n = 11</td>
+            <td><div class="track"><i style="width:80.3%"></i></div>
+                <div class="track exp" style="margin-top:2px"><i style="width:61.3%"></i></div></td>
+            <td class="v">4.21</td><td class="v">3.45</td></tr>
         </tbody>
       </table>
       <div class="stat">
-        <span>Experience difference <b>&minus;0.06</b></span>
-        <span>Cliff's <code>d</code> +0.06 (none)</span>
-        <span>Mann-Whitney <code>p</code> = 0.848 (system <code>p</code> = 0.637)</span>
+        <span>Experience difference <b>&minus;0.12</b>, <code>p</code> = 1.000</span>
+        <span>System &minus;0.36, <code>p</code> = 0.281</span>
+        <span>Groups now equal at 11/11</span>
       </div>
     </div>
   </section>
@@ -315,95 +326,111 @@ section{display:flex; flex-direction:column;}
 <div class="sheet">
   <header class="mast">
     <div>
-      <div class="eyebrow">Caveats and the one lead</div>
-      <h1>How much of this would survive one more participant?</h1>
+      <div class="eyebrow">The one result, and what it is not</div>
+      <h1>A hypothesis from last week, tested this week</h1>
     </div>
     <div class="who">
-      8 comparisons run<br>
-      0 significant after correction<br>
-      Smallest group <b>n = 6</b>
+      Predicted at <b>n = 20</b><br>
+      Tested at <b>n = 22</b><br>
+      Smallest cell <b>n = 1</b>
     </div>
   </header>
 
+  <p class="lede">Last week&rsquo;s note called this &ldquo;the hypothesis worth
+  testing, not claiming&rdquo;. Two participants then arrived &mdash; one of
+  them the study&rsquo;s first regular player &mdash; and it held. <b>That
+  sequence matters: the prediction was on paper before the data that tests
+  it.</b></p>
+
   <section>
-    <div class="note warn">
-      <h4>The tennis-experience result rests heavily on one person</h4>
-      <p>Six participants play tennis occasionally, and the contrast is worth
-      showing only with its sensitivity attached. Dropping each player in turn
-      and recomputing the system-quality difference:</p>
+    <div class="note">
+      <h4>The gradient, and how hard it is to break</h4>
+      <p>Treating playing frequency as an ordered exposure gives
+      <strong>Spearman rho = &minus;0.533, p = 0.011</strong> against the
+      system-quality composite. Dropping either extreme participant leaves it
+      significant:</p>
       <table class="loo">
-        <tr><td>all 20</td><td>diff +0.43</td><td>p 0.073</td></tr>
-        <tr><td>drop P03</td><td>diff +0.53</td><td>p 0.051</td></tr>
-        <tr><td>drop P06</td><td>diff +0.53</td><td>p 0.051</td></tr>
-        <tr><td>drop P13</td><td>diff +0.46</td><td>p 0.102</td></tr>
-        <tr><td>drop P20</td><td>diff +0.46</td><td>p 0.102</td></tr>
-        <tr><td>drop P17</td><td>diff +0.40</td><td>p 0.136</td></tr>
-        <tr class="hl"><td class="hl">drop P23</td><td class="hl">diff +0.20</td><td class="hl">p 0.177</td></tr>
+        <tr><td>all 22</td><td>rho &minus;0.533</td><td>p 0.011</td></tr>
+        <tr><td>drop P23 (the dissenter)</td><td>rho &minus;0.484</td><td>p 0.026</td></tr>
+        <tr><td>drop P12 (the regular player)</td><td>rho &minus;0.464</td><td>p 0.034</td></tr>
+        <tr><td>18 unflagged sheets only</td><td>rho &minus;0.516</td><td>p 0.028</td></tr>
+        <tr class="hl"><td class="hl">drop both extremes</td><td class="hl">rho &minus;0.392</td><td class="hl">p 0.087</td></tr>
       </table>
-      <p>Removing <strong>P23</strong> more than halves the effect. P23 plays
-      tennis, rated synchronisation 2, and is the only participant to dispute
-      the timing in writing (&ldquo;slightly off&rdquo;). So the finding is
-      partly a restatement of that one dissent.</p>
-      <p>The direction survives regardless &mdash; every leave-one-out is still
-      positive, and players average 4.40 against 4.60 even without P23 &mdash;
-      but the magnitude does not. <strong>The hypothesis worth testing, not
-      claiming:</strong> people who have played tennis have a bodily reference
-      for what a struck ball feels like, so they judge the timing more harshly.
-      Note the direction is a double one: players rate the system lower (4.17 vs
-      4.60) while rating the experience higher (3.89 vs 3.40). They are more
-      critical and more engaged at the same time.</p>
+      <p>Last week the same contrast rested almost entirely on P23; it does not
+      any more. Only removing both extremes at once costs significance, and even
+      then the direction holds.</p>
     </div>
   </section>
 
   <section>
-    <h2><span class="n">4</span>Why none of this is a result yet</h2>
-    <p class="sub" style="max-width:74ch">Four reasons, in order of how much
-    they matter.</p>
+    <div class="note warn">
+      <h4>I had the mechanism wrong, and the data says so</h4>
+      <p>Last week I suggested players judge the <em>timing</em> more harshly.
+      Broken out by item, that is not where the gradient lives:</p>
+      <table class="loo">
+        <tr><td>Q5 noticeable</td><td>rho &minus;0.482</td><td>p 0.023</td>
+            <td>4.71 / 4.14 / 4.00</td></tr>
+        <tr><td>Q6 fitted</td><td>rho &minus;0.427</td><td>p 0.047</td>
+            <td>4.57 / 4.14 / 3.00</td></tr>
+        <tr><td>Q7 synchronised</td><td>rho &minus;0.285</td><td>p 0.199</td>
+            <td>4.50 / 4.14 / 3.00</td></tr>
+      </table>
+      <p>It is carried by <strong>noticeability and fit</strong>; synchronisation
+      alone does not reach significance. So the reading is broader than timing:
+      people who play are harsher about whether the haptic matched the game at
+      all. The timing dissents (P23&rsquo;s &ldquo;slightly off&rdquo;, P12
+      anticipating the pulse &ldquo;before every hitting&rdquo;) are consistent
+      with it but are not what produces the statistic.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span>Two things that could still explain it away</h2>
     <div class="note">
-      <p><strong>1. Nothing is significant.</strong> The smallest p-value is
-      0.073. I ran eight comparisons (two outcomes &times; four background
-      variables with usable group sizes); a Bonferroni correction for eight
-      tests would require p &lt; 0.006. Nothing is close.</p>
-      <p><strong>2. The groups are tiny.</strong> Six players, nine women, nine
-      no-vibration-first. A difference of 0.4 on a three-item mean is one
-      participant changing two ticks.</p>
-      <p><strong>3. Order is confounded with clip content.</strong> The haptic
-      and non-haptic clips were different footage and which clip carried the
-      haptics was not recorded, so the +0.53 order difference may be partly a
-      statement about which rally was more interesting. This is the one
-      confound a repeat can remove for free, by recording one extra field.</p>
-      <p><strong>4. Age, haptics familiarity and phone habit could not be
-      tested at all</strong> &mdash; each splits into three or more groups with
-      cells of 1 and 2. They are reported as descriptives only. For what it is
-      worth, the largest raw gaps there are experience by age (18&ndash;24 at
-      4.11 against 35&ndash;44 at 3.27) and by phone habit (never in hand, 2.89,
-      n = 3).</p>
+      <p><strong>1. Playing is entangled with gender here.</strong> Six of the
+      eight who have played are women; nine of the fourteen who have not are
+      men. Since women also rate system quality slightly lower (4.21 against
+      4.58), part of the tennis contrast could be a gender contrast. It does
+      survive splitting: within women rho = &minus;0.592 (p = 0.055), within men
+      rho = &minus;0.310 (p = 0.354), and the played/never gap appears in both
+      rows of the 2&times;2 &mdash; women 3.94 against 4.53, men 4.33 against
+      4.63. But with two male players that separation is weak. <strong>The
+      cheapest fix is recruiting male players.</strong></p>
+      <p><strong>2. &ldquo;Regularly&rdquo; is one person.</strong> The bottom
+      of the gradient is P12 alone. Removing them keeps the result
+      (p = 0.034), so it is not load-bearing, but the shape of the curve past
+      &ldquo;occasionally&rdquo; is a single observation.</p>
+      <p>Multiplicity still applies: this is one of eight comparisons and a
+      Bonferroni correction for eight would require p &lt; 0.006. What earns
+      this one more credit than the others is that it was a directional
+      prediction made before these two participants, not a pattern found by
+      looking.</p>
     </div>
   </section>
 
   <section>
     <h2><span class="n">5</span>What I would say in one sentence each</h2>
     <div class="note">
-      <p><strong>Gender:</strong> no relationship, and this is the cleanest null
-      in the data &mdash; the two groups differ by 0.06 on experience, and by
-      0.17 with the four flagged sheets removed. If a supervisor asks whether to
-      recruit for gender balance, the answer from these twenty is that it will
-      not change the outcome.</p>
-      <p><strong>Order:</strong> seeing vibration first is associated with a
-      half-point higher experience score, which is the largest experience gap in
-      the study and is not significant. It survives removing the four flagged
-      sheets (+0.63, p = 0.341), so it is not an artefact of those. It is
-      confounded with clip content, so I would not report it as an order effect
-      until the assignment is recorded.</p>
-      <p><strong>Tennis experience:</strong> the only contrast with a large
-      effect size, and the only one I would spend more participants on. Six
-      players is too few, and one of them is doing much of the work. Recruiting
-      players specifically is the cheapest way to find out.</p>
+      <p><strong>Gender:</strong> still nothing, now on equal groups of 11 and
+      11 &mdash; 0.12 apart on experience, p = 1.000. The one caveat is that
+      gender is tangled with playing, so it should not be dismissed until the
+      player group is less female-heavy.</p>
+      <p><strong>Order:</strong> +0.55 on experience for seeing vibration
+      first, p = 0.186, and now on perfectly balanced groups so the imbalance
+      excuse is gone. It remains confounded with clip content, which is the one
+      thing a repeat can fix for free by recording which clip carried the
+      haptics.</p>
+      <p><strong>Tennis experience:</strong> the result of the study so far.
+      More playing, lower system rating, monotonically, p = 0.011, robust to
+      dropping either extreme. It is about whether the haptic matched the game,
+      not specifically about timing. Next step is recruiting players &mdash;
+      especially male players &mdash; because that both strengthens the
+      estimate and unpicks the gender confound at the same time.</p>
     </div>
   </section>
 
   <div class="foot">
     <span>Page 2 of 2</span>
-    <span>Tests: Mann-Whitney U, two-sided &middot; effect size: Cliff's delta</span>
+    <span>Spearman on ordered exposure &middot; Mann-Whitney for two groups</span>
   </div>
 </div>

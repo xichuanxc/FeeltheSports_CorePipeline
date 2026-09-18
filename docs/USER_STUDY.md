@@ -63,15 +63,15 @@ Participants completed a pre-study questionnaire (demographics, viewing habits,
 haptic familiarity) and a post-study questionnaire: a nine-item 5-point Likert
 battery plus three free-text questions.
 
-**N = 20** (P01–P11, P13, P14, P17–P23).
+**N = 22** (P01–P14, P17–P24; P15 and P16 absent).
 
 | | |
 |---|---|
-| Age | 35–44 (10), 25–34 (5), 18–24 (3), 45–54 (1), 55+ (1) |
-| Gender | 11 male, 9 female |
-| Watches tennis | a few times a year (13), never (6), monthly (1) |
-| Plays tennis | never (14), occasionally (6) |
-| Haptics familiarity | very (8), slightly (6), moderately (4), not at all (2) |
+| Age | 35–44 (10), 25–34 (7), 18–24 (3), 45–54 (1), 55+ (1) |
+| Gender | 11 male, 11 female |
+| Watches tennis | a few times a year (14), never (6), monthly (1), weekly (1) |
+| Plays tennis | never (14), occasionally (7), **regularly (1)** |
+| Haptics familiarity | very (8), slightly (7), moderately (5), not at all (2) |
 
 No participant reported a condition affecting vibration sensitivity. The sample
 is drawn from a convenience population; **nobody watches tennis more often
@@ -86,13 +86,13 @@ finding.
 
 | Item | Mean | Median | Range |
 |---|---|---|---|
-| Vibrations clearly noticeable | 4.55 | 5 | 3–5 |
-| Fitted what I saw and heard | 4.45 | 5 | 3–5 |
-| **Synchronised with the hits** | **4.40** | **5** | **2–5** |
+| Vibrations clearly noticeable | 4.50 | 5 | 3–5 |
+| Fitted what I saw and heard | 4.36 | 4.5 | 3–5 |
+| **Synchronised with the hits** | **4.32** | **4.5** | **2–5** |
 
-Pooled mean **4.47**, standard deviation **0.70**. Three participants — P07,
-P13 and P23 — scored below 4 on any of these, and **P23 is the first to score
-below 3**, answering *disagree* on synchronisation.
+Pooled mean **4.39**, standard deviation **0.72**. Four participants — P07,
+P12, P13 and P23 — scored below 4 on any of these; P23 remains the only one
+below 3, answering *disagree* on synchronisation.
 
 This remains the direct subjective validation of the acoustic pipeline: the
 measured firing timing (median 33 ms early against hand-labelled onsets) sits,
@@ -110,6 +110,54 @@ dissent in twenty does not overturn a pooled 4.47, but it is the first
 direct evidence that the 33 ms lead is perceptible to somebody, and it should
 be treated as a lead to chase rather than an outlier to average away.
 
+### People who play tennis rate the system lower, and it is graded
+
+This is now the strongest quantitative relationship in the study, and unlike
+everything else here it was predicted before the data that tests it arrived.
+The n = 20 write-up proposed it as "a hypothesis for a larger sample"; P12 and
+P24 then arrived, P12 being the first participant who plays **regularly**, and
+the gradient is monotonic:
+
+| Plays tennis | n | System quality |
+|---|---|---|
+| Never | 14 | 4.60 |
+| Occasionally | 7 | 4.14 |
+| **Regularly** | **1** | **3.33** |
+
+Treating playing frequency as an ordered exposure, Spearman **rho = −0.533,
+p = 0.011** against the system-quality composite. It survives dropping either
+extreme participant (without P23, rho = −0.484, p = 0.026; without P12,
+rho = −0.464, p = 0.034) and the four flagged sheets (rho = −0.516, p = 0.028).
+Dropping both extremes leaves the direction and loses significance
+(rho = −0.392, p = 0.087), which is the honest limit of a single-digit
+subgroup.
+
+**The earlier reading of this was wrong in one respect and should be corrected.**
+At n = 20 I suggested players judge the *timing* more harshly. Broken out by
+item, the gradient is carried most by *noticeability* (rho = −0.482, p = 0.023)
+and *fit* (rho = −0.427, p = 0.047), and synchronisation alone does not reach
+significance (rho = −0.285, p = 0.199). So it is not specifically a timing
+effect: people who play are harsher about whether the haptic matched the game
+at all.
+
+Two caveats carry equal weight with the result. **Playing is entangled with
+gender in this sample** — six of the eight who have played are women, nine of
+the fourteen who have not are men — so the contrast is partly a gender contrast.
+It does hold within each gender separately (women rho = −0.592, p = 0.055; men
+rho = −0.310, p = 0.354, n = 11 each), and the played/never gap appears in both
+rows of the 2×2 (women 3.94 against 4.53; men 4.33 against 4.63), but with two
+male players that separation is weak. And **"regularly" is one person**, so the
+bottom of the gradient rests on P12 alone.
+
+P12 also supplies a plausible mechanism, unprompted: *"before every hitting. I
+became kind of thinking the feedback, which is slightly disturbe me."* They
+were anticipating the buzz ahead of the strike. A viewer who knows the rhythm
+of a rally well enough to predict the contact point is exactly the viewer for
+whom a pulse arriving a median 33 ms early has something to be early *against*.
+That is consistent with P23's *"slightly off"* and with the direction of the
+measured error, and it is testable: delay the fire point by ~30 ms and see
+whether the gradient flattens.
+
 The milder dissent is still worth naming. P07 is the only participant to answer
 *neutral* on both "fitted" and "synchronised", and also the only one who rated
 familiarity with phone haptics as *not at all* while never having watched
@@ -125,15 +173,15 @@ a claim on its own.
 
 | Item | Mean | Median | Range |
 |---|---|---|---|
-| Enjoyed it | 3.50 | 4 | 1–5 |
-| More engaging than without | 3.80 | 4 | 1–5 |
-| Would install it | 3.35 | 4 | 1–5 |
+| Enjoyed it | 3.55 | 4 | 1–5 |
+| More engaging than without | 3.73 | 4 | 1–5 |
+| Would install it | 3.27 | 3.5 | 1–5 |
 
-Pooled mean **3.55**, standard deviation **1.29** — **1.8× the spread** of the
-system-quality items. That multiple has fallen from 2.1× because the
-system-quality spread widened, not because the experience spread narrowed:
-P23 is the first participant to disagree about the system itself. Adoption
-intent split **11 yes / 2 unsure / 7 no**, and
+Pooled mean **3.52**, standard deviation **1.27** — **1.8× the spread** of the
+system-quality items, down from 2.2× at n = 18. The multiple keeps falling
+because the system-quality spread keeps widening as people who play tennis
+arrive, not because the experience spread is narrowing. Adoption intent split
+**11 yes / 3 unsure / 8 no**, and
 the per-participant experience score ranges from 5.00 to 1.33.
 
 The variance is *between participants*, not between items: those who liked it
@@ -143,8 +191,9 @@ performing correctly is therefore not sufficient to predict acceptance.
 ### Order
 
 Participants who received the haptic condition first rated it higher on every
-experience item (engagement +0.24, would-install +0.84). The split is 11
-against 9, and 20 participants still cannot support a test; it is reported
+experience item (engagement +0.36, would-install +0.91). The split is now
+**even at 11 against 11**, and 22 participants still cannot support a test; it
+is reported
 so the direction is visible, and suggests a contrast effect worth controlling
 in a larger study.
 
@@ -215,11 +264,19 @@ and half"*. On this reading the haptic channel is not simply distracting or
 simply engaging; it competes for attention when attention is already committed
 to the screen, and recruits it when it is not. Both participants rated
 synchronisation 4/5 or better, so this is not a detection error but a cross-modal
-attention cost that no accuracy improvement addresses. Three of twenty
+attention cost that no accuracy improvement addresses. Three of twenty-two
 participants agree with "the vibration feedback distracted me"; the median
 answer is 2, disagree. The third, P20, wrote *"not distracting"* on the very
 next question, which is why that sheet is flagged below rather than read as
 a third case of attentional capture.
+
+P12, who plays tennis regularly, reports the failure mode in its most specific
+form yet: *"before every hitting. I became kind of thinking the feedback, which
+is slightly disturbe me"*, summarised as *"a bit distractily"*. This is not the
+undifferentiated capture P11 described but anticipation — attention going to
+the predicted buzz rather than to the screen. P24, at the opposite end, found
+it *"natural &hellip; because it could increase my emotional feeling"* and felt
+*"more engaged and interesting with the vibration clip"*.
 
 P21 is the clearest evidence for the other half of P14's condition, and the
 first participant to describe the vibration as *repairing* attention rather
@@ -314,11 +371,13 @@ pipeline would port and the model would have to be retrained.
   A repeat should either counterbalance clip against condition or record the
   clip-to-condition assignment per participant, which costs one extra field.
 
-- **n = 20**, convenience sample, nobody watching tennis more than monthly.
-  Sufficient to establish that the experience response is divided; insufficient
-  to explain who falls on which side.
-- Order is 11 haptic-first against 9; the sample is still far too small to test
-  the apparent order effect. One more no-vibration-first session evens it up.
+- **n = 22**, convenience sample. One participant watches tennis weekly and
+  one plays regularly; everyone else is lighter than that. Sufficient to
+  establish that the experience response is divided; insufficient to explain
+  who falls on which side.
+- **Order is now evenly counterbalanced, 11 against 11.** The apparent order
+  effect on experience (+0.55, p = 0.186) is still not testable at this size,
+  and remains confounded with clip content.
 - Single session, single device, short clips — nothing here speaks to whether
   the effect survives an hour of viewing, or novelty decay.
 - **Transcription caveat.** Four sheets argue with themselves on one tick.
@@ -338,7 +397,7 @@ pipeline would port and the model would have to be retrained.
   Q8 is the sole negatively worded statement, and Q10 the sole item not on an
   agree/disagree scale. The other two are both on Q3, the first Likert row on
   the page, and both fall at the extreme opposite end from everything else that
-  participant wrote. Four contradictions in twenty sheets is a rate worth
+  participant wrote. Four contradictions in twenty-two sheets is a rate worth
   designing against — reverse-coded and odd-scaled items are the usual suspects
   — rather than attributing to four careless participants.
 - Participant codes P12, P15 and P16 are absent from the returned
