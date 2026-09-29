@@ -79,4 +79,6 @@ docs/*.pptx
 
 # Overleaf dissertation project: its own git repo, synced to Overleaf.
 # Never track it here -- git would store a bare pointer, not the text.
-dissertation/
+# Anchored with a leading slash so it matches only the clone at the repository
+# root, not docs/dissertation/, which holds ordinary tracked markdown.
+/dissertation/
